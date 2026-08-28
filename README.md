@@ -6,6 +6,7 @@ Study guide portal for SMU CS610 Applied Machine Learning.
 
 - **Topics & Glossary** — lecture content by segment + searchable term glossary
 - **Practice Quiz** — MCQ bank with worked explanations (incl. Bayes calculation drills)
+- **Math Trainer** — progressive calculation drills (6 skill levels × 3 tiers, guided → exam-style) with fresh random numbers, worked solutions, and a cheat-sheet formula bank with self-test mode
 - **Lab Walkthrough** — naive Bayes notebook explained step by step
 - **Course Map** — assessment weights, schedule, policies
 

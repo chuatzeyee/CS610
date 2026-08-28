@@ -3,6 +3,7 @@ import {
   Home,
   BookOpen,
   ClipboardCheck,
+  Sigma,
   FlaskConical,
   CalendarDays,
 } from 'lucide-react'
@@ -11,6 +12,7 @@ const navItems = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/topics', label: 'Topics', icon: BookOpen },
   { to: '/quiz', label: 'Quiz', icon: ClipboardCheck },
+  { to: '/math', label: 'Math', icon: Sigma },
   { to: '/lab', label: 'Lab', icon: FlaskConical },
   { to: '/course', label: 'Course', icon: CalendarDays },
 ] as const

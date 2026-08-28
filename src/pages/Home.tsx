@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, ClipboardCheck, FlaskConical, CalendarDays, ArrowRight } from 'lucide-react'
+import { BookOpen, ClipboardCheck, Sigma, FlaskConical, CalendarDays, ArrowRight } from 'lucide-react'
 import { sessions } from '../data/topics'
 import { definitions } from '../data/definitions'
 import { questions } from '../data/quiz'
+import { levels } from '../data/mathdrills'
 import { lab } from '../data/lab'
 import { course } from '../data/course'
 
@@ -22,6 +23,14 @@ const cards = [
     description: 'MCQ bank with worked explanations — recall, concepts, and Bayes-theorem calculation drills',
     count: questions.length,
     unit: 'questions',
+  },
+  {
+    to: '/math',
+    icon: Sigma,
+    title: 'Math Trainer',
+    description: 'Progressive calculation drills for the exam — level up from guided practice to exam-style problems, plus a cheat-sheet formula bank',
+    count: levels.length,
+    unit: 'skill levels',
   },
   {
     to: '/lab',
