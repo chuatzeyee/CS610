@@ -22,10 +22,10 @@
   --color-ink-muted: #6b6b6b;
   --color-ink-faint: #4a4a4a;
 
-  /* ── Accent (electric cyan) ── */
-  --color-glow: #22d3ee;
-  --color-glow-dim: #164e63;
-  --color-glow-hover: #67e8f9;
+  /* ── Accent (vintage terminal green) ── */
+  --color-glow: #4ade80;
+  --color-glow-dim: #14532d;
+  --color-glow-hover: #86efac;
 
   /* ── Semantic ── */
   --color-correct: #4ade80;
@@ -34,9 +34,9 @@
   --color-wrong-dim: #450a0a;
 
   /* ── Session Tab Colors ── */
-  --color-s1: #22d3ee;
+  --color-s1: #4ade80;
   --color-s2: #a78bfa;
-  --color-s3: #4ade80;
+  --color-s3: #22d3ee;
   --color-s4: #fbbf24;
   --color-s5: #fb923c;
 

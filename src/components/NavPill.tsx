@@ -27,7 +27,7 @@ export default function NavPill() {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-glow-dim text-glow shadow-[0_0_12px_rgba(34,211,238,0.12)]'
+                  ? 'bg-glow-dim text-glow shadow-[0_0_12px_rgba(74,222,128,0.12)]'
                   : 'text-ink-muted hover:text-ink hover:bg-raised'
               }`
             }
