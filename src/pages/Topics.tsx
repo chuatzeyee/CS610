@@ -72,7 +72,7 @@ export default function Topics() {
     <div className="max-w-4xl mx-auto px-6 py-12">
       <div className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold text-ink mb-2">Topics & Glossary</h1>
-        <p className="text-ink-secondary">Week 1 lecture content by segment, and every term you need.</p>
+        <p className="text-ink-secondary">Lecture content by segment, week by week — and every term you need.</p>
       </div>
 
       <div className="flex gap-2 mb-8">

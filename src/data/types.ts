@@ -39,6 +39,8 @@ export type LabStep = {
 }
 
 export type Lab = {
+  id: string
+  week: string
   title: string
   overview: string
   steps: readonly LabStep[]

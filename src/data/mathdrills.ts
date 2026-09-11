@@ -12,6 +12,7 @@ export interface DrillLevel {
   title: string
   concept: string
   formula: string
+  week: string
   generate: (tier: Tier) => Problem
 }
 
@@ -401,9 +402,347 @@ function genMultinomial(tier: Tier): Problem {
   }
 }
 
+// ---------- Week 1a: probability, information theory, linear algebra ----------
+
+function genJoint(tier: Tier): Problem {
+  if (tier === 3) {
+    // axioms: P(A∪B) = P(A) + P(B) − P(A∩B), on a 20-grid so numbers stay clean
+    let a: number, b: number, ab: number
+    do {
+      a = ri(5, 15)
+      b = ri(5, 15)
+      ab = ri(1, Math.min(a, b))
+    } while (a + b - ab > 19)
+    const answer = (a + b - ab) / 20
+    return {
+      prompt: `Exam-style (probability axioms): events A and B have P(A) = ${a}/20, P(B) = ${b}/20, and P(A ∩ B) = ${ab}/20. Compute P(A ∪ B).`,
+      answerLabel: 'P(A ∪ B)',
+      answer,
+      steps: [
+        `Union rule: P(A ∪ B) = P(A) + P(B) − P(A ∩ B) — subtract the overlap so it is not counted twice.`,
+        `P(A ∪ B) = ${a}/20 + ${b}/20 − ${ab}/20 = ${a + b - ab}/20 = ${fmt(answer)}.`,
+        `Sanity checks from the axioms: P(Ā) = 1 − ${a}/20 = ${fmt(1 - a / 20)}, and P(A ∪ B) ≤ 1.`,
+      ],
+    }
+  }
+  // joint table in 32nds, 3 columns (x) × 2 rows (y), like the slide's 32nds table
+  let cells: number[][]
+  do {
+    cells = [0, 1].map(() => [ri(1, 8), ri(1, 8), ri(1, 8)])
+  } while (cells.flat().reduce((s, c) => s + c, 0) > 30)
+  const rest = 32 - cells.flat().reduce((s, c) => s + c, 0)
+  cells[1][2] += rest
+  const colSums = [0, 1, 2].map(j => cells[0][j] + cells[1][j])
+  const tableStr = cells.map((row, i) => `y${i + 1}: [${row.map(c => `${c}/32`).join(', ')}]`).join('; ')
+  if (tier === 1) {
+    const j = ri(0, 2)
+    const answer = colSums[j] / 32
+    return {
+      prompt: `A joint distribution P(X, Y) is given as a table (rows = Y, columns = x1, x2, x3, entries in 32nds): ${tableStr}. Compute the marginal P(X = x${j + 1}) using the sum rule.`,
+      answerLabel: `P(X = x${j + 1})`,
+      answer,
+      steps: [
+        `Sum rule: marginalize Y out by summing the x${j + 1} column.`,
+        `P(X = x${j + 1}) = ${cells[0][j]}/32 + ${cells[1][j]}/32 = ${colSums[j]}/32 = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const j = ri(0, 2)
+  const i = ri(0, 1)
+  const answer = cells[i][j] / colSums[j]
+  return {
+    prompt: `Joint table P(X, Y) (rows = Y, columns = x1, x2, x3, entries in 32nds): ${tableStr}. Compute the conditional P(Y = y${i + 1} | X = x${j + 1}).`,
+    answerLabel: `P(Y = y${i + 1} | X = x${j + 1})`,
+    answer,
+    steps: [
+      `Conditional = joint ÷ marginal: P(Y|X) = P(X, Y) / P(X).`,
+      `Joint: P(Y = y${i + 1}, X = x${j + 1}) = ${cells[i][j]}/32. Marginal (column sum): P(X = x${j + 1}) = ${colSums[j]}/32.`,
+      `P(Y = y${i + 1} | X = x${j + 1}) = (${cells[i][j]}/32) / (${colSums[j]}/32) = ${cells[i][j]}/${colSums[j]} = ${fmt(answer)}.`,
+    ],
+  }
+}
+
+// dyadic distributions so every log₂ is an integer
+const DYADIC = [
+  [1 / 2, 1 / 4, 1 / 4],
+  [1 / 2, 1 / 4, 1 / 8, 1 / 8],
+  [1 / 4, 1 / 4, 1 / 4, 1 / 4],
+  [1 / 2, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
+  [1 / 4, 1 / 4, 1 / 4, 1 / 8, 1 / 8],
+] as const
+const lg2 = (p: number) => Math.log2(p)
+const entropy = (ps: readonly number[]) => ps.reduce((s, p) => s - p * lg2(p), 0)
+const probStr = (ps: readonly number[]) => `(${ps.map(p => `1/${1 / p}`).join(', ')})`
+
+function genEntropy(tier: Tier): Problem {
+  if (tier === 1) {
+    const k = ri(2, 12)
+    return {
+      prompt: `An outcome has probability p = 1/${2 ** k}. Compute its uncertainty −log₂ p, i.e. how many bits (gestures) are needed to communicate it.`,
+      answerLabel: '−log₂ p (bits)',
+      answer: k,
+      steps: [
+        `p = 1/2^${k}, so log₂ p = −${k}.`,
+        `Uncertainty = −log₂ p = ${k} bits — rarer outcomes carry more information.`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const ps = pick(DYADIC)
+    const answer = entropy(ps)
+    return {
+      prompt: `A random variable has distribution p = ${probStr(ps)}. Compute the entropy H(X) = −Σ pᵢ log₂ pᵢ in bits.`,
+      answerLabel: 'H(X)',
+      answer,
+      steps: [
+        `Per-outcome uncertainties −log₂ pᵢ: ${ps.map(p => `${-lg2(p)}`).join(', ')} bits.`,
+        `Weight each by its probability: ${ps.map(p => `${fmt(p)}×${-lg2(p)}`).join(' + ')}.`,
+        `H(X) = ${fmt(answer)} bits.`,
+      ],
+    }
+  }
+  // cross entropy of a coding scheme optimized for q, used on actual p; answer = KL divergence
+  let p: readonly number[], q: readonly number[]
+  do {
+    const len = pick([3, 4] as const)
+    p = pick(DYADIC.filter(d => d.length === len))
+    q = pick(DYADIC.filter(d => d.length === len))
+  } while (p === q)
+  const Hpq = p.reduce((s, pi, k) => s + pi * -lg2(q[k]), 0)
+  const Hp = entropy(p)
+  const answer = Hpq - Hp
+  return {
+    prompt: `Exam-style: a code is optimized for q = ${probStr(q)} (so symbol i gets a code of length −log₂ qᵢ), but the true distribution is p = ${probStr(p)}. Compute the KL divergence D(p‖q) = H(p,q) − H(p) in bits.`,
+    answerLabel: 'D(p‖q)',
+    answer,
+    steps: [
+      `Code lengths from q: ${q.map(qi => `${-lg2(qi)}`).join(', ')} bits.`,
+      `Cross entropy H(p,q) = Σ pᵢ·lengthᵢ = ${p.map((pi, k) => `${fmt(pi)}×${-lg2(q[k])}`).join(' + ')} = ${fmt(Hpq)} bits.`,
+      `Entropy H(p) = ${fmt(Hp)} bits (the best possible average length).`,
+      `D(p‖q) = ${fmt(Hpq)} − ${fmt(Hp)} = ${fmt(answer)} bits — the price of coding with the wrong distribution.`,
+    ],
+  }
+}
+
+const vecStr = (v: readonly number[]) => `(${v.join(', ')})`
+
+function genVectors(tier: Tier): Problem {
+  const w = [ri(1, 4), ri(-3, 3) || 2]
+  const norm = Math.hypot(w[0], w[1])
+  if (tier === 1) {
+    const x = [ri(-4, 5), ri(-4, 5)]
+    const answer = w[0] * x[0] + w[1] * x[1]
+    return {
+      prompt: `Compute the dot product w·x for w = ${vecStr(w)} and x = ${vecStr(x)}. (Points with the same w·x project onto the same point along w.)`,
+      answerLabel: 'w·x',
+      answer,
+      steps: [
+        `w·x = ${w[0]}×${x[0]} + ${w[1]}×${x[1]} = ${w[0] * x[0]} + ${w[1] * x[1]} = ${answer}.`,
+        `Every x with w·x = ${answer} lies on the same hyperplane perpendicular to w.`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const x = [ri(-3, 4), ri(-3, 4)]
+    const dot = w[0] * x[0] + w[1] * x[1]
+    const answer = dot / norm
+    return {
+      prompt: `w = ${vecStr(w)} and x = ${vecStr(x)}. Compute the TRUE projected distance of x along w, i.e. ŵ·x where ŵ = w/|w| is the unit vector.`,
+      answerLabel: 'ŵ·x',
+      answer,
+      steps: [
+        `|w| = √(${w[0]}² + ${w[1]}²) = √${w[0] ** 2 + w[1] ** 2} = ${fmt(norm)}.`,
+        `Raw projection: w·x = ${w[0]}×${x[0]} + ${w[1]}×${x[1]} = ${dot}.`,
+        `Divide by |w| to make it a distance: ŵ·x = ${dot}/${fmt(norm)} = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const a = ri(-2, 2)
+  let b = ri(-2, 4)
+  if (b === a) b = a + ri(1, 3)
+  const answer = Math.abs(b - a) / norm
+  return {
+    prompt: `Exam-style: w = ${vecStr(w)}. What is the true (perpendicular) distance between the parallel hyperplanes w·x = ${a} and w·x = ${b}? (Careful: it is NOT |${b} − ${a}| unless |w| = 1.)`,
+    answerLabel: 'distance',
+    answer,
+    steps: [
+      `Projection values differ by |${b} − ${a}| = ${Math.abs(b - a)}, but that is measured in units of |w|.`,
+      `|w| = √(${w[0]}² + ${w[1]}²) = ${fmt(norm)}.`,
+      `True separation = |b − a|/|w| = ${Math.abs(b - a)}/${fmt(norm)} = ${fmt(answer)}.`,
+    ],
+  }
+}
+
+// ---------- Week 2: linear regression, errors, regularization ----------
+
+function genRegression(tier: Tier): Problem {
+  if (tier === 1) {
+    const w1 = ri(50, 90)
+    const w0 = ri(5, 20) * 1000
+    const x = ri(8, 30) * 100
+    const answer = w1 * x + w0
+    return {
+      prompt: `A fitted house-price model is h(x) = ${w1}·x + ${w0.toLocaleString()} (x = size in ft², price in $). Predict the price of a ${x.toLocaleString()} ft² house.`,
+      answerLabel: 'ŷ ($)',
+      answer,
+      steps: [
+        `Plug in: h(${x.toLocaleString()}) = ${w1} × ${x.toLocaleString()} + ${w0.toLocaleString()}.`,
+        `= ${(w1 * x).toLocaleString()} + ${w0.toLocaleString()} = ${answer.toLocaleString()}.`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const w1 = pick([0.2, 0.3, 0.5])
+    const w0 = ri(10, 40)
+    const pts = Array.from({ length: 3 }, () => {
+      const x = ri(10, 90) * 10
+      const y = Math.round(w1 * x + w0 + pick([-30, -20, -10, 10, 20, 30]))
+      return { x, y }
+    })
+    const residuals = pts.map(p => w1 * p.x + w0 - p.y)
+    const answer = residuals.reduce((s, r) => s + r * r, 0) / pts.length
+    return {
+      prompt: `Hypothesis h(x) = ${w1}·x + ${w0} on the points ${pts.map(p => `(${p.x}, ${p.y})`).join(', ')}. Compute the MSE cost J = (1/n) Σ(h(xᵢ) − yᵢ)². (Slides use 1/n — no 1/2, not n−1.)`,
+      answerLabel: 'J',
+      answer,
+      steps: [
+        `Predictions h(xᵢ): ${pts.map(p => fmt(w1 * p.x + w0)).join(', ')}.`,
+        `Residuals h(xᵢ) − yᵢ: ${residuals.map(fmt).join(', ')}.`,
+        `Squared: ${residuals.map(r => fmt(r * r)).join(', ')}; sum = ${fmt(residuals.reduce((s, r) => s + r * r, 0))}.`,
+        `J = ${fmt(residuals.reduce((s, r) => s + r * r, 0))}/3 = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  // one gradient-descent update on two points from (w0, w1) = (0, 0)
+  const pts = [
+    { x: ri(1, 3), y: ri(2, 5) },
+    { x: ri(4, 6), y: ri(5, 9) },
+  ]
+  const alpha = pick([0.05, 0.1])
+  const g0 = (2 / 2) * pts.reduce((s, p) => s + (0 - p.y), 0)
+  const g1 = (2 / 2) * pts.reduce((s, p) => s + (0 - p.y) * p.x, 0)
+  const answer = 0 - alpha * g1
+  return {
+    prompt: `Exam-style (one gradient-descent step): data ${pts.map(p => `(${p.x}, ${p.y})`).join(', ')}, model h(x) = w₀ + w₁x starting at w₀ = 0, w₁ = 0, learning rate α = ${alpha}, cost J = (1/n)Σ(h(xᵢ)−yᵢ)². Do ONE simultaneous update and enter the new w₁.`,
+    answerLabel: 'new w₁',
+    answer,
+    steps: [
+      `Residuals h(xᵢ) − yᵢ at w = (0,0): ${pts.map(p => `−${p.y}`).join(', ')}.`,
+      `∂J/∂w₀ = (2/n)Σ(h(xᵢ)−yᵢ) = (2/2)(${pts.map(p => `−${p.y}`).join(' + ')}) = ${fmt(g0)}.`,
+      `∂J/∂w₁ = (2/n)Σ(h(xᵢ)−yᵢ)·xᵢ = (2/2)(${pts.map(p => `−${p.y}×${p.x}`).join(' + ')}) = ${fmt(g1)}.`,
+      `Simultaneous update: w₁ = 0 − ${alpha}×(${fmt(g1)}) = ${fmt(answer)} (and w₀ = 0 − ${alpha}×(${fmt(g0)}) = ${fmt(0 - alpha * g0)}).`,
+    ],
+  }
+}
+
+function genR2Reg(tier: Tier): Problem {
+  if (tier === 1) {
+    const sst = ri(2, 9) * 100
+    const sse = ri(10, Math.round(sst * 0.8) / 10) * 10
+    const answer = 1 - sse / sst
+    return {
+      prompt: `A regression on some data gives SST (total sum of squares) = ${sst} and SSE (sum of squared errors) = ${sse}. Compute R² = 1 − SSE/SST.`,
+      answerLabel: 'R²',
+      answer,
+      steps: [
+        `SST = SSR + SSE, so SSR = ${sst} − ${sse} = ${sst - sse}.`,
+        `R² = 1 − ${sse}/${sst} = SSR/SST = ${sst - sse}/${sst} = ${fmt(answer)} — the fraction of variance the model explains.`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const errs = Array.from({ length: 4 }, () => pick([-9, -6, -4, -3, -2, -1, 1, 2, 3, 4, 6, 9]))
+    const mae = errs.reduce((s, e) => s + Math.abs(e), 0) / 4
+    const answer = errs.reduce((s, e) => s + e * e, 0) / 4
+    return {
+      prompt: `Four test predictions have errors (ŷᵢ − yᵢ): ${errs.join(', ')}. Compute the MSE = (1/n)Σ(ŷᵢ−yᵢ)². (For contrast, also work out the MAE — note how MSE punishes the big miss.)`,
+      answerLabel: 'MSE',
+      answer,
+      steps: [
+        `Squared errors: ${errs.map(e => e * e).join(', ')}; sum = ${errs.reduce((s, e) => s + e * e, 0)}.`,
+        `MSE = ${errs.reduce((s, e) => s + e * e, 0)}/4 = ${fmt(answer)}.`,
+        `MAE = (${errs.map(e => Math.abs(e)).join(' + ')})/4 = ${fmt(mae)} — smaller because it does not square the large errors.`,
+      ],
+    }
+  }
+  const w = [ri(1, 5), -ri(1, 5), pick([0, 0, ri(1, 3)])]
+  const alpha = pick([0.1, 0.2, 0.5, 1])
+  const l1 = w.reduce((s, wi) => s + Math.abs(wi), 0)
+  const l2sq = w.reduce((s, wi) => s + wi * wi, 0)
+  const wantRidge = Math.random() < 0.5
+  const answer = wantRidge ? alpha * l2sq : alpha * l1
+  return {
+    prompt: `Exam-style: a model has weights w = ${vecStr(w)} and regularization strength α = ${alpha}. Compute the ${wantRidge ? 'RIDGE penalty α‖w‖₂² (squared L2)' : 'LASSO penalty α‖w‖₁ (L1)'}.`,
+    answerLabel: wantRidge ? 'α‖w‖₂²' : 'α‖w‖₁',
+    answer,
+    steps: [
+      `‖w‖₁ = ${w.map(wi => `|${wi}|`).join(' + ')} = ${l1}.`,
+      `‖w‖₂² = ${w.map(wi => `${wi}²`).join(' + ')} = ${l2sq} (so ‖w‖₂ = ${fmt(Math.sqrt(l2sq))}).`,
+      wantRidge
+        ? `Ridge penalty = α‖w‖₂² = ${alpha} × ${l2sq} = ${fmt(answer)}. (Lasso would give ${alpha} × ${l1} = ${fmt(alpha * l1)} — L1 drives weights to exactly 0, L2 just shrinks them.)`
+        : `Lasso penalty = α‖w‖₁ = ${alpha} × ${l1} = ${fmt(answer)}. (Ridge would give ${alpha} × ${l2sq} = ${fmt(alpha * l2sq)} — L1 drives weights to exactly 0, L2 just shrinks them.)`,
+    ],
+  }
+}
+
+// ---------- Week 3: logistic regression ----------
+
+const sigmoid = (z: number) => 1 / (1 + Math.exp(-z))
+
+function genLogistic(tier: Tier): Problem {
+  if (tier === 1) {
+    const z = pick([-3, -2, -1, -0.5, 0.5, 1, 2, 3])
+    const answer = sigmoid(z)
+    return {
+      prompt: `Compute the sigmoid σ(z) = 1/(1 + e^(−z)) at z = ${z}.`,
+      answerLabel: 'σ(z)',
+      answer,
+      steps: [
+        `e^(−(${z})) = e^${fmt(-z)} = ${fmt(Math.exp(-z))}.`,
+        `σ(${z}) = 1/(1 + ${fmt(Math.exp(-z))}) = ${fmt(answer)}.`,
+        `Check: σ(0) = 0.5; z ${z > 0 ? '> 0 so σ > 0.5' : '< 0 so σ < 0.5'}. Also σ(−z) = 1 − σ(z).`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const w = [ri(-3, 3) / 10 || 0.2, ri(-3, 3) / 10 || -0.1]
+    const b = ri(-20, 20) / 10
+    const x = [ri(2, 9), ri(2, 9)]
+    const z = w[0] * x[0] + w[1] * x[1] + b
+    const answer = sigmoid(z)
+    return {
+      prompt: `Logistic regression with w = ${vecStr(w)}, b = ${b}. For input x = ${vecStr(x)}, compute P(y = 1|x) = σ(w·x + b). (The model predicts class 1 iff this exceeds 0.5.)`,
+      answerLabel: 'P(y=1|x)',
+      answer,
+      steps: [
+        `z = w·x + b = ${w[0]}×${x[0]} + ${w[1]}×${x[1]} + ${b} = ${fmt(z)}.`,
+        `σ(${fmt(z)}) = 1/(1 + e^${fmt(-z)}) = ${fmt(answer)}.`,
+        `Since ${fmt(answer)} ${answer > 0.5 ? '> 0.5 → predict class 1' : '< 0.5 → predict class 0'} (z ${z > 0 ? '> 0' : '< 0'} says the same thing).`,
+      ],
+    }
+  }
+  const w0 = pick([0.5, 1, 1.5, 2, 2.5])
+  const w1 = pick([0.5, 1, 1.5, 2])
+  const b = ri(-60, -20)
+  const x1 = ri(10, 60)
+  const answer = (-w1 * x1 - b) / w0
+  return {
+    prompt: `Exam-style (decision boundary): a logistic model has weights w₀ = ${w0}, w₁ = ${w1} and bias b = ${b}, so the boundary is w₀x₀ + w₁x₁ + b = 0 (where σ = 0.5). For x₁ = ${x1}, find the x₀ on the boundary.`,
+    answerLabel: 'x₀',
+    answer,
+    steps: [
+      `On the boundary z = 0: w₀x₀ + w₁x₁ + b = 0.`,
+      `Solve for x₀: x₀ = (−w₁·x₁ − b)/w₀ = (−${w1}×${x1} − (${b}))/${w0}.`,
+      `= (${fmt(-w1 * x1)} + ${-b})/${w0} = ${fmt(-w1 * x1 - b)}/${w0} = ${fmt(answer)}.`,
+      `Points with z > 0 (σ > 0.5) fall on class 1's side of this line.`,
+    ],
+  }
+}
+
 export const levels: readonly DrillLevel[] = [
   {
     id: 'fit',
+    week: 'W1',
     title: 'Fit a Gaussian (MLE)',
     concept: 'Estimate μ and σ² from data — the building block of every generative model this week.',
     formula: 'μ = (1/n) Σxᵢ    σ² = (1/n) Σ(xᵢ − μ)²   (divide by n, not n−1)',
@@ -411,6 +750,7 @@ export const levels: readonly DrillLevel[] = [
   },
   {
     id: 'bayes',
+    week: 'W1',
     title: 'Bayes theorem',
     concept: 'Invert a conditional probability: from P(symptom|disease) to P(disease|symptom).',
     formula: 'P(h|D) = P(D|h)·P(h) / P(D)',
@@ -418,6 +758,7 @@ export const levels: readonly DrillLevel[] = [
   },
   {
     id: 'posterior',
+    week: 'W1',
     title: 'Posteriors over classes',
     concept: 'Score each class with likelihood × prior, then normalize so the posteriors sum to 1.',
     formula: 'P(Cₖ|x) = p(x|Cₖ)P(Cₖ) / Σⱼ p(x|Cⱼ)P(Cⱼ)',
@@ -425,6 +766,7 @@ export const levels: readonly DrillLevel[] = [
   },
   {
     id: 'density',
+    week: 'W1',
     title: 'Gaussian densities',
     concept: 'Evaluate the 1D Gaussian pdf, then multiply across i.i.d. samples to compare hypotheses.',
     formula: 'p(x) = 1/√(2πσ²) · exp(−(x−μ)²/(2σ²))    P(D|h) = Πᵢ p(xᵢ|h)',
@@ -432,6 +774,7 @@ export const levels: readonly DrillLevel[] = [
   },
   {
     id: 'nb',
+    week: 'W1',
     title: 'Naive Bayes decisions',
     concept: 'Combine a prior with a product of per-attribute conditionals and pick the larger score.',
     formula: 'C = argmaxₖ P(Cₖ) · Πᵢ P(xᵢ|Cₖ)',
@@ -439,9 +782,58 @@ export const levels: readonly DrillLevel[] = [
   },
   {
     id: 'text',
+    week: 'W1',
     title: 'Text & multinomial',
     concept: 'Sequence vs bag probabilities, classifying documents with multinomial NB, and Laplace smoothing for unseen words.',
     formula: 'P(bag) = n!/(x₁!…xᵥ!) · Πpⱼ^xⱼ  (n = total tokens)    P(w|C) = (count+1)/(total+|V|)',
     generate: genMultinomial,
+  },
+  {
+    id: 'joint',
+    week: 'W1a',
+    title: 'Joint & conditional probability',
+    concept: 'Read marginals and conditionals off a joint table with the sum and product rules, plus the probability axioms.',
+    formula: 'P(X) = Σᵧ P(X,Y)    P(Y|X) = P(X,Y)/P(X)    P(A∪B) = P(A)+P(B)−P(A∩B)',
+    generate: genJoint,
+  },
+  {
+    id: 'entropy',
+    week: 'W1a',
+    title: 'Entropy & information',
+    concept: 'Uncertainty as bits, entropy of a distribution, and the KL price of coding with the wrong distribution.',
+    formula: 'H(X) = −Σ pᵢ log₂ pᵢ    H(p,q) = −Σ pᵢ log₂ qᵢ    D(p‖q) = H(p,q) − H(p)',
+    generate: genEntropy,
+  },
+  {
+    id: 'vectors',
+    week: 'W1a',
+    title: 'Vectors & projections',
+    concept: 'Dot products as projections, unit vectors, and true distances between hyperplanes — the geometry behind linear classifiers.',
+    formula: 'w·x = Σ wᵢxᵢ    ŵ = w/|w|    distance between w·x = a, b planes = |b−a|/|w|',
+    generate: genVectors,
+  },
+  {
+    id: 'regression',
+    week: 'W2',
+    title: 'Linear regression & MSE',
+    concept: 'Predict with h(x) = w₁x + w₀, score with the MSE cost, and take one gradient-descent step by hand.',
+    formula: 'J = (1/n)Σ(h(xᵢ)−yᵢ)²    ∂J/∂w₀ = (2/n)Σ(h−y)    ∂J/∂w₁ = (2/n)Σ(h−y)xᵢ',
+    generate: genRegression,
+  },
+  {
+    id: 'r2reg',
+    week: 'W2',
+    title: 'R², errors & regularization',
+    concept: 'Judge a fit with R², compare MSE vs MAE, and compute Lasso/Ridge penalties.',
+    formula: 'R² = 1 − SSE/SST    Lasso: α‖w‖₁    Ridge: α‖w‖₂²',
+    generate: genR2Reg,
+  },
+  {
+    id: 'logistic',
+    week: 'W3',
+    title: 'Logistic regression',
+    concept: 'Squash scores with the sigmoid, turn w·x + b into P(y=1|x), and solve for the decision boundary.',
+    formula: 'σ(z) = 1/(1+e⁻ᶻ)    P(y=1|x) = σ(w·x+b)    boundary: w·x + b = 0',
+    generate: genLogistic,
   },
 ]

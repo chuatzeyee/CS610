@@ -25,9 +25,11 @@ function loadProgress(): Progress {
     if (
       typeof p?.level === 'number' &&
       Array.isArray(p?.correct) &&
-      p.correct.length === levels.length
+      p.correct.length <= levels.length &&
+      p.correct.every((c: unknown) => typeof c === 'number')
     )
-      return p
+      // pad with zeros when new levels are added, so old progress survives
+      return { level: p.level, correct: [...p.correct, ...levels.slice(p.correct.length).map(() => 0)] }
   } catch {
     /* fall through */
   }
@@ -220,6 +222,7 @@ export default function MathTrainer() {
 
           <div className="bg-surface border border-edge rounded-lg p-6 animate-fade-in" key={`${levelIdx}-${tier}-${nonce}`}>
             <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-mono text-ink-muted bg-raised border border-edge rounded-full px-2 py-0.5">{level.week}</span>
               <span className="text-xs font-mono text-glow">Level {levelIdx + 1} · {level.title}</span>
               <span className="text-xs font-mono text-ink-faint">· {TIER_NAMES[tier - 1]}</span>
             </div>

@@ -48,6 +48,11 @@ console.log('free practice OK')
 
 // locked levels stay locked
 assert(await page.getByRole('button', { name: /6 Text & multinomial/ }).isDisabled(), 'level 6 should be locked')
+assert(await page.getByRole('button', { name: /12 Logistic regression/ }).isDisabled(), 'level 12 should be locked')
+
+// week chip shows on the active level
+await page.waitForSelector('text=Level 2 · Bayes theorem')
+assert(await page.locator('span', { hasText: /^W1$/ }).first().isVisible(), 'week chip missing')
 
 // formula bank + self-test
 await page.getByRole('button', { name: 'Formula Bank' }).click()
@@ -63,6 +68,17 @@ await page.reload({ waitUntil: 'networkidle' })
 await page.getByRole('button', { name: 'Skill Drills' }).click()
 await page.waitForSelector('text=Level 2 · Bayes theorem')
 console.log('persistence OK')
+
+// new content: quiz topic filter, lab pills, topics sessions
+await page.getByRole('navigation').getByRole('link', { name: 'Quiz' }).click()
+await page.getByRole('button', { name: 'Logistic', exact: true }).click()
+await page.waitForSelector('text=· Logistic')
+await page.getByRole('navigation').getByRole('link', { name: 'Lab' }).click()
+await page.getByRole('button', { name: /W3 ·/ }).click()
+await page.waitForSelector('text=Key takeaways')
+await page.getByRole('navigation').getByRole('link', { name: 'Topics' }).click()
+await page.waitForSelector('text=Logistic Regression')
+console.log('new W1a/W2/W3 content OK')
 
 assert.deepEqual(errors, [], 'JS errors: ' + errors.join('; '))
 await browser.close()

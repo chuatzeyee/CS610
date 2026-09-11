@@ -1,6 +1,8 @@
 import type { Lab } from './types'
 
-export const lab: Lab = {
+export const nbLab: Lab = {
+  "id": "w1-naive-bayes",
+  "week": "W1",
   "title": "CS610 Week 1 Lab: Naive Bayes — Gaussian NB on Toy/Iris/Occupancy Data and Multinomial NB on 20 Newsgroups",
   "overview": "This lab (01_naive_bayes.ipynb, 31 cells) builds intuition for Naive Bayes classifiers across four progressively realistic settings: a hand-made 10-point 2-D toy dataset, the Iris dataset (first two features), a room-occupancy sensor dataset (Temperature, Humidity, Light, CO2, HumidityRatio → Occupancy; 8,143 training rows), and a binary politics-vs-rest text task on 20 newsgroups. Along the way it exposes the fitted parameters (class_prior_, class_count_, theta_, var_), contrasts predictions made from the likelihood P(x|y) alone versus the posterior P(y|x) ∝ P(x|y)·P(y), visualizes decision surfaces with contour plots, and switches from GaussianNB (continuous features) to MultinomialNB (word counts), reaching 0.8866 test accuracy on the text task.",
   "steps": [
@@ -71,3 +73,158 @@ export const lab: Lab = {
     "Interpret accuracy against the class balance: 0.8866 on the politics task is only modestly above the ~0.861 majority-class baseline (6,482 of 7,532 test docs are class 0) — and MultinomialNB stays interpretable via feature_log_prob_ (top politics words: 'israeli', 'guns', 'israel', 'gun', 'weapons')."
   ]
 }
+
+export const regressionLab: Lab = {
+  "id": "w2-regression",
+  "week": "W2",
+  "title": "CS610 Week 2 Lab: Regression — from LinearRegression to SGD",
+  "overview": "This notebook walks through the full regression workflow in scikit-learn: loading tabular data with pandas, fitting simple and multiple linear regression, decomposing variance into SST/SSR/SSE to understand R², using a train/test split for honest evaluation, visualizing fitted lines and planes, turning linear regression into polynomial regression with PolynomialFeatures, demonstrating the bias-variance tradeoff experimentally, comparing Lasso (L1) and Ridge (L2) regularization across alphas, and finally contrasting closed-form solvers with SGDRegressor.",
+  "steps": [
+    {
+      "title": "Load the data and shape the arrays",
+      "explanation": "pandas reads the tab-separated house price file into a DataFrame. The double-bracket selection data_house[['size']] keeps x as a 2-D matrix, which sklearn requires; single brackets for y give a 1-D vector. Printing shapes confirms 100 rows: x is (100, 1) and y is (100,).",
+      "code": "data_house = pd.read_csv('dataset/house_price.tsv', sep='\\t')\nx = data_house[['size']].values  # (100, 1)\ny = data_house['price'].values   # (100,)"
+    },
+    {
+      "title": "Fit simple linear regression",
+      "explanation": "linear_model.LinearRegression() declares the model and fit(x, y) learns the weights. coef_ is w₁ and intercept_ is w₀ in y = w₁x₁ + w₀. The output means: predicted price = 77.0077 × size + 9161.16.",
+      "code": "regr = linear_model.LinearRegression()\nregr.fit(x, y)\n# Coefficients: [77.00769255]\n# Intercept: 9161.1588643422"
+    },
+    {
+      "title": "Add a second feature (multiple regression)",
+      "explanation": "Refitting with both size and Taxes changes the picture: the size coefficient drops from 77.01 to 34.07 because Taxes now explains part of what size alone was credited with. Coefficients are always conditional on the other features in the model.",
+      "code": "x = data_house[['size', 'Taxes']].values\nregr.fit(x, y)\n# Coefficients: [34.06888701 32.12061364]\n# Intercept: 21115.050084267292"
+    },
+    {
+      "title": "Decompose the variance: SST, SSR, SSE",
+      "explanation": "Three sums of squares are computed by hand with numpy. SST (314,432,519,600) is the total variation of price around its mean; SSR (229,612,632,470.76) is what the predictions explain; SSE (84,819,887,129.24) is what remains. They satisfy SST = SSR + SSE exactly.",
+      "code": "sst = np.sum((y - np.mean(y))**2)            # 314432519600.0\nssr = np.sum((regr.predict(x) - np.mean(y))**2)  # 229612632470.76\nsse = np.sum((regr.predict(x) - y)**2)        # 84819887129.24"
+    },
+    {
+      "title": "Compute R² two ways",
+      "explanation": "regr.score(x, y) and the manual ratio ssr/sst both give 0.7302, proving that sklearn's regression score IS R² = SSR/SST. The notebook then pointedly asks whether 0.73 is 'very good' and whether there is a problem — there is: it was measured on the training data.",
+      "code": "regr.score(x, y)  # 0.730244545834062\nssr / sst         # 0.7302445458340622"
+    },
+    {
+      "title": "Split into train and test for an honest score",
+      "explanation": "train_test_split holds out 20% of the rows (with random_state=2022 fixed so bugs are reproducible; x and y are split with the same flags to keep rows paired). Retraining on the 80 training rows and scoring on the 20 unseen rows gives R² = 0.42 — far below the in-sample 0.73. This gap is the whole reason we evaluate on held-out data.",
+      "code": "x_tr, x_te, y_tr, y_te = model_selection.train_test_split(\n    x, y, test_size=0.2, random_state=2022)\nregr.fit(x_tr, y_tr)\nregr.score(x_te, y_te)  # 0.42"
+    },
+    {
+      "title": "More metrics: explained variance, MAE, MSE",
+      "explanation": "sklearn.metrics offers alternatives to R². On the test predictions: explained variance = 0.4723 (slightly above R² = 0.42 because it ignores constant bias in the errors), MAE = 25,920.69 (average miss in price units), and MSE = 873,455,968.76 (squared units — hence the enormous number).",
+      "code": "y_pred = regr.predict(x_te)\nmetrics.explained_variance_score(y_te, y_pred)  # 0.4723\nmetrics.mean_absolute_error(y_te, y_pred)       # 25920.69\nmetrics.mean_squared_error(y_te, y_pred)        # 873455968.76"
+    },
+    {
+      "title": "Visualize the fit in 2-D and 3-D",
+      "explanation": "On the diabetes dataset, a 1-feature model is drawn as a blue line over a red scatter by predicting on 200 evenly spaced x values. For 2 features, np.meshgrid builds a 40×40 grid, the model predicts on all 1600 grid points, and plot_surface renders the fitted PLANE over a 3-D scatter — visually confirming that a linear model in 2 features is a plane.",
+      "code": "lx = np.arange(min(x), max(x), (max(x)-min(x))/200).reshape(200, 1)\nplt.plot(lx, regr.predict(lx))  # fitted line\n# 3-D: meshgrid -> predict on 40*40 grid -> ax.plot_surface(xx0, xx1, yy)"
+    },
+    {
+      "title": "Polynomial regression recovers a known quadratic surface",
+      "explanation": "Data is generated from a KNOWN quadratic: y = −24x₀² − 12x₁² − 15x₀x₁ + 70x₀ + 90x₁ + 100 + noise. PolynomialFeatures(2) expands (x₀, x₁) into 6 columns [1, x₀, x₁, x₀², x₀x₁, x₁²] (see powers_), and plain LinearRegression on those columns achieves test R² = 0.994592 with coefficients [0, 69.27, 93.05, −23.78, −15.11, −12.52] — almost exactly the true generator values. Polynomial regression is just linear regression on transformed features.",
+      "code": "poly2 = preprocessing.PolynomialFeatures(2)\nx2 = poly2.fit_transform(x)   # 6 columns\nregr2.fit(x2_train, y2_train)\n# R^2: 0.994592; coefs ~ true values (70, 90, -24, -15, -12)"
+    },
+    {
+      "title": "The intercept trick and degree-3 comparison",
+      "explanation": "Because PolynomialFeatures adds a column of ones, the model with fit_intercept=True gives that column coefficient 0 and reports intercept 97.936; with fit_intercept=False the same 97.936 appears as the first coefficient and the intercept is 0 — equivalent parameterizations. Going to degree 3 adds four cubic columns but R² barely moves (0.994706 vs 0.994592) and the cubic coefficients are near zero (−0.254, −0.134, 0.008, 0.190): the model correctly detects the surface is quadratic.",
+      "code": "linear_model.LinearRegression(fit_intercept=False).fit(x2_train, y2_train)\n# coef[0] = 97.9355 (was the intercept), intercept_ = 0.0\n# degree 3: R^2 = 0.994706, cubic coefs ~ 0"
+    },
+    {
+      "title": "Bias-variance tradeoff, made visible",
+      "explanation": "Two quadratic targets are generated so each model's average error is a 2-D point. Training on ONLY 10 points (test_size=190) and evaluating on 20 random 10-point test subsets, four models are compared: the constant mean (m1), linear (m2), degree-2 (m3), degree-4 (m4). The plots show m1's errors tightly clustered but far from the origin (high bias, low variance), m4's errors widely scattered around the origin (low bias, high variance), and m3 — the model matching the true function class — closest to the ideal: centered and compact.",
+      "code": "x_tr, x_te, y_tr, y_te = train_test_split(x, y, test_size=190, random_state=2022)\n# m1: mean predictor | m2: linear | m3: poly deg 2 | m4: poly deg 4\n# plot mean error per test subset; blue x = bias, black x = origin"
+    },
+    {
+      "title": "Lasso vs Ridge across alpha, then SGD",
+      "explanation": "On the diabetes data (50/50 split), sweeping alpha over [1, 0.1, 0.01, 0.001]: Lasso scores 0.3528 → 0.4702 → 0.4628 → 0.4597 and Ridge 0.3749 → 0.4649 → 0.4609 → 0.4594, both peaking at alpha=0.1. At alpha=1 Lasso zeroes 7 of 10 coefficients (sparsity) while Ridge keeps all 10 non-zero. Finally, SGDRegressor with the same penalties and alpha=0.001 scores only 0.0818 (L1) and 0.0802 (L2) vs 0.3344/0.3343 for Lasso/Ridge — with a ConvergenceWarning: 200 iterations were not enough, so the iterative optimizer never reached the optimum the closed-form solvers found.",
+      "code": "linear_model.Lasso(alpha=1).fit(x_tr, y_tr)   # 7 of 10 coefs exactly 0\nlinear_model.Ridge(alpha=1).fit(x_tr, y_tr)   # all 10 coefs non-zero\nlinear_model.SGDRegressor(tol=1e-4, max_iter=200, penalty='l1', alpha=0.001)\n# sgd_l1 score 0.0818 vs lasso 0.3344 -> ConvergenceWarning"
+    }
+  ],
+  "takeaways": [
+    "sklearn's regression pattern is always the same: construct the estimator, fit(x_train, y_train), then predict/score — and x must be 2-D (n_samples, n_features).",
+    "R² = SSR/SST = 1 − SSE/SST, and SST = SSR + SSE; regr.score() computes exactly this (verified: 0.7302 both ways on the house data).",
+    "Never trust an in-sample score: the house model's R² fell from 0.73 (training data) to 0.42 (held-out test set). Always split with a fixed random_state for reproducibility.",
+    "MAE and MSE measure the same errors on different scales — MSE is in squared units and punishes outliers (MAE 25,921 vs MSE 873 million on the same predictions).",
+    "Polynomial regression is linear regression on expanded features: PolynomialFeatures(2) on 2 features gives 6 columns, and the fitted coefficients recovered the true generator (69.3≈70, 93.1≈90, −23.8≈−24, −15.1≈−15, −12.5≈−12) with R² = 0.9946.",
+    "Adding unnecessary complexity (degree 3) barely helped (0.9947 vs 0.9946) and its extra coefficients were ~0; with tiny training sets, high-degree models (degree 4 on 10 points) show high variance — the bias-variance tradeoff.",
+    "Lasso (L1) drives coefficients exactly to zero (feature selection); Ridge (L2) only shrinks them. Tune alpha: both peaked at alpha=0.1 (Lasso 0.470, Ridge 0.465) on the diabetes data.",
+    "SGD optimizes the same penalized objectives iteratively, but is approximate: with max_iter=200 it scored ~0.08 vs ~0.33 for the exact solvers and raised ConvergenceWarning — increase max_iter (and scale features) or prefer exact solvers on small data."
+  ]
+}
+
+export const logisticLab: Lab = {
+  "id": "w3-logistic",
+  "week": "W3",
+  "title": "CS610 Week 3 Lab: Logistic Regression — Exam Scores Walkthrough",
+  "overview": "This notebook trains a logistic regression classifier on a two-feature exam-score dataset, evaluates it on a large held-out test set, visualizes the linear decision boundary, sweeps the regularization hyperparameter C to show the complexity/accuracy trade-off, and finishes by rendering class-probability contours and the 3D sigmoid surface.",
+  "steps": [
+    {
+      "title": "Load the CSV into a NumPy array",
+      "explanation": "np.loadtxt reads the raw comma-separated file into a numeric array. Each row is one student: two exam scores followed by a 0/1 class label.",
+      "code": "import numpy as np\nfrom sklearn import linear_model\ndata = np.loadtxt('dataset/exam_score.csv', delimiter=',')"
+    },
+    {
+      "title": "Separate features from the target",
+      "explanation": "The target is the LAST (third) column. Features x are the first two columns; y is cast to int because classifiers expect integer class labels, not floats.",
+      "code": "x = data[:, :2]\ny = data[:, 2].astype(int)"
+    },
+    {
+      "title": "Split into train and test sets — note the unusual ratio",
+      "explanation": "test_size=0.8 holds out 80% of the rows for testing and trains on only 20%. random_state=610 fixes the shuffle so everyone gets the identical split and identical numbers.",
+      "code": "from sklearn import model_selection\nx_train, x_test, y_train, y_test = model_selection.train_test_split(\n    x, y, test_size=0.8, random_state=610)"
+    },
+    {
+      "title": "Fit a logistic regression model",
+      "explanation": "LogisticRegression with the lbfgs solver minimizes the regularized log-loss. With no C given, sklearn defaults to C=1 with an L2 penalty. After fit, coef_ holds the two weights and intercept_ the bias.",
+      "code": "estimator = linear_model.LogisticRegression(solver='lbfgs')\nestimator.fit(x_train, y_train)  # -> LogisticRegression()"
+    },
+    {
+      "title": "Predict on the test set and score accuracy",
+      "explanation": "predict outputs hard 0/1 labels (probability thresholded at 0.5). accuracy_score compares them to the true labels: 0.8875 means 71 of the 80 test points are correct.",
+      "code": "from sklearn import metrics\ny_pred = estimator.predict(x_test)\nprint('accuracy:', metrics.accuracy_score(y_test, y_pred))\n# accuracy: 0.8875"
+    },
+    {
+      "title": "Plot the data and the linear decision boundary",
+      "explanation": "Training points are circles, test points are '+' marks; red = class 0, green = class 1. The boundary is where w0*x0 + w1*x1 + b = 0, so the code solves for x0 = (-w1*x1 - b)/w0 at the min and max of feature x1 and draws the straight line between them. The boundary is a LINE: logistic regression is a linear classifier.",
+      "code": "plt.plot((- estimator.coef_[0][1] * np.array((min(x_train[:,1]), max(x_train[:,1])))\n          - estimator.intercept_[0]) / estimator.coef_[0][0],\n         np.array((min(x_train[:,1]), max(x_train[:,1]))))"
+    },
+    {
+      "title": "Sweep the regularization hyperparameter C",
+      "explanation": "The loop refits the model at C = 0.0001, 0.01, 0.1, 1 and prints test accuracy plus 'model complexity' — the L2 norm of the weights, sqrt(w0^2 + w1^2). Smaller C = stronger regularization = smaller weights.",
+      "code": "C = [0.0001, 0.01, 0.1, 1]\nfor i in range(4):\n    clf = linear_model.LogisticRegression(C=C[i])\n    clf.fit(x_train, y_train)\n    # C=0.0001: acc 0.8250, ||w|| 0.0136\n    # C=0.01:   acc 0.8625, ||w|| 0.1747\n    # C=0.1:    acc 0.8750, ||w|| 0.4019\n    # C=1:      acc 0.8875, ||w|| 0.7873"
+    },
+    {
+      "title": "Interpret the sweep and the four-color plots",
+      "explanation": "Both the weight norm and the test accuracy rise monotonically with C here: the most regularized model (C=0.0001) UNDERFITS and scores worst (0.825). The scatter colors encode color[true][pred]: blue and green are correct (0->0, 1->1); red (true 0 predicted 1) and yellow (true 1 predicted 0) are the errors, so you can see exactly which points each model gets wrong.",
+      "code": "color = [['blue', 'red'], ['yellow', 'green']]  # [true][pred]"
+    },
+    {
+      "title": "Build a probability mesh with a margin helper",
+      "explanation": "my_linspace pads the axis range by 10% of the data spread on each side. A NEW model with very strong regularization (C=0.001) is fitted so probabilities change gradually across the plane — better for seeing contours. meshgrid creates a 200x200 grid; np.c_ flattens it into 40,000 (x0, x1) points; predict_proba returns two probabilities per point, reshaped to (200, 200, 2).",
+      "code": "estimator = linear_model.LogisticRegression(solver='lbfgs', C=0.001)\nestimator.fit(x_train, y_train)\nxx0, xx1 = np.meshgrid(x0, x1)  # 200 x 200\nmesh_proba = estimator.predict_proba(np.c_[xx0.ravel(), xx1.ravel()]).reshape(200, 200, 2)"
+    },
+    {
+      "title": "Draw class-probability contours",
+      "explanation": "For each class, contourf shades 20 probability levels with a Reds or Greens colormap. np.maximum(proba, 0.5) clips values below 0.5 so each color only appears where that class is the predicted (more probable) one; the two shaded regions meet at the P = 0.5 boundary line.",
+      "code": "for i in range(2):\n    plt.contourf(xx0, xx1, np.maximum(mesh_proba[:,:,i], 0.5), 20,\n                 cmap=[plt.cm.Reds, plt.cm.Greens][i], alpha=0.5)"
+    },
+    {
+      "title": "Visualize P(y=1|x) as a 3D sigmoid surface",
+      "explanation": "The 3D plot places every data point at height 0 or 1 (its true label) and draws mesh_proba[:,:,1] — the probability of class 1 — as a surface. It is an S-shaped ramp: flat near 0 on one side, flat near 1 on the other, crossing height 0.5 exactly above the 2D decision boundary line.",
+      "code": "ax = fig.add_subplot(projection='3d')\nax.scatter(x[:,0], x[:,1], y, c=y_color)\nax.plot_surface(xx0, xx1, mesh_proba[:,:,1], alpha=0.2)"
+    }
+  ],
+  "takeaways": [
+    "Logistic regression is a LINEAR classifier: its decision boundary w₀x₀ + w₁x₁ + b = 0 is a straight line, even though the sigmoid output is nonlinear.",
+    "The plotted boundary comes from solving P = 0.5 ⇔ wᵀx + b = 0 for one coordinate: x₀ = (−w₁·x₁ − b)/w₀.",
+    "sklearn's C is the INVERSE regularization strength: C = 0.0001 shrank the weight norm to 0.0136, while C = 1 allowed it to grow to 0.787.",
+    "On this dataset, stronger regularization hurt: test accuracy rose monotonically from 0.825 (C=0.0001) to 0.8875 (C=1) — over-regularizing causes underfitting.",
+    "Model complexity can be summarized in one number, the L2 norm of the weights √(w₀² + w₁²) — exactly what the notebook prints for each C.",
+    "predict gives hard labels (0.5 threshold); predict_proba gives per-class probabilities that sum to 1 — use the latter for contour/surface visualizations.",
+    "The meshgrid + predict_proba + contourf pattern is the standard recipe for visualizing any 2-feature classifier's probability landscape.",
+    "test_size=0.8 with random_state=610 trains on only 20% of the data but makes every number reproducible — always check which fraction is train vs test before interpreting accuracy."
+  ]
+}
+
+export const labs: readonly Lab[] = [nbLab, regressionLab, logisticLab]

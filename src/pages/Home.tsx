@@ -4,7 +4,7 @@ import { sessions } from '../data/topics'
 import { definitions } from '../data/definitions'
 import { questions } from '../data/quiz'
 import { levels } from '../data/mathdrills'
-import { lab } from '../data/lab'
+import { labs } from '../data/lab'
 import { course } from '../data/course'
 
 const cards = [
@@ -12,7 +12,7 @@ const cards = [
     to: '/topics',
     icon: BookOpen,
     title: 'Topics & Glossary',
-    description: 'Every Week 1 lecture segment distilled into revision notes, plus a searchable glossary of key terms',
+    description: 'Every lecture segment (Weeks 1–3) distilled into revision notes, plus a searchable glossary of key terms',
     count: sessions.reduce((sum, s) => sum + s.topics.length, 0) + definitions.length,
     unit: 'entries',
   },
@@ -35,10 +35,10 @@ const cards = [
   {
     to: '/lab',
     icon: FlaskConical,
-    title: 'Lab Walkthrough',
-    description: 'The naive Bayes occupancy-detection notebook, explained cell by cell with the key code and outputs',
-    count: lab.steps.length,
-    unit: 'steps',
+    title: 'Lab Walkthroughs',
+    description: 'The weekly lecture notebooks — naive Bayes, regression, logistic regression — explained cell by cell with the key code and outputs',
+    count: labs.length,
+    unit: 'notebooks',
   },
   {
     to: '/course',
@@ -66,9 +66,10 @@ export default function Home() {
           {course.courseTitle}
         </p>
         <p className="text-ink-secondary max-w-2xl mx-auto leading-relaxed">
-          Study companion for SMU CS610 — Week 1: course introduction, the machine
-          learning landscape, Bayesian learning and naive Bayes, plus the
-          room-occupancy lab notebook.
+          Study companion for SMU CS610 — Weeks 1–3: the ML landscape, Bayesian
+          learning and naive Bayes, probability, linear algebra and information
+          theory foundations, linear regression and regularization, and logistic
+          regression — plus the weekly lab notebooks.
         </p>
       </div>
 
