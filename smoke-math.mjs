@@ -49,6 +49,8 @@ console.log('free practice OK')
 // locked levels stay locked
 assert(await page.getByRole('button', { name: /6 Text & multinomial/ }).isDisabled(), 'level 6 should be locked')
 assert(await page.getByRole('button', { name: /12 Logistic regression/ }).isDisabled(), 'level 12 should be locked')
+assert(await page.getByRole('button', { name: /13 Decision trees/ }).isDisabled(), 'level 13 should be locked')
+assert(await page.getByRole('button', { name: /14 Ensemble methods/ }).isDisabled(), 'level 14 should be locked')
 
 // week chip shows on the active level
 await page.waitForSelector('text=Level 2 · Bayes theorem')
@@ -79,6 +81,19 @@ await page.waitForSelector('text=Key takeaways')
 await page.getByRole('navigation').getByRole('link', { name: 'Topics' }).click()
 await page.waitForSelector('text=Logistic Regression')
 console.log('new W1a/W2/W3 content OK')
+
+// W4: quiz topic filters, lab pills, topics sessions
+await page.getByRole('navigation').getByRole('link', { name: 'Quiz' }).click()
+await page.getByRole('button', { name: 'Decision Trees', exact: true }).click()
+await page.waitForSelector('text=· Decision Trees')
+await page.getByRole('button', { name: 'Ensemble Methods', exact: true }).click()
+await page.waitForSelector('text=· Ensemble Methods')
+await page.getByRole('navigation').getByRole('link', { name: 'Lab' }).click()
+await page.getByRole('button', { name: /W4 ·/ }).first().click()
+await page.waitForSelector('text=Key takeaways')
+await page.getByRole('navigation').getByRole('link', { name: 'Topics' }).click()
+await page.waitForSelector('text=Decision Trees')
+console.log('new W4 content OK')
 
 assert.deepEqual(errors, [], 'JS errors: ' + errors.join('; '))
 await browser.close()

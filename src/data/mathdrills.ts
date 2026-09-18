@@ -739,6 +739,128 @@ function genLogistic(tier: Tier): Problem {
   }
 }
 
+// ---------- Week 4: decision trees, ensembles ----------
+
+function entropy2(a: number, b: number): number {
+  const total = a + b
+  if (total === 0) return 0
+  let h = 0
+  if (a > 0) h -= (a / total) * Math.log2(a / total)
+  if (b > 0) h -= (b / total) * Math.log2(b / total)
+  return h
+}
+
+function splitCounts(p: number, n: number): [number, number, number, number] {
+  let p1: number, n1: number
+  do {
+    p1 = ri(0, p)
+    n1 = ri(0, n)
+  } while (p1 + n1 === 0 || p1 + n1 === p + n)
+  return [p1, n1, p - p1, n - n1]
+}
+
+function genTrees(tier: Tier): Problem {
+  if (tier === 1) {
+    const p = ri(2, 10)
+    const n = ri(2, 10)
+    const answer = entropy2(p, n)
+    return {
+      prompt: `A node has ${p} positive and ${n} negative examples. Compute its entropy H(S) = −Σ pᵢ log₂ pᵢ.`,
+      answerLabel: 'H(S)',
+      answer,
+      steps: [
+        `p+ = ${p}/${p + n} = ${fmt(p / (p + n))}, p− = ${n}/${p + n} = ${fmt(n / (p + n))}.`,
+        `H(S) = −${fmt(p / (p + n))}·log₂${fmt(p / (p + n))} − ${fmt(n / (p + n))}·log₂${fmt(n / (p + n))} = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const p = ri(4, 10)
+  const n = ri(3, 9)
+  const [p1, n1, p2, n2] = splitCounts(p, n)
+  const t1 = p1 + n1
+  const t2 = p2 + n2
+  const total = p + n
+  if (tier === 2) {
+    const HS = entropy2(p, n)
+    const branchH = (t1 / total) * entropy2(p1, n1) + (t2 / total) * entropy2(p2, n2)
+    const answer = HS - branchH
+    return {
+      prompt: `Node S has ${p}+ and ${n}− examples. Splitting on attribute A gives branch 1 with ${p1}+/${n1}− (${t1} examples) and branch 2 with ${p2}+/${n2}− (${t2} examples). Compute the information gain IG(S,A) = H(S) − H(Y|A).`,
+      answerLabel: 'IG(S,A)',
+      answer,
+      steps: [
+        `H(S) = ${fmt(HS)}.`,
+        `H(branch 1) = ${fmt(entropy2(p1, n1))}, H(branch 2) = ${fmt(entropy2(p2, n2))}.`,
+        `H(Y|A) = (${t1}/${total})×${fmt(entropy2(p1, n1))} + (${t2}/${total})×${fmt(entropy2(p2, n2))} = ${fmt(branchH)}.`,
+        `IG(S,A) = ${fmt(HS)} − ${fmt(branchH)} = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const gini = (a: number, b: number) => {
+    const t = a + b
+    return t === 0 ? 0 : 1 - (a / t) ** 2 - (b / t) ** 2
+  }
+  const GS = gini(p, n)
+  const branchG = (t1 / total) * gini(p1, n1) + (t2 / total) * gini(p2, n2)
+  const answer = GS - branchG
+  return {
+    prompt: `Exam-style (CART): node S has ${p}+ and ${n}− examples. A candidate split gives a left child with ${p1}+/${n1}− (${t1} examples) and a right child with ${p2}+/${n2}− (${t2} examples). Compute the Gini gain = Gini(S) − Σᵢ(|Sᵢ|/|S|)Gini(Sᵢ).`,
+    answerLabel: 'Gini gain',
+    answer,
+    steps: [
+      `Gini(S) = 1 − (${p}/${total})² − (${n}/${total})² = ${fmt(GS)}.`,
+      `Gini(left) = ${fmt(gini(p1, n1))}, Gini(right) = ${fmt(gini(p2, n2))}.`,
+      `Weighted child Gini = (${t1}/${total})×${fmt(gini(p1, n1))} + (${t2}/${total})×${fmt(gini(p2, n2))} = ${fmt(branchG)}.`,
+      `Gini gain = ${fmt(GS)} − ${fmt(branchG)} = ${fmt(answer)}.`,
+    ],
+  }
+}
+
+function genEnsemble(tier: Tier): Problem {
+  if (tier === 1) {
+    const v = ri(4, 50)
+    const n = ri(2, 10)
+    const answer = v / n
+    return {
+      prompt: `${n} independent models each have variance σ² = ${v}. Compute the variance of their simple average M* = (1/n)Σ Mᵢ.`,
+      answerLabel: 'Var(M*)',
+      answer,
+      steps: [
+        `Averaging independent models divides variance by n: Var(M*) = σ²/n.`,
+        `Var(M*) = ${v}/${n} = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const n = ri(3, 10)
+  const k = ri(1, n - 1)
+  const err = k / n
+  if (tier === 2) {
+    const answer = 0.5 * Math.log((n - k) / k)
+    return {
+      prompt: `An AdaBoost round has ${n} equally-weighted instances; the weak classifier misclassifies ${k} of them. Compute its voting weight αₜ = (1/2)ln((1 − errₜ)/errₜ), where errₜ = ${k}/${n}.`,
+      answerLabel: 'αₜ',
+      answer,
+      steps: [
+        `errₜ = ${k}/${n} = ${fmt(err)}, so 1 − errₜ = ${fmt(1 - err)}.`,
+        `αₜ = (1/2)·ln(${fmt(1 - err)}/${fmt(err)}) = (1/2)·ln(${fmt((1 - err) / err)}) = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const askMisclassified = Math.random() < 0.5
+  const answer = askMisclassified ? 1 / (2 * k) : 1 / (2 * (n - k))
+  return {
+    prompt: `Exam-style: ${n} equally-weighted instances (w = 1/${n} each) go through one AdaBoost round; ${k} are misclassified. After computing αₜ and applying wᵢ ← wᵢ·exp(∓αₜ) then renormalizing so weights sum to 1, what is the new weight of ONE ${askMisclassified ? 'misclassified' : 'correctly classified'} instance?`,
+    answerLabel: 'new wᵢ',
+    answer,
+    steps: [
+      `errₜ = ${k}/${n}, so exp(αₜ) = √((${n}−${k})/${k}) and exp(−αₜ) = √(${k}/(${n}−${k})).`,
+      `Misclassified instances get unnormalized weight (1/${n})·exp(αₜ); correct ones get (1/${n})·exp(−αₜ). Both group totals reduce to the same value, so they split the renormalization evenly.`,
+      `This simplifies to a clean closed form: a misclassified instance's new weight is 1/(2k) = 1/(2×${k}) = ${fmt(1 / (2 * k))}; a correctly-classified one's is 1/(2(n−k)) = 1/(2×${n - k}) = ${fmt(1 / (2 * (n - k)))}.`,
+      `Answer (${askMisclassified ? 'misclassified' : 'correctly classified'} instance): ${fmt(answer)}.`,
+    ],
+  }
+}
+
 export const levels: readonly DrillLevel[] = [
   {
     id: 'fit',
@@ -835,5 +957,21 @@ export const levels: readonly DrillLevel[] = [
     concept: 'Squash scores with the sigmoid, turn w·x + b into P(y=1|x), and solve for the decision boundary.',
     formula: 'σ(z) = 1/(1+e⁻ᶻ)    P(y=1|x) = σ(w·x+b)    boundary: w·x + b = 0',
     generate: genLogistic,
+  },
+  {
+    id: 'trees',
+    week: 'W4',
+    title: 'Decision trees: entropy & splitting',
+    concept: 'Score a node with entropy or Gini impurity, then pick the split that reduces it the most.',
+    formula: 'H(S) = −Σ pᵢ log₂ pᵢ    IG(S,A) = H(S) − H(Y|A)    Gini(S) = 1 − Σ pᵢ²',
+    generate: genTrees,
+  },
+  {
+    id: 'ensemble',
+    week: 'W4',
+    title: 'Ensemble methods: bagging & boosting',
+    concept: 'Averaging shrinks variance by 1/n; AdaBoost reweights misclassified points each round using a per-classifier vote weight.',
+    formula: 'Var(M*) = σ²/n    αₜ = ½ln((1−errₜ)/errₜ)    wᵢ ← wᵢ·exp(∓αₜ), renormalize',
+    generate: genEnsemble,
   },
 ]

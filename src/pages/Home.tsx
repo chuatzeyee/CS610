@@ -12,7 +12,7 @@ const cards = [
     to: '/topics',
     icon: BookOpen,
     title: 'Topics & Glossary',
-    description: 'Every lecture segment (Weeks 1–3) distilled into revision notes, plus a searchable glossary of key terms',
+    description: 'Every lecture segment (Weeks 1–4) distilled into revision notes, plus a searchable glossary of key terms',
     count: sessions.reduce((sum, s) => sum + s.topics.length, 0) + definitions.length,
     unit: 'entries',
   },
@@ -36,7 +36,7 @@ const cards = [
     to: '/lab',
     icon: FlaskConical,
     title: 'Lab Walkthroughs',
-    description: 'The weekly lecture notebooks — naive Bayes, regression, logistic regression — explained cell by cell with the key code and outputs',
+    description: 'The weekly lecture notebooks — naive Bayes, regression, logistic regression, decision trees, ensembles — explained cell by cell with the key code and outputs',
     count: labs.length,
     unit: 'notebooks',
   },
@@ -66,10 +66,11 @@ export default function Home() {
           {course.courseTitle}
         </p>
         <p className="text-ink-secondary max-w-2xl mx-auto leading-relaxed">
-          Study companion for SMU CS610 — Weeks 1–3: the ML landscape, Bayesian
+          Study companion for SMU CS610 — Weeks 1–4: the ML landscape, Bayesian
           learning and naive Bayes, probability, linear algebra and information
-          theory foundations, linear regression and regularization, and logistic
-          regression — plus the weekly lab notebooks.
+          theory foundations, linear regression and regularization, logistic
+          regression, and decision trees and ensemble methods — plus the weekly
+          lab notebooks.
         </p>
       </div>
 

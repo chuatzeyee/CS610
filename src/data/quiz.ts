@@ -1365,5 +1365,642 @@ export const questions: readonly QuizQuestion[] = [
     ],
     "answerIndex": 1,
     "explanation": "Clipping at 0.5 flattens everything below 0.5 to a single baseline color, so the Reds shading only appears where class 0 is more probable and the Greens shading where class 1 is — the two regions meet at the P = 0.5 decision boundary. predict_proba already returns valid probabilities that sum to 1."
+  },
+  {
+    "id": "dt1",
+    "topic": "Decision Trees",
+    "question": "What is the entropy H(Y) of the Play Tennis target variable, which has 9 'yes' and 5 'no' out of 14 examples (log base 2)?",
+    "options": [
+      "0.940",
+      "1.000",
+      "0.863",
+      "0.650"
+    ],
+    "answerIndex": 0,
+    "explanation": "H(Y) = -(9/14)log2(9/14) - (5/14)log2(5/14) ≈ 0.410 + 0.530 = 0.940."
+  },
+  {
+    "id": "dt2",
+    "topic": "Decision Trees",
+    "question": "ID3 must choose the root attribute for the Play Tennis dataset. Given IG(S,Outlook)=0.247 and IG(S,Humidity)=0.152, which attribute is selected as the root?",
+    "options": [
+      "Outlook",
+      "Humidity",
+      "Windy",
+      "Temperature"
+    ],
+    "answerIndex": 0,
+    "explanation": "ID3 picks the attribute with the highest information gain; 0.247 (Outlook) > 0.152 (Humidity), so Outlook is chosen."
+  },
+  {
+    "id": "dt3",
+    "topic": "Decision Trees",
+    "question": "The binary entropy function H(X) = -p0 log p0 - p1 log p1 reaches its maximum value of 1 at which value of p1?",
+    "options": [
+      "0",
+      "0.25",
+      "0.5",
+      "1"
+    ],
+    "answerIndex": 2,
+    "explanation": "At p1=0.5 (and p0=0.5) the outcome is maximally uncertain: H(X) = -0.5log(0.5) - 0.5log(0.5) = 1."
+  },
+  {
+    "id": "dt4",
+    "topic": "Decision Trees",
+    "question": "A node contains 6 positive and 6 negative examples. What is its Gini impurity?",
+    "options": [
+      "0.5",
+      "0.25",
+      "0.75",
+      "1.0"
+    ],
+    "answerIndex": 0,
+    "explanation": "Gini(S) = 1 - (6/12)^2 - (6/12)^2 = 1 - 0.25 - 0.25 = 0.5."
+  },
+  {
+    "id": "dt5",
+    "topic": "Decision Trees",
+    "question": "In a Gini-based split, Gini(S)=1/2 before splitting. The left child (40% of the data) has Gini=0 and the right child (60% of the data) has Gini=5/18. What is the Gini Gain of this split?",
+    "options": [
+      "1/3",
+      "1/2",
+      "5/18",
+      "0.4"
+    ],
+    "answerIndex": 0,
+    "explanation": "GiniGain = 1/2 - (0.4×0 + 0.6×5/18) = 1/2 - 1/6 = 1/3."
+  },
+  {
+    "id": "dt6",
+    "topic": "Decision Trees",
+    "question": "Why does raw information gain unfairly favor a high-cardinality attribute like 'date' (500 distinct values) over 'gender' (2 values)?",
+    "options": [
+      "Because splitting on many-valued attributes tends to create small, pure subsets, inflating entropy reduction without real predictive value",
+      "Because entropy cannot be computed for attributes with more than 2 values",
+      "Because ID3 always ignores attributes with more than 10 values",
+      "Because information gain is undefined for categorical attributes"
+    ],
+    "answerIndex": 0,
+    "explanation": "A 500-valued attribute can create almost one example per branch, driving conditional entropy toward 0 and inflating gain; Gain Ratio corrects this by dividing by SplitInfo."
+  },
+  {
+    "id": "dt7",
+    "topic": "Decision Trees",
+    "question": "If attribute X completely determines target Y (no uncertainty remains once X is known), what is H(Y|X)?",
+    "options": [
+      "0",
+      "1",
+      "H(Y)",
+      "Infinite"
+    ],
+    "answerIndex": 0,
+    "explanation": "Conditional entropy H(Y|X)=0 whenever knowing X removes all uncertainty about Y."
+  },
+  {
+    "id": "dt8",
+    "topic": "Decision Trees",
+    "question": "If X and Y are statistically independent random variables, what is the mutual information I(X;Y)?",
+    "options": [
+      "0",
+      "1",
+      "H(X)",
+      "H(Y)"
+    ],
+    "answerIndex": 0,
+    "explanation": "Independence means knowing X reveals nothing about Y, so I(X;Y) = H(Y) - H(Y|X) = H(Y) - H(Y) = 0."
+  },
+  {
+    "id": "dt9",
+    "topic": "Decision Trees",
+    "question": "When finding split thresholds for a continuous attribute, ID3 sorts the values and proposes a candidate threshold at the midpoint between which pairs?",
+    "options": [
+      "Every pair of adjacent sorted values, regardless of class",
+      "Only adjacent sorted values whose class labels differ",
+      "Only the global minimum and maximum values",
+      "The mean and the median of all values"
+    ],
+    "answerIndex": 1,
+    "explanation": "Candidate thresholds only need to be checked where the class label changes between consecutive sorted values, e.g., Temp thresholds 64.5, 66.5, 70.5, 72, 77.5, 80.5, 84."
+  },
+  {
+    "id": "dt10",
+    "topic": "Decision Trees",
+    "question": "In reduced-error pruning, what is the greedy criterion for removing a subtree from a fully-grown tree?",
+    "options": [
+      "Remove the split that most improves accuracy on a held-out validation/test set",
+      "Remove the split with the lowest information gain at training time",
+      "Remove splits in random order until the tree has fewer than 10 nodes",
+      "Remove the split that most improves training set accuracy"
+    ],
+    "answerIndex": 0,
+    "explanation": "Reduced-error pruning greedily removes whichever split most improves (or least harms) accuracy on held-out data, stopping when no further pruning helps."
+  },
+  {
+    "id": "dt11",
+    "topic": "Decision Trees",
+    "question": "ID3 is best described as performing what kind of search through the hypothesis space of trees?",
+    "options": [
+      "Greedy, top-down search",
+      "Exhaustive breadth-first search",
+      "Genetic/evolutionary search",
+      "Random restart search"
+    ],
+    "answerIndex": 0,
+    "explanation": "ID3 greedily picks the locally best attribute at each node and never backtracks; finding the globally smallest tree is intractable, so this greedy top-down heuristic is used instead."
+  },
+  {
+    "id": "dt12",
+    "topic": "Decision Trees",
+    "question": "If a decision tree leaf is not perfectly pure (contains a mix of classes), how does the tree typically make its prediction there?",
+    "options": [
+      "By majority vote among the training examples in that leaf",
+      "By always predicting the alphabetically first class",
+      "By refusing to make a prediction",
+      "By randomly sampling a label each time"
+    ],
+    "answerIndex": 0,
+    "explanation": "E.g., {Y|Outlook=sunny}=[2+,3-] predicts 'no' because the majority (3 of 5) of the leaf's examples are negative."
+  },
+  {
+    "id": "dt13",
+    "topic": "Decision Trees",
+    "question": "Which of the following is NOT one of the stopping criteria discussed for halting decision tree growth (pre-pruning)?",
+    "options": [
+      "Minimum samples required for a node split",
+      "Minimum samples required for a terminal leaf",
+      "Maximum depth of the tree",
+      "Requiring every internal node to have exactly two children"
+    ],
+    "answerIndex": 3,
+    "explanation": "The stopping criteria mentioned are minimum samples per split, minimum samples per leaf, and maximum depth; forcing exactly two children per node was not discussed as a stopping rule."
+  },
+  {
+    "id": "dt14",
+    "topic": "Decision Trees",
+    "question": "Using H(Y|Humidity=high)=0.985 (7 of 14 examples) and H(Y|Humidity=normal)=0.592 (7 of 14 examples), what is H(Y|Humidity)?",
+    "options": [
+      "0.788",
+      "0.985",
+      "0.592",
+      "1.577"
+    ],
+    "answerIndex": 0,
+    "explanation": "H(Y|Humidity) = (7/14)(0.985) + (7/14)(0.592) = 0.5(0.985) + 0.5(0.592) = 0.4925 + 0.296 = 0.788."
+  },
+  {
+    "id": "dt15",
+    "topic": "Decision Trees",
+    "question": "Given H(Y)=0.940 and H(Y|Outlook)=0.694, what is the information gain IG(Y;Outlook)?",
+    "options": [
+      "0.247",
+      "0.694",
+      "1.634",
+      "0.940"
+    ],
+    "answerIndex": 0,
+    "explanation": "IG(Y;Outlook) = H(Y) - H(Y|Outlook) = 0.940 - 0.694 = 0.247, matching the slide's reported value (computing with unrounded intermediate entropies gives 0.9406 - 0.6935 = 0.2471, which rounds to 0.247)."
+  },
+  {
+    "id": "en1",
+    "topic": "Ensemble Methods",
+    "question": "Why is using the test set to choose hyperparameters during tuning problematic?",
+    "options": [
+      "It makes training too slow",
+      "It causes data leakage: the model architecture ends up fit to the test data, invalidating it as an unbiased generalization estimate",
+      "It requires StratifiedKFold instead of KFold",
+      "It only works for decision trees"
+    ],
+    "answerIndex": 1,
+    "explanation": "The slides state that evaluating hyperparameter choices on the test set causes the model architecture to be 'fit' to the test data ('data leakage'), so a separate validation set (or cross-validation) should be used instead."
+  },
+  {
+    "id": "en2",
+    "topic": "Ensemble Methods",
+    "question": "In k-fold cross-validation, what is done with the k per-fold scores to get the overall performance estimate?",
+    "options": [
+      "Only the best fold's score is kept",
+      "The scores are summed without averaging",
+      "The average of the k scores is taken as the overall performance",
+      "Only the last fold's score is used"
+    ],
+    "answerIndex": 2,
+    "explanation": "The slides state: 'Take the average score as the overall performance' after training/evaluating across all k folds."
+  },
+  {
+    "id": "en3",
+    "topic": "Ensemble Methods",
+    "question": "What advantage does StratifiedKFold have over plain KFold?",
+    "options": [
+      "It trains faster because it uses fewer folds",
+      "It maintains the class ratio in each fold and prevents classes from appearing in sequential blocks",
+      "It removes the need for a validation set entirely",
+      "It guarantees zero variance in the cross-validation estimate"
+    ],
+    "answerIndex": 1,
+    "explanation": "The slides describe StratifiedKFold as maintaining the class ratio in each portion and preventing classes from coming in sequence, unlike plain KFold."
+  },
+  {
+    "id": "en4",
+    "topic": "Ensemble Methods",
+    "question": "According to the bias-variance decomposition on the slides, E[(f(x) - h(x))^2] equals which sum?",
+    "options": [
+      "Bias(h(x)) + Var(h(x))",
+      "Bias^2(h(x)) + Var(h(x)) + sigma^2",
+      "Bias(h(x)) * Var(h(x))",
+      "Var(h(x)) - Bias^2(h(x))"
+    ],
+    "answerIndex": 1,
+    "explanation": "The slide gives: E[(f(x)-h(x))^2] = Bias^2(h(x)) + Var(h(x)) + sigma^2, where sigma^2 is the irreducible noise variance."
+  },
+  {
+    "id": "en5",
+    "topic": "Ensemble Methods",
+    "question": "With 25 independent classifiers each having error rate epsilon = 0.35, the probability that a majority-vote ensemble misclassifies (13+ of 25 wrong) is computed as sum_{i=13}^{25} C(25,i) * 0.35^i * 0.65^(25-i). What is this probability approximately, and what does it show?",
+    "options": [
+      "≈ 0.35, the same as a single classifier, showing voting has no effect",
+      "≈ 0.06, much lower than the 0.35 individual error rate, showing majority voting reduces error when classifiers are independent",
+      "≈ 0.99, showing ensembles always perform worse",
+      "≈ 0.13, exactly equal to 13/25"
+    ],
+    "answerIndex": 1,
+    "explanation": "Summing C(25,i)*0.35^i*0.65^(25-i) for i=13..25 gives approximately 0.0604 (verified numerically), far below the single-classifier error rate of 0.35 — illustrating why majority voting among independent classifiers reduces error."
+  },
+  {
+    "id": "en6",
+    "topic": "Ensemble Methods",
+    "question": "If n independent models each have variance sigma^2, what is the variance of their simple average M* = (1/n) * sum(Mi)?",
+    "options": [
+      "sigma^2 * n",
+      "sigma^2",
+      "sigma^2 / n",
+      "sigma^2 / n^2"
+    ],
+    "answerIndex": 2,
+    "explanation": "The slide states Var(M*) = Var((1/n) sum Mi) = sigma^2 / n for n independent models with equal variance sigma^2 — averaging shrinks variance by a factor of n."
+  },
+  {
+    "id": "en7",
+    "topic": "Ensemble Methods",
+    "question": "For a bootstrap sample Dj created by drawing m examples with replacement from a set D of size m, approximately what fraction of D's distinct examples appear in Dj on average (for large m)?",
+    "options": [
+      "About 37%",
+      "About 50%",
+      "About 63%",
+      "100%"
+    ],
+    "answerIndex": 2,
+    "explanation": "Prob(a given sample is NOT selected) = (1-1/m)^m -> 1/e ≈ 0.368 as m grows, so the fraction of distinct samples included is 1 - (1-1/m)^m ≈ 0.632, i.e., about 63%, as stated on the slide."
+  },
+  {
+    "id": "en8",
+    "topic": "Ensemble Methods",
+    "question": "What is the key structural difference between plain tree bagging and Random Forest?",
+    "options": [
+      "Random Forest does not use bootstrap sampling at all",
+      "Random Forest additionally restricts each split to consider only a random subset of features, in addition to bootstrap sampling of rows",
+      "Tree bagging uses boosting internally while Random Forest does not",
+      "Random Forest trains only a single tree"
+    ],
+    "answerIndex": 1,
+    "explanation": "Both use bootstrap sampling of training rows, but Random Forest additionally randomizes the feature subset considered at each split (e.g., max_features), further decorrelating trees beyond plain bagging."
+  },
+  {
+    "id": "en9",
+    "topic": "Ensemble Methods",
+    "question": "What are the two stated limitations of bagging that motivate boosting and stacking?",
+    "options": [
+      "Bagging is too slow to train and cannot be parallelized",
+      "Inefficient bootstrap sampling (no distinction between easy/difficult examples) and inefficient model combination (constant weight per classifier)",
+      "Bagging cannot be used with decision trees",
+      "Bagging requires labeled test data during training"
+    ],
+    "answerIndex": 1,
+    "explanation": "The slides list: (1) inefficient bootstrap sampling since every example has equal chance of being sampled with no distinction between easy/difficult examples, and (2) inefficient model combination since every classifier gets a constant equal weight regardless of accuracy — leading to boosting (better sampling) and stacking (better combination)."
+  },
+  {
+    "id": "en10",
+    "topic": "Ensemble Methods",
+    "question": "In AdaBoost, a weak classifier has a weighted error rate err_t = 0.25. Using alpha_t = (1/2) ln((1 - err_t) / err_t), what is alpha_t?",
+    "options": [
+      "0.5 * ln(3) ≈ 0.549",
+      "ln(3) ≈ 1.099",
+      "0.25",
+      "0.5 * ln(0.25) ≈ -0.693"
+    ],
+    "answerIndex": 0,
+    "explanation": "(1 - 0.25) / 0.25 = 0.75 / 0.25 = 3. alpha_t = 0.5 * ln(3) = 0.5 * 1.0986 ≈ 0.549."
+  },
+  {
+    "id": "en11",
+    "topic": "Ensemble Methods",
+    "question": "In the lecture's AdaBoost worked example, a classifier's voting weight is given as alpha_1 = (1/2) ln 2. What weighted error rate produced this alpha?",
+    "options": [
+      "1/3",
+      "1/2",
+      "1/4",
+      "2/3"
+    ],
+    "answerIndex": 0,
+    "explanation": "Solve 0.5*ln((1-e)/e) = 0.5*ln(2) => (1-e)/e = 2 => 1 - e = 2e => 3e = 1 => e = 1/3."
+  },
+  {
+    "id": "en12",
+    "topic": "Ensemble Methods",
+    "question": "After each AdaBoost round, how are instance weights updated?",
+    "options": [
+      "Misclassified instances get increased weight; correctly classified instances get decreased weight, then weights are renormalized",
+      "All instances get equal weight regardless of correctness",
+      "Correctly classified instances get increased weight to reinforce confidence",
+      "Weights are only updated for the final round, not intermediate rounds"
+    ],
+    "answerIndex": 0,
+    "explanation": "AdaBoost increases the weight of misclassified instances (so they are more likely sampled next round) and decreases the weight of correctly classified ones, then renormalizes so weights sum to 1."
+  },
+  {
+    "id": "en13",
+    "topic": "Ensemble Methods",
+    "question": "What is the key difference between SAMME and SAMME.R AdaBoost implementations in scikit-learn?",
+    "options": [
+      "SAMME adapts using predicted class labels; SAMME.R adapts using predicted class probabilities",
+      "SAMME is for regression; SAMME.R is for classification only",
+      "SAMME.R does not support multi-class problems while SAMME does",
+      "SAMME uses gradient descent; SAMME.R uses random search"
+    ],
+    "answerIndex": 0,
+    "explanation": "SAMME (Stagewise Additive Modeling using a Multi-class Exponential loss) adapts based on discrete predicted labels, while SAMME.R (Real) uses the real-valued predicted class probabilities."
+  },
+  {
+    "id": "en14",
+    "topic": "Ensemble Methods",
+    "question": "In Gradient Boosting, what does each new tree h(x) at stage m attempt to fit?",
+    "options": [
+      "The residual y - F_m(x) left over from the current ensemble",
+      "The original raw labels y, ignoring prior stages",
+      "The average of all previous trees' predictions",
+      "A random subsample of the feature space unrelated to prior errors"
+    ],
+    "answerIndex": 0,
+    "explanation": "Gradient boosting fits h(x) = F_{m+1}(x) - F_m(x) to the residual y - F_m(x), so each new tree corrects the errors of the current ensemble F_m(x)."
+  },
+  {
+    "id": "en15",
+    "topic": "Ensemble Methods",
+    "question": "How does stacking primarily differ from bagging and boosting?",
+    "options": [
+      "Stacking combines heterogeneous learners via a learned meta-model, whereas bagging/boosting combine mostly homogeneous learners via deterministic algorithms",
+      "Stacking never uses more than one base model",
+      "Stacking requires no training data splitting at all",
+      "Stacking can only be applied to regression problems"
+    ],
+    "answerIndex": 0,
+    "explanation": "Stacking often combines different types of learners and uses a trained meta-model to combine their outputs, while bagging and boosting typically combine homogeneous weak learners deterministically."
+  },
+  {
+    "id": "en16",
+    "topic": "Ensemble Methods",
+    "question": "What distinguishes blending from stacking?",
+    "options": [
+      "Blending uses a single holdout validation split instead of k-fold cross-validation",
+      "Blending requires more folds than stacking",
+      "Blending cannot use a meta-model",
+      "Blending only works with a single base model and no level-2 model"
+    ],
+    "answerIndex": 0,
+    "explanation": "Blending splits data into training and validation sets once (no cross-validation), using the validation set's predictions to train a level-2 meta-model, unlike stacking's k-fold approach."
+  },
+  {
+    "id": "en17",
+    "topic": "Ensemble Methods",
+    "question": "Which of the following is listed as a potential pitfall of complex ensemble pipelines (stacking/blending)?",
+    "options": [
+      "Exponentially increasing training time and greater risk of data leakage between stages",
+      "Guaranteed lower accuracy than any single base model",
+      "Inability to use decision trees as base learners",
+      "Reduced infrastructure requirements compared to single models"
+    ],
+    "answerIndex": 0,
+    "explanation": "The lecture lists exponentially increasing training/computation time, higher infrastructure maintenance demands, and greater chance of data leakage between models/stages as pitfalls."
+  },
+  {
+    "id": "en18",
+    "topic": "Ensemble Methods",
+    "question": "A feature engineer notices that 'watch_time = -1.0' is used to represent an undefined value. What is the recommended fix per the lecture's 'Properties of Good Features'?",
+    "options": [
+      "Add a separate boolean feature like watch_time_is_defined instead of using a magic value",
+      "Replace all -1.0 values with the mean watch_time silently",
+      "Leave it as -1.0 since models handle negative numbers fine",
+      "Remove the watch_time feature entirely from the dataset"
+    ],
+    "answerIndex": 0,
+    "explanation": "The lecture states features shouldn't take on 'magic' values; instead, use an additional boolean feature (e.g., watch_time_is_defined) to explicitly flag missing/undefined values."
+  },
+  {
+    "id": "en19",
+    "topic": "Ensemble Methods",
+    "question": "Why are feature crosses (e.g., [latitude x num_bedrooms]) useful for linear models?",
+    "options": [
+      "They let linear models capture non-linear interactions between features while still scaling well to massive data",
+      "They eliminate the need for any training data",
+      "They convert a regression problem into a classification problem automatically",
+      "They remove the need for feature normalization"
+    ],
+    "answerIndex": 0,
+    "explanation": "Linear learners scale well to massive data but have limited expressivity alone; feature crosses combine features (e.g., [A x B]) to capture non-linear relationships, making linear models much more expressive without losing scalability."
+  },
+  {
+    "id": "dtl1",
+    "topic": "Decision Trees",
+    "question": "A root node contains 64 examples: 29 of class 0 and 35 of class 1. What is its entropy (base 2)?",
+    "options": [
+      "0.99",
+      "0.50",
+      "1.00",
+      "0.73"
+    ],
+    "answerIndex": 0,
+    "explanation": "H = -(29/64)*log2(29/64) - (35/64)*log2(35/64) = -(0.4531)*log2(0.4531) - (0.5469)*log2(0.5469) ≈ 0.5177 + 0.4759 = 0.9937 ≈ 0.99 (matches scipy.stats.entropy([29/64,35/64], base=2) = 0.9937 in the notebook)."
+  },
+  {
+    "id": "dtl2",
+    "topic": "Decision Trees",
+    "question": "Splitting on attribute A1 sends 26 examples (21 class-0, 5 class-1) to the left child and 38 examples (8 class-0, 30 class-1) to the right child. What is the weighted (conditional) entropy H(S|A1)?",
+    "options": [
+      "0.73",
+      "0.99",
+      "0.27",
+      "0.87"
+    ],
+    "answerIndex": 0,
+    "explanation": "H(S|A1) = (26/64)*H([21/26,5/26]) + (38/64)*H([8/38,30/38]) = 0.40625*0.7063 + 0.59375*0.7425 ≈ 0.7278 ≈ 0.73, exactly the H_A1 value computed in the notebook."
+  },
+  {
+    "id": "dtl3",
+    "topic": "Decision Trees",
+    "question": "Given root entropy H(S) = 0.9937 and A1's weighted child entropy H(S|A1) = 0.7278, what is the information gain IG_A1?",
+    "options": [
+      "0.27",
+      "0.12",
+      "0.73",
+      "0.99"
+    ],
+    "answerIndex": 0,
+    "explanation": "IG_A1 = H(S) - H(S|A1) = 0.9937 - 0.7278 = 0.2659 ≈ 0.27, matching the notebook's IG_A1 = 0.26587486854294173."
+  },
+  {
+    "id": "dtl4",
+    "topic": "Decision Trees",
+    "question": "A2 produces a weighted child entropy of 0.8722, giving IG_A2 = 0.9937 - 0.8722 = 0.1214. If A1 has IG_A1 = 0.2659, which attribute would an ID3-style tree pick as the root split, and why?",
+    "options": [
+      "A1, because 0.2659 > 0.1214 (higher information gain reduces impurity more)",
+      "A2, because it has a smaller weighted entropy in absolute terms",
+      "Either attribute, since ID3 splits are chosen at random",
+      "Neither, because both gains are below the 0.5 threshold required to split"
+    ],
+    "answerIndex": 0,
+    "explanation": "ID3/CART choose the split that maximizes information gain; 0.2659 (A1) > 0.1214 (A2), so A1 is preferred, exactly as concluded from IG_A1, IG_A2 = (0.26587..., 0.12143...) in the notebook."
+  },
+  {
+    "id": "dtl5",
+    "topic": "Decision Trees",
+    "question": "tree_clf_depth_3 (max_depth=3) is trained on Iris petal length/width. What does tree_clf_depth_3.predict_proba([[5, 1.5]]) return, and what class is predicted?",
+    "options": [
+      "[0, 0.333, 0.667] -> class 2 (virginica)",
+      "[1, 0, 0] -> class 0 (setosa)",
+      "[0.333, 0.333, 0.333] -> tie, no prediction possible",
+      "[0, 0.667, 0.333] -> class 1 (versicolor)"
+    ],
+    "answerIndex": 0,
+    "explanation": "The notebook output is array([[0., 0.33333333, 0.66666667]]) and .predict([[5,1.5]]) returns array([2]), i.e. the leaf reached by petal length=5, width=1.5 has 0 setosa, 1/3 versicolor, 2/3 virginica, so the majority class 2 (virginica) is predicted."
+  },
+  {
+    "id": "dtl6",
+    "topic": "Decision Trees",
+    "question": "The 'Name' attribute splits 8 samples into 8 singleton groups (each a unique name), giving IG_Name = H_s = 0.9544 but SplitInfo_Name = entropy([1/8]*8, base=2) = 3.0. What is the Gain Ratio for Name?",
+    "options": [
+      "0.32",
+      "0.95",
+      "3.00",
+      "0.17"
+    ],
+    "answerIndex": 0,
+    "explanation": "GainRatio = IG / SplitInfo = 0.9544 / 3.0 = 0.3181 ≈ 0.32, matching the notebook's GR_Name = 0.318144667641655."
+  },
+  {
+    "id": "dtl7",
+    "topic": "Decision Trees",
+    "question": "Given Gain Ratios GR_Name = 0.318, GR_Height = 0.166, and GR_cap = 0.391, which attribute would C4.5 (which splits on Gain Ratio) prefer, even though Name has the highest raw information gain (0.9544)?",
+    "options": [
+      "Cap-color, because it has the highest Gain Ratio (0.391)",
+      "Name, because Gain Ratio always agrees with Information Gain",
+      "Height, because it has the lowest Split Information",
+      "None -- Gain Ratio cannot be compared across attributes with different cardinality"
+    ],
+    "answerIndex": 0,
+    "explanation": "0.391 (cap) > 0.318 (Name) > 0.166 (Height), so C4.5 picks cap-color; Gain Ratio's Split-Information penalty (SI_Name=3.0 vs SI_cap=1.561) suppresses Name's huge but overfit-prone information gain."
+  },
+  {
+    "id": "dtl8",
+    "topic": "Decision Trees",
+    "question": "Using the Gini impurity function gini(p) = 1 - p^2 - (1-p)^2 defined in the notebook, what is gini(0.5)?",
+    "options": [
+      "0.5",
+      "1.0",
+      "0.0",
+      "0.25"
+    ],
+    "answerIndex": 0,
+    "explanation": "gini(0.5) = 1 - 0.5^2 - 0.5^2 = 1 - 0.25 - 0.25 = 0.5, the maximum impurity point for a binary node, matching the peak of the plotted curve over x = np.arange(0, 1.1, 0.05)."
+  },
+  {
+    "id": "enl1",
+    "topic": "Ensemble Methods",
+    "question": "As the number of training samples n grows large, what fraction of rows is expected to be left OUT of a single bootstrap sample (and therefore usable for OOB scoring)?",
+    "options": [
+      "About 36.8% (1/e)",
+      "About 50%",
+      "About 63.2%",
+      "About 10%"
+    ],
+    "answerIndex": 0,
+    "explanation": "The probability a specific row is never drawn in n draws with replacement is (1 - 1/n)^n, which converges to e^-1 ≈ 0.368 (36.8%) as n → ∞ — e.g. (1-1/100)^100 ≈ 0.366, already close to 0.368."
+  },
+  {
+    "id": "enl2",
+    "topic": "Ensemble Methods",
+    "question": "The notebook's 10-fold plain KFold cross_val_score for the depth-2 Decision Tree was [0.828, 0.816, 0.954, 0.86, 0.558, 0.767, 0.907, 0.791, 0.581, 0.279]. What mean accuracy (rounded to 3 dp) does this give, matching the notebook's printed output?",
+    "options": [
+      "0.734",
+      "0.798",
+      "0.710",
+      "0.746"
+    ],
+    "answerIndex": 0,
+    "explanation": "Summing the 10 scores gives 7.341, and 7.341 / 10 = 0.7341, which rounds to 0.734 — exactly the 'mean: 0.734' the notebook prints for KFold on the depth-2 tree."
+  },
+  {
+    "id": "enl3",
+    "topic": "Ensemble Methods",
+    "question": "For the same depth-2 Decision Tree, using StratifiedKFold WITH shuffling gave scores [0.747, 0.736, 0.69, 0.709, 0.779, 0.756, 0.733, 0.802, 0.744, 0.767] (mean 0.746). What is the standard deviation of these scores (rounded to 3 dp), as printed by the notebook?",
+    "options": [
+      "0.031",
+      "0.194",
+      "0.201",
+      "0.120"
+    ],
+    "answerIndex": 0,
+    "explanation": "The squared deviations from the mean 0.746 average out to about 0.000955, whose square root is ≈ 0.031 — matching the notebook's printed 'standard deviation: 0.031' and showing shuffled folds are far more stable than unshuffled ones (std 0.194)."
+  },
+  {
+    "id": "enl4",
+    "topic": "Ensemble Methods",
+    "question": "For Logistic Regression with C=1, unshuffled KFold gave standard deviation 0.274 across folds while StratifiedKFold with shuffle gave 0.046. By roughly how much did shuffling reduce the fold-to-fold standard deviation?",
+    "options": [
+      "About 0.228",
+      "About 0.046",
+      "About 0.320",
+      "About 0.502"
+    ],
+    "answerIndex": 0,
+    "explanation": "0.274 - 0.046 = 0.228. The unshuffled folds are contiguous blocks of the (non-random) dataset order, so class balance varies wildly fold to fold; shuffling before splitting removes that ordering bias and shrinks the spread by about 0.228."
+  },
+  {
+    "id": "enl5",
+    "topic": "Ensemble Methods",
+    "question": "GridSearchCV over Decision Tree hyperparameters (with 10-fold shuffled StratifiedKFold) reported best_score_ = 0.8587677091686714. How is this displayed when rounded to 3 decimal places, as the other cross-validation results in the notebook are?",
+    "options": [
+      "0.859",
+      "0.858",
+      "0.860",
+      "0.857"
+    ],
+    "answerIndex": 0,
+    "explanation": "0.8587677... rounds at the third decimal: the digit after the third place is 7 (0.8587...), so 0.858 rounds up to 0.859."
+  },
+  {
+    "id": "enl6",
+    "topic": "Ensemble Methods",
+    "question": "In the AdaBoost cell, sample_weight is initialized with sample_weight[:, 0, :] = 1.0 / x_train.shape[0] before any boosting round. If x_train has 160 rows, what is each sample's initial weight?",
+    "options": [
+      "0.00625",
+      "0.0625",
+      "0.160",
+      "1.0"
+    ],
+    "answerIndex": 0,
+    "explanation": "Uniform initialization means each of the 160 samples gets weight 1/160 = 0.00625, so all rows start with equal influence before the first weak learner's errors reweight them."
+  },
+  {
+    "id": "enl7",
+    "topic": "Ensemble Methods",
+    "question": "Why does RandomForestClassifier typically produce a smoother, less overfit decision boundary than a single unpruned DecisionTreeClassifier trained on the same data?",
+    "options": [
+      "Each tree splits on a random feature subset, decorrelating the trees so their averaged/voted prediction has lower variance than any one tree",
+      "Random forests use a completely different loss function than decision trees",
+      "Random forests always use fewer training samples per tree than the full dataset",
+      "Random forests replace splits with linear regression at each node"
+    ],
+    "answerIndex": 0,
+    "explanation": "Random Forest = bagging + per-split random feature selection (max_features=1 in the notebook forces this to the extreme). Decorrelated trees average out each other's idiosyncratic overfitting, which is why the aggregated boundary is smoother than any individual tree's."
   }
 ]

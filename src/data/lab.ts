@@ -227,4 +227,171 @@ export const logisticLab: Lab = {
   ]
 }
 
-export const labs: readonly Lab[] = [nbLab, regressionLab, logisticLab]
+export const dtLab: Lab = {
+  "id": "w4-decision-tree",
+  "week": "W4",
+  "title": "CS610 Week 4 Lab: Decision Trees — Classification, Regression, and Splitting Criteria (Iris + Toy Data)",
+  "overview": "This lab builds intuition for how CART-style decision trees grow. It trains a DecisionTreeClassifier on the Iris petal length/width features and visualizes its axis-aligned decision boundaries and class-probability outputs, contrasts unrestricted vs. regularized trees on noisy make_moons data, fits DecisionTreeRegressor models to a noisy quadratic dataset to show piecewise-constant regression predictions and overfitting control via min_samples_leaf, then manually recomputes the entropy, information gain, Gini impurity, split information, and gain ratio that a tree-growing algorithm uses internally to pick splits, using both the Iris-like A1/A2 attributes and a small 8-row toy dataset (Name/Height/Cap-color).",
+  "steps": [
+    {
+      "title": "Import core libraries",
+      "explanation": "Set up numpy and matplotlib for numerical work and plotting throughout the notebook.",
+      "code": "import numpy as np\nimport matplotlib.pyplot as plt"
+    },
+    {
+      "title": "Load Iris and train a depth-3 classification tree",
+      "explanation": "Use only the petal length and width features (columns 2:) and fit a CART classifier capped at depth 3 for interpretability.",
+      "code": "from sklearn.datasets import load_iris\nfrom sklearn.tree import DecisionTreeClassifier\n\niris = load_iris()\nX = iris.data[:, 2:] # use only petal length and width\ny = iris.target\n\ntree_clf_depth_3 = DecisionTreeClassifier(max_depth=3, random_state=2022)\ntree_clf_depth_3.fit(X, y)"
+    },
+    {
+      "title": "Export the tree structure with export_graphviz",
+      "explanation": "Write a Graphviz .dot file describing the learned tree (feature thresholds, class distributions per node) for visualization/rendering to PNG.",
+      "code": "from sklearn.tree import export_graphviz\n\nexport_graphviz(\n        tree_clf_depth_3,\n        out_file='iris_tree_depth_3.dot',\n        feature_names=iris.feature_names[2:],\n        class_names=iris.target_names,\n        rounded=True,\n        filled=True\n    )"
+    },
+    {
+      "title": "Plot the axis-aligned decision boundary",
+      "explanation": "A helper function meshes the feature space, predicts a class per grid cell, and overlays the true points; annotated split lines show the tree's actual thresholds at petal length=2.45, petal width=1.75, and petal length=4.95/4.85.",
+      "code": "from matplotlib.colors import ListedColormap\n\ndef plot_decision_boundary(clf, X, y, axes=[0, 7.5, 0, 3], plot_iris=True):\n    x1s = np.linspace(axes[0], axes[1], 100)\n    x2s = np.linspace(axes[2], axes[3], 100)\n    x1, x2 = np.meshgrid(x1s, x2s)\n    X_new = np.c_[x1.ravel(), x2.ravel()]\n    y_pred = clf.predict(X_new).reshape(x1.shape)\n    custom_cmap = ListedColormap(['#fafab0','#9898ff','#a0faa0'])\n    \n    plt.contourf(x1, x2, y_pred, alpha=0.3, cmap=custom_cmap)\n\n   \n    plt.plot(X[:, 0][y==0], X[:, 1][y==0], 'yo', label=f'{iris.target_names[0]}')\n    plt.plot(X[:, 0][y==1], X[:, 1][y==1], 'bs', label=f'{iris.target_names[1]}')\n    plt.plot(X[:, 0][y==2], X[:, 1][y==2], 'g^', label=f'{iris.target_names[2]}')\n    plt.axis(axes)\n     \n    if plot_iris:\n        plt.xlabel(\"Petal length\", fontsize=14)\n        plt.ylabel(\"Petal width\", fontsize=14)\n        plt.legend(loc=\"lower right\", fontsize=12)\n    else:\n        plt.xlabel(\"X\", fontsize=14)\n        plt.ylabel(\"Y\", fontsize=14)\n\nplt.figure(figsize=(11, 5))\nplot_decision_boundary(tree_clf_depth_3, X, y)\n\n# Plot the decision boundaries\nplt.plot([2.45, 2.45], [0, 3], \"r-\", linewidth=2)\nplt.plot([2.45, 7.5], [1.75, 1.75], \"b--\", linewidth=2)\nplt.plot([4.95, 4.95], [0, 1.75], \"k:\", linewidth=2)\nplt.plot([4.85, 4.85], [1.75, 3], \"k:\", linewidth=2)\n\nplt.text(1.40, 1.0, \"Depth=0\", fontsize=15)\nplt.text(3.2, 1.80, \"Depth=1\", fontsize=13)\nplt.text(4.05, 0.5, \"(Depth=2)\", fontsize=11)\nplt.show()"
+    },
+    {
+      "title": "Predict class probabilities for a new sample",
+      "explanation": "For an unseen flower with petal length=5, width=1.5, the tree returns the class distribution of the leaf it lands in.",
+      "code": "tree_clf_depth_3.predict_proba([[5, 1.5]])\n# array([[0.        , 0.33333333, 0.66666667]])\n\ntree_clf_depth_3.predict([[5, 1.5]])\n# array([2])"
+    },
+    {
+      "title": "Compare unrestricted vs. regularized trees on noisy moons data",
+      "explanation": "Fit one tree with no stopping constraints and one with min_samples_leaf=4 on make_moons(noise=0.25) to visually contrast overfitting vs. a smoother boundary.",
+      "code": "from sklearn.datasets import make_moons\nXm, ym = make_moons(n_samples=100, noise=0.25, random_state=2022)\n\ndeep_tree_clf1 = DecisionTreeClassifier(random_state=2022)\ndeep_tree_clf2 = DecisionTreeClassifier(min_samples_leaf=4, random_state=2022)\ndeep_tree_clf1.fit(Xm, ym)\ndeep_tree_clf2.fit(Xm, ym)\n\nplt.figure(figsize=(16, 8))\nplt.subplot(121)\nplot_decision_boundary(deep_tree_clf1, Xm, ym, axes=[-1.5, 2.5, -1, 1.5], plot_iris=False)\nplt.title(\"No restrictions\", fontsize=16)\nplt.subplot(122)\nplot_decision_boundary(deep_tree_clf2, Xm, ym, axes=[-1.5, 2.5, -1, 1.5], plot_iris=False)\nplt.title(\"min_samples_leaf = {}\".format(deep_tree_clf2.min_samples_leaf), fontsize=14)\n\nplt.show()"
+    },
+    {
+      "title": "Build a noisy quadratic dataset for regression",
+      "explanation": "Generate 200 random points and a quadratic target y = 4*(x-0.5)^2 plus Gaussian noise, to demonstrate DecisionTreeRegressor.",
+      "code": "np.random.seed(2022)\nm = 200\nX = np.random.rand(m, 1)\ny = 4 * (X - 0.5) ** 2\ny = y + np.random.randn(m, 1) / 10"
+    },
+    {
+      "title": "Fit a depth-2 regression tree",
+      "explanation": "DecisionTreeRegressor splits on MSE reduction instead of entropy/Gini, producing a piecewise-constant prediction function.",
+      "code": "from sklearn.tree import DecisionTreeRegressor\n\ntree_reg = DecisionTreeRegressor(max_depth=2, random_state=2022)\ntree_reg.fit(X, y)"
+    },
+    {
+      "title": "Compare depth-2 vs. depth-3 regression trees",
+      "explanation": "Plot both trees' step-function predictions against the training data and the true split thresholds (e.g. 0.144, 0.057, 0.828 for depth 2; finer splits at 0.02, 0.096, 0.293, 0.918 for depth 3) to see how added depth refines the fit.",
+      "code": "## from sklearn.tree import DecisionTreeRegressor\n\ntree_reg1 = DecisionTreeRegressor(random_state=2022, max_depth=2)\ntree_reg2 = DecisionTreeRegressor(random_state=2022, max_depth=3)\ntree_reg1.fit(X, y)\ntree_reg2.fit(X, y)\n\ndef plot_regression_predictions(tree_reg, X, y, axes=[0, 1, -0.2, 1], ylabel=\"$y$\"):\n    x1 = np.linspace(axes[0], axes[1], 500).reshape(-1, 1)\n    y_pred = tree_reg.predict(x1)\n    plt.axis(axes)\n    plt.xlabel(\"$x_1$\", fontsize=18)\n    if ylabel:\n        plt.ylabel(ylabel, fontsize=18, rotation=0)\n    plt.plot(X, y, \"b.\")\n    plt.plot(x1, y_pred, \"r.-\", linewidth=2, label=r\"$\\hat{y}$\")\n\nplt.figure(figsize=(16, 7))\nplt.subplot(121)\nplot_regression_predictions(tree_reg1, X, y)\n\nfor split, style in ((0.144, \"k-\"), (0.057, \"k--\"), (0.828, \"k--\")):\n    plt.plot([split, split], [-0.2, 1], style, linewidth=2)\n    \nplt.text(0.15, 0.65, \"Depth=0\", fontsize=15)\nplt.text(0.01, 0.2, \"Depth=1\", fontsize=13)\nplt.text(0.75, 0.8, \"Depth=1\", fontsize=13)\n\nplt.legend(loc=\"upper center\", fontsize=18)\nplt.title(\"max_depth=2\", fontsize=14)\n\nplt.subplot(122)\nplot_regression_predictions(tree_reg2, X, y, ylabel=None)\n\nfor split, style in ((0.144, \"k-\"), (0.057, \"k--\"), (0.828, \"k--\")):\n    plt.plot([split, split], [-0.2, 1], style, linewidth=2)\n    \nfor split in (0.02, 0.096, 0.293, 0.918):\n    plt.plot([split, split], [-0.2, 1], \"k:\", linewidth=1)\n    \nplt.text(0.3, 0.5, \"Depth=2\", fontsize=13)\nplt.title(\"max_depth=3\", fontsize=14)\nplt.show()"
+    },
+    {
+      "title": "Show overfitting control with min_samples_leaf on regression trees",
+      "explanation": "An unrestricted regression tree memorizes noise (jagged steps); requiring min_samples_leaf=10 forces broader, smoother leaves.",
+      "code": "tree_reg1 = DecisionTreeRegressor(random_state=2022)\ntree_reg2 = DecisionTreeRegressor(random_state=2022, min_samples_leaf=10)\ntree_reg1.fit(X, y)\ntree_reg2.fit(X, y)\n\nx1 = np.linspace(0, 1, 500).reshape(-1, 1)\ny_pred1 = tree_reg1.predict(x1)\ny_pred2 = tree_reg2.predict(x1)"
+    },
+    {
+      "title": "Compute root entropy and information gain by hand (attribute A1)",
+      "explanation": "Manually recreate what the tree-growing algorithm computes internally: entropy of the parent (29 vs 35 out of 64) and the weighted entropy after splitting on A1 (26 samples: 21/5, and 38 samples: 8/30), then their difference is the information gain.",
+      "code": "from scipy.stats import entropy\n\nH_29_35 = entropy([29/64, 35/64], base=2)          # 0.9936507116910405\n\nH_A1 = 26/(26+38) * entropy([21/26, 5/26], base=2) + 38/(26+38) * entropy([8/38, 30/38], base=2)\n# H_A1 = 0.7277758431480987\n\nIG_A1 = H_29_35 - H_A1   # 0.26587486854294173"
+    },
+    {
+      "title": "Compute information gain for a second attribute (A2) and compare",
+      "explanation": "Repeat the entropy/IG calculation for attribute A2 (51 samples: 18/33, and 13 samples: 11/2) and compare IG_A1 vs IG_A2 to decide which attribute is the better root split.",
+      "code": "H_A2 = 51/(51+13) * entropy([18/51, 33/51], base=2) + 13/(51+13) * entropy([11/13, 2/13], base=2)\n# H_A2 = 0.8722188282278065\n\nIG_A2 = H_29_35 - H_A2\n\nIG_A1, IG_A2\n# (0.26587486854294173, 0.12143188346323397)  -> A1 is the stronger split"
+    },
+    {
+      "title": "Plot the Gini impurity curve",
+      "explanation": "Define gini(p) = 1 - p^2 - (1-p)^2 and plot it over p in [0, 1] to see it peak at p=0.5 (maximum impurity) and hit 0 at the pure endpoints.",
+      "code": "x = np.arange(0, 1.1, 0.05)\n\ndef gini(p):\n    return 1 - p*p - (1-p)*(1-p)\n\ny = list(map(gini, x))\nplt.plot(x, y)\nplt.show()"
+    },
+    {
+      "title": "Compute entropy, information gain, split information, and gain ratio on a toy dataset",
+      "explanation": "For an 8-row toy dataset (5 positive / 3 negative) with attributes Name (8 unique values), Height, and Cap-color, compute each attribute's information gain, then normalize by split information to get gain ratio -- showing why Name (a unique-ID-like attribute with IG=0.9544) is NOT chosen once cardinality bias is corrected.",
+      "code": "H_s = entropy([5/8, 3/8], base=2)                      # 0.954434002924965\nH_s_Name = 0                                            # each of 8 unique names is a pure singleton leaf\nH_s_Height = (5/8)*entropy([1/5,4/5], base=2) + (3/8)*entropy([1/3,2/3], base=2)   # 0.795565997075035\nH_s_cap = 0 + 0 + 3/8*entropy([1/3,2/3], base=2)        # 0.34436093777043353\n\nIG_Name = H_s - H_s_Name       # 0.954434002924965\nIG_Height = H_s - H_s_Height   # 0.1588680058499301\nIG_cap = H_s - H_s_cap         # 0.6100730651545315\n\nSI_Name = entropy([1/8]*8, base=2)                     # 3.0\nSI_Height = entropy([5/8, 3/8], base=2)                # 0.954434002924965\nSI_cap = entropy([3/8, 3/8, 2/8], base=2)              # 1.561278124459133\n\nGR_Name = IG_Name / SI_Name       # 0.318144667641655\nGR_Height = IG_Height / SI_Height # 0.1664525837963255\nGR_cap = IG_cap / SI_cap          # 0.39075233015634325\n\nGR_Name, GR_Height, GR_cap  # cap-color has the best gain ratio despite Name having the best raw info gain"
+    }
+  ],
+  "takeaways": [
+    "CART grows binary, axis-aligned trees by greedily choosing the (feature, threshold) that most reduces impurity (Gini by default) at each node.",
+    "predict_proba returns the class distribution of the training samples in the leaf reached by an input; predict just takes the argmax of that distribution.",
+    "Regularization hyperparameters like max_depth and min_samples_leaf trade off fit-to-training-noise against generalization -- unrestricted trees overfit both classification (moons) and regression (quadratic) data.",
+    "DecisionTreeRegressor produces piecewise-constant predictions (a step function), with each leaf predicting the mean target of its training samples.",
+    "Entropy H(S) = -sum(p_i*log2(p_i)) measures node impurity; Information Gain IG(S,A) = H(S) - H(S|A) measures how much a split on A reduces that impurity, and the attribute with the highest IG (e.g. A1 at 0.2659 over A2 at 0.1214) is preferred by ID3.",
+    "Gini impurity, 1 - p^2 - (1-p)^2, is CART's default alternative to entropy: same shape, cheaper to compute, peaks at 0.5 for a balanced binary node.",
+    "Raw information gain is biased toward high-cardinality attributes (a unique 'Name' column gets IG=0.9544, the maximum possible); Gain Ratio = IG / SplitInfo corrects this, here favoring Cap-color (0.391) over Name (0.318) and Height (0.166)."
+  ]
+}
+
+export const ensembleLab: Lab = {
+  "id": "w4-ensemble",
+  "week": "W4",
+  "title": "CS610 Week 4 Lab: Ensemble Learning — Bagging, Random Forests, AdaBoost, and Gradient Boosting",
+  "overview": "This lab (04_ensemble.ipynb) first revisits cross-validation and grid search on a 2D nonlinear binary classification dataset, then builds up four ensemble strategies on the same data/train-test split: Bagging, Random Forest, AdaBoost (SAMME and SAMME.R), and Gradient Boosting. For each ensemble it visualizes every base estimator's individual decision boundary alongside the combined ensemble's boundary, making the bias/variance tradeoffs of bagging-style vs boosting-style ensembles directly visible.",
+  "steps": [
+    {
+      "title": "Load the nonlinear dataset",
+      "explanation": "Loads a 2-feature, binary-label synthetic dataset used throughout the notebook for both the cross-validation/grid-search warm-up and the ensemble experiments.",
+      "code": "import numpy as np\nfrom sklearn import linear_model, tree, model_selection\nimport matplotlib.pyplot as plt\n\n# Load the dataset\ndata = np.loadtxt('dataset/nonlinear.txt', delimiter = ',')\nx = data[:,:2]\ny = data[:,2].astype(int)"
+    },
+    {
+      "title": "Compare KFold vs StratifiedKFold (with and without shuffle)",
+      "explanation": "Builds three 10-fold splitters -- plain KFold, StratifiedKFold, and StratifiedKFold with shuffle=True -- and plots each fold's train/test points to show how unshuffled folds can land on very different, non-representative regions of the data.",
+      "code": "kf  = [\n    model_selection.KFold(n_splits=10),\n    model_selection.StratifiedKFold(n_splits=10),\n    model_selection.StratifiedKFold(n_splits=10, shuffle=True, random_state=2022)]\n\ncolor = ['blue', 'red']\nfor i in range(3):\n    print('**using ' + (i > 0 and 'Stratified' or '') + 'KFold' + (i == 2 and ' with shuffle' or ''))\n    plt.figure(figsize = (25, 10))\n    counter = 1\n    for train_index, test_index in kf[i].split(x, y):\n        plt.subplot(2, 5, counter)\n        counter += 1\n        x_train = x[train_index,:]\n        x_test = x[test_index,:]\n        y_train_color = [color[i] for i in y[train_index]]\n        y_test_color = [color[i] for i in y[test_index]]\n        plt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\n        plt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\n    \n    plt.show()"
+    },
+    {
+      "title": "Cross-validate 6 classifiers across all 3 CV strategies",
+      "explanation": "Fits Logistic Regression at C=1,10,100 and a Decision Tree at max_depth=2,3,4, running cross_val_score under each of the 3 CV splitters and printing per-fold scores plus mean/std. This is where the notebook demonstrates that unshuffled KFold/StratifiedKFold gives unstable (high-std) accuracy estimates on this ordered dataset, while shuffled StratifiedKFold gives tight, reliable estimates.",
+      "code": "clf, desc = [], []\n\nfor c in [1, 10, 100]:\n    clf.append(linear_model.LogisticRegression(C=c, solver='liblinear'))\n    desc.append('Logistic Regression with C = ' + str(c))\n\nfor d in [2, 3, 4]:\n    clf.append(tree.DecisionTreeClassifier(criterion='entropy', max_depth=d))\n    desc.append('Decision Tree with depth = ' + str(d))\n\nfor i in range(6):\n    print('-' * len(desc[i]))\n    print(desc[i])\n    print('-' * len(desc[i]))\n    for j in range(3):\n        print('**using ' + (j > 0 and 'Stratified' or '') + 'KFold' + (j == 2 and ' with shuffle' or ''))\n        score = model_selection.cross_val_score(clf[i], x, y, cv=kf[j])\n        score_format = list(map(lambda x: round(x, 3), score))\n        # pred = model_selection.cross_val_predict(clf[i], x, y, cv=kf[j])\n        print('        score:', score_format)\n        print('        mean: %.3f, standard deviation: %.3f' % (np.mean(score), np.std(score)))"
+    },
+    {
+      "title": "Grid search Decision Tree hyperparameters",
+      "explanation": "Runs GridSearchCV over two parameter grids (varying max_depth with min_samples_split=5, and varying min_samples_split with max_depth=3) using the shuffled StratifiedKFold as the CV strategy, finding the single best-performing configuration.",
+      "code": "color = ['blue', 'red']\ny_color = [color[i] for i in y]\n\nparameters = [\n    {'criterion': ['gini', 'entropy'], 'splitter': ['best', 'random'], 'max_depth': [2, 3, 4, 5], 'min_samples_split': [5]},\n    {'criterion': ['gini', 'entropy'], 'splitter': ['best', 'random'], 'max_depth': [3], 'min_samples_split': [3, 5, 7, 9]}]\n\nclf = model_selection.GridSearchCV(\n    tree.DecisionTreeClassifier(), parameters, cv=model_selection.StratifiedKFold(n_splits=10, shuffle=True, random_state=2022))\nclf.fit(x, y)\nprint('best score:', clf.best_score_)\nprint('best parameters: ', clf.best_params_)"
+    },
+    {
+      "title": "Visualize the grid-search winner's decision boundary",
+      "explanation": "Builds a fine mesh grid over the feature space and plots the best_estimator_'s predicted-probability contours together with the raw data points, giving a visual sanity check on the tuned tree.",
+      "code": "steps = 200\nx0 = my_linspace(min(x[:,0]), max(x[:,0]), steps)\nx1 = my_linspace(min(x[:,1]), max(x[:,1]), steps)\nxx0, xx1 = np.meshgrid(x0, x1)\nmesh_data = np.c_[xx0.ravel(), xx1.ravel()]\nmesh_deci = clf.best_estimator_.predict_proba(mesh_data).reshape(steps, steps, 2)\n\nplt.figure(figsize = (12, 12))\nplt.contourf(xx0, xx1, mesh_deci[:,:,0], 40, cmap = plt.cm.RdBu, alpha = 0.3)\nplt.scatter(x[:,0], x[:,1], c=y_color)\nplt.show()"
+    },
+    {
+      "title": "Set up train/test split and mesh grid for the ensemble section",
+      "explanation": "Switches to the ensemble module (sklearn.ensemble) and creates a single train/test split (80/20) plus a reusable mesh grid that every subsequent ensemble (bagging, random forest, AdaBoost, gradient boosting) will be evaluated and visualized on.",
+      "code": "import numpy as np\nfrom sklearn import tree, ensemble, model_selection, metrics\nimport matplotlib.pyplot as plt\n\ndef my_linspace (min_value, max_value, steps):\n    diff = max_value - min_value\n    return np.linspace (min_value - 0.1 * diff, max_value + 0.1 * diff, steps)\n\nx_train, x_test, y_train, y_test = model_selection.train_test_split(x, y, test_size=0.2, random_state=2022)\n\ncolor = ['blue', 'red']\ny_train_color = [color[i] for i in y_train]\ny_test_color = [color[i] for i in y_test]\n\nsteps = 200\nx0 = my_linspace(min(x[:,0]), max(x[:,0]), steps)\nx1 = my_linspace(min(x[:,1]), max(x[:,1]), steps)\nxx0, xx1 = np.meshgrid(x0, x1)\nmesh_data = np.c_[xx0.ravel(), xx1.ravel()]"
+    },
+    {
+      "title": "Bagging: train and visualize each bootstrap-sampled tree",
+      "explanation": "Trains a BaggingClassifier of decision trees, each on 50% of samples (max_samples=0.5) and 1 feature at a time (max_features=1), with oob_score enabled. Plots each of the ensemble's base estimators' decision surfaces plus its individual test accuracy.",
+      "code": "bagging = ensemble.BaggingClassifier(tree.DecisionTreeClassifier(), max_samples=0.5, max_features=1, oob_score=True, random_state = 2022)\nbagging.fit(x_train, y_train)\n\nplt.figure(figsize = (25, 10))\nfor i in range(bagging.n_estimators):\n    plt.subplot(2, 5, i+1)\n    mesh_prob = bagging.estimators_[i].predict_proba(mesh_data[:,bagging.estimators_features_[i]]).reshape(steps, steps, 2)\n    plt.contourf(xx0, xx1, mesh_prob[:,:,0], 10, cmap=plt.cm.RdBu, alpha=0.3)\n    plt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\n    plt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\n    plt.text(0, 1, round(bagging.estimators_[i].score(x_test[:,bagging.estimators_features_[i]], y_test), 3))\n\nplt.show()"
+    },
+    {
+      "title": "Bagging: visualize the combined ensemble boundary",
+      "explanation": "Uses the fitted BaggingClassifier's aggregated predict_proba (averaging all base trees) to draw one combined decision boundary and prints its overall test-set score.",
+      "code": "plt.figure(figsize = (12, 12))\nmesh_prob = bagging.predict_proba(mesh_data).reshape(steps, steps, 2)\nplt.contourf(xx0, xx1, mesh_prob[:,:,0], 10, cmap=plt.cm.RdBu, alpha=0.3)\nplt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\nplt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\nplt.text(0, 1, round(bagging.score(x_test, y_test), 3))\nplt.show()"
+    },
+    {
+      "title": "Random Forest: train and visualize each tree",
+      "explanation": "Trains a RandomForestClassifier with 20 trees, each restricted to considering only 1 feature per split (max_features=1), and visualizes all 20 individual tree boundaries -- the extreme feature restriction makes each tree noisier and more different from its peers than in the bagging step.",
+      "code": "rforest = ensemble.RandomForestClassifier(n_estimators=20, max_features=1, oob_score=True, random_state=2022)\nrforest.fit(x_train, y_train)\n\nplt.figure(figsize = (25, 20))\nfor i in range(rforest.n_estimators):\n    plt.subplot(4, 5, i+1)\n    mesh_prob = rforest.estimators_[i].predict_proba(mesh_data).reshape(steps, steps, 2)\n    plt.contourf(xx0, xx1, mesh_prob[:,:,0], 10, cmap=plt.cm.RdBu, alpha=0.3)\n    plt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\n    plt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\n    plt.text(0, 1, round(rforest.estimators_[i].score(x_test, y_test), 3))\n\nplt.show()"
+    },
+    {
+      "title": "Random Forest: visualize the combined ensemble boundary",
+      "explanation": "Averages all 20 trees' predicted probabilities into one smoother decision boundary and prints the forest's overall test accuracy for comparison against the single-tree and bagging results.",
+      "code": "plt.figure(figsize = (12, 12))\nmesh_prob = rforest.predict_proba(mesh_data).reshape(steps, steps, 2)\nplt.contourf(xx0, xx1, mesh_prob[:,:,0], 10, cmap=plt.cm.RdBu, alpha=0.3)\nplt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\nplt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\nplt.text(0, 1, round(rforest.score(x_test, y_test),3))\nplt.show()"
+    },
+    {
+      "title": "AdaBoost: fit SAMME and SAMME.R, track sample weights and staged scores",
+      "explanation": "Fits two AdaBoostClassifiers (base learner: depth-2 decision tree, 10 estimators) using the discrete 'SAMME' and probability-based 'SAMME.R' algorithms. Recomputes each round's sample weights via the private _boost method to visualize which points get up-weighted, and records staged_score to track training accuracy round-by-round. Then plots each round's weak learner boundary (point size scaled by current sample weight) and the final combined boundary for each algorithm.",
+      "code": "adaboost = [\n    ensemble.AdaBoostClassifier(tree.DecisionTreeClassifier(max_depth=2), n_estimators=10, algorithm='SAMME', random_state=2022),\n    ensemble.AdaBoostClassifier(tree.DecisionTreeClassifier(max_depth=2), n_estimators=10, algorithm='SAMME.R', random_state=2022)]\n\nstaged_score = [0.0] * 2\nsample_weight = np.zeros((2, 10, x_train.shape[0]))\nsample_weight[:, 0, :] = 1.0 / x_train.shape[0]\n\nfor i in range(2):\n    adaboost[i].fit(x_train, y_train)\n    staged_score[i] = [j for j in adaboost[i].staged_score(x_train, y_train)]\n    for j in range(adaboost[i].n_estimators):\n        sample_weight[i][j], _, _ = adaboost[i]._boost(\n            j, x_train, y_train, sample_weight[i][max(0,j-1)], random_state=2022)\n    sample_weight_sum = np.sum(sample_weight[i][j])\n    sample_weight[i][j] /= sample_weight_sum\n\nfor i in range(2):\n    plt.figure(figsize = (25, 10))\n    for j in range(adaboost[i].n_estimators):\n        plt.subplot(2, 5, j+1)\n        mesh_prob = adaboost[i].estimators_[j].predict_proba(mesh_data).reshape(steps, steps, 2)\n        plt.contourf(xx0, xx1, mesh_prob[:,:,0], 10, cmap=plt.cm.RdBu, alpha=0.3)\n        plt.scatter(x_train[:,0], x_train[:,1], s=[np.maximum(20, 20 * sample_weight[i,j,:] * x_train.shape[0])], c=y_train_color)\n        plt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\n        plt.text(0, 1, round(adaboost[i].estimators_[j].score(x_test, y_test), 3))\n        plt.text(0, 0.38, staged_score[i][j])\n    \n    plt.show()\n    \n    plt.figure(figsize = (12, 12))\n    mesh_prob = adaboost[i].predict_proba(mesh_data).reshape(steps, steps, 2)\n    plt.contourf(xx0, xx1, mesh_prob[:,:,0], 10, cmap=plt.cm.RdBu, alpha=0.3)\n    plt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\n    plt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\n    plt.text(0, 1, round(adaboost[i].score(x_test, y_test),3))\n    plt.show()"
+    },
+    {
+      "title": "Gradient Boosting: fit, inspect staged predictions, and visualize each residual-fitting tree",
+      "explanation": "Fits a GradientBoostingClassifier (10 estimators) and uses staged_predict to get the ensemble's training predictions after each boosting round, showing training accuracy climbing as trees are added. Each round's individual regression tree (estimators_[i][0]) is plotted with its own decision surface and standalone test accuracy, then the final combined ensemble boundary is drawn using the full model's predict_proba.",
+      "code": "gboost = ensemble.GradientBoostingClassifier(n_estimators=10, random_state=2022)\ngboost.fit(x_train, y_train)\nstaged_pred = [i for i in gboost.staged_predict(x_train)]\n\nplt.figure(figsize = (25, 10))\nfor i in range(gboost.n_estimators):\n    plt.subplot(2, 5, i+1)\n    mesh_prob = gboost.estimators_[i][0].predict(mesh_data).reshape(steps, steps)\n    plt.contourf(xx0, xx1, -mesh_prob[:,:], 10, cmap=plt.cm.RdBu, alpha=0.3)\n    plt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\n    plt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\n    plt.text(0, 1, round(metrics.accuracy_score(y_test, gboost.estimators_[i][0].predict(x_test) > 0), 3))\n    plt.text(0, 0.38, round(metrics.accuracy_score(y_train, staged_pred[i]),3))\n\nplt.show()\n\nplt.figure(figsize = (12, 12))\nmesh_prob = gboost.predict_proba(mesh_data).reshape(steps, steps, 2)\nplt.contourf(xx0, xx1, mesh_prob[:,:,0], 10, cmap=plt.cm.RdBu, alpha=0.3)\nplt.scatter(x_train[:,0], x_train[:,1], c=y_train_color)\nplt.scatter(x_test[:,0], x_test[:,1], c=y_test_color, marker='+')\nplt.text(0, 1, round(gboost.score(x_test, y_test), 3))\nplt.show()"
+    }
+  ],
+  "takeaways": [
+    "Unshuffled KFold/StratifiedKFold on an ordered dataset can produce wildly unstable per-fold accuracy (std as high as 0.27 for logistic regression); shuffling before splitting (StratifiedKFold(shuffle=True)) collapses that std to under 0.05 without changing the mean much.",
+    "GridSearchCV paired with a shuffled StratifiedKFold found the best single decision tree (gini, max_depth=5, min_samples_split=5, splitter='best') at accuracy 0.859, a ceiling the later ensembles can be compared against.",
+    "Bagging trains independent estimators on bootstrap-resampled rows (and optionally random feature subsets), then averages predictions to reduce variance; oob_score=True gets a free validation estimate from the ~36.8% of rows excluded from each bootstrap draw.",
+    "Random Forest is bagging + per-split random feature selection; forcing max_features=1 in the notebook makes each of the 20 trees rely on a different single feature at each split, decorrelating them more than plain bagging does.",
+    "AdaBoost reweights training samples after every weak learner based on its errors; SAMME.R uses predicted probabilities (not just hard labels) for these updates, generally producing smoother weight/boundary evolution than discrete SAMME.",
+    "Gradient Boosting fits each new tree to the residual/negative gradient of the current ensemble's loss; staged_predict/staged_score confirm training accuracy improves monotonically as more of the 10 trees are added.",
+    "Across all four ensembles, the per-base-estimator plots (each with its own text-annotated accuracy) consistently score lower individually than the combined ensemble boundary plotted right after -- the core empirical argument for ensembling.",
+    "Bagging-family methods (Bagging, Random Forest) primarily fight variance via averaging independent-ish learners; boosting-family methods (AdaBoost, Gradient Boosting) primarily fight bias via sequential error-correction."
+  ]
+}
+
+export const labs: readonly Lab[] = [nbLab, regressionLab, logisticLab, dtLab, ensembleLab]

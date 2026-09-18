@@ -1368,4 +1368,484 @@ export const sessions: readonly Session[] = [
       }
     ]
   }
+,
+  {
+    "id": "w4_decision_tree",
+    "title": "Decision Trees",
+    "subtitle": "04_decision_tree.pdf",
+    "topics": [
+      {
+        "id": "dt-basics",
+        "title": "Decision Tree Fundamentals",
+        "sections": [
+          {
+            "heading": "What is a Decision Tree",
+            "points": [
+              "A decision tree is a decision-support tool that uses a tree-like graph or model of decisions and their possible consequences.",
+              "Terminology: Root Node (entire population/sample), Decision Node (splits further), Leaf/Terminal Node (no further split, outputs a label), Splitting (dividing a node into sub-nodes), Branch/Sub-Tree (a section of the tree with a node and its descendants).",
+              "Example: 'Should I accept a new job offer?' splits on salary ≥ $50,000, then commute time > 1 hour, then free coffee, ending at accept/decline leaves.",
+              "Example: 'Should I do exercise today?' splits on whether exercise happened yesterday, then whether junk food was eaten today."
+            ]
+          },
+          {
+            "heading": "Decision Trees as Supervised Learning",
+            "points": [
+              "Formalization: input x ∈ X ⊆ R^m; output y ∈ Y (regression: y ⊆ R, binary classification: y ∈ {+1,-1}, multi-class: y ∈ {1,...,K}); unknown target function f: X→Y; training data D={(x1,y1),...,(xn,yn)}; hypothesis space H; output hypothesis h: X→Y with h ≈ f.",
+              "Each instance x is a feature vector, e.g., <humidity=low, wind=weak, outlook=rain, temp=hot>; each hypothesis is a decision tree that sorts x to a leaf and assigns its class Y.",
+              "The Play Tennis dataset (14 examples with Outlook, Temp, Humidity, Windy → Play yes/no) is the running worked example throughout the lecture.",
+              "Decision trees are non-linear classifiers: they can separate positive and negative samples that are not linearly separable, because splits are combined hierarchically rather than via a single hyperplane."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "id3-algorithm",
+        "title": "Building Decision Trees: The ID3 Algorithm",
+        "sections": [
+          {
+            "heading": "Greedy Top-Down Construction",
+            "points": [
+              "General recursive algorithm: (1) pick the 'best' attribute A to partition the data, (2) create a child for each value of A, (3) group data by child, (4) if a child's data is perfectly classified stop, else recurse on that child's data with step 1.",
+              "We can always build *some* tree for a dataset by picking any unused feature at each level and branching recursively, but starting with a poorly-chosen feature can lead to a large, complex tree.",
+              "Finding the smallest (optimal) decision tree is intractable (NP-hard), so ID3 (Iterative Dichotomiser 3) instead uses a simple greedy heuristic that tends to find small trees without guaranteeing the best one.",
+              "ID3 performs a top-down, greedy search through the hypothesis space, choosing the locally 'best' attribute at each split using a purity-based measure.",
+              "General principle: prefer short/simple trees over larger, complex ones, since a simple consistent hypothesis is more likely to generalize (a form of Occam's razor)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "entropy-information-gain",
+        "title": "Entropy and Information Gain",
+        "sections": [
+          {
+            "heading": "Entropy as Expected Uncertainty",
+            "points": [
+              "Entropy characterizes the (im)purity of a collection of samples: H(X) = -Σ p_i log p_i, where p_i = Pr(X=x_i).",
+              "Binary case: H(X) = -p0 log p0 - p1 log p1, with p0+p1=1. H(X)=0 when p0 or p1 = 1 (totally certain); H(X)=1 when p0=p1=0.5 (most uncertain) — the entropy curve peaks at 1 for p=0.5.",
+              "Information gain measures how well an attribute separates samples according to the target classification; it is built on top of entropy."
+            ]
+          },
+          {
+            "heading": "Conditional Entropy and Mutual Information",
+            "points": [
+              "Conditional entropy H(Y|X) = Σ p(X=x_i) H(Y|X=x_i) is the remaining uncertainty in Y once X is known.",
+              "If X determines Y, H(Y|X)=0. If X and Y are independent, H(Y|X)=H(Y) (X reveals nothing about Y).",
+              "Mutual information I(X;Y) measures how much uncertainty about Y is resolved by knowing X; if X determines Y, H(Y)=I(X;Y); if X,Y independent, I(X;Y)=0.",
+              "Information Gain = Mutual Information = H(Y) - H(Y|X): this is exactly the quantity ID3 maximizes when choosing a split attribute."
+            ]
+          },
+          {
+            "heading": "Worked Example: Play Tennis",
+            "points": [
+              "Target Y=[9+,5-] over 14 examples: H(Y) = -(9/14)log(9/14) - (5/14)log(5/14) = 0.940.",
+              "Splitting on Humidity: H(Y|Humidity=high)=0.985 (7 examples), H(Y|Humidity=normal)=0.592 (7 examples) → H(Y|Humidity)=0.5(0.985)+0.5(0.592)=0.788, so IG(Y;Humidity)=0.940-0.788=0.152.",
+              "Splitting on Outlook: H(Y|Outlook=sunny)=0.971 (5 ex.), H(Y|Outlook=overcast)=0 (4 ex.), H(Y|Outlook=rainy)=0.971 (5 ex.) → H(Y|Outlook)=(5/14)(0.971)+(4/14)(0)+(5/14)(0.971)=0.694, so IG(Y;Outlook)=0.940-0.694=0.247.",
+              "Since IG(Outlook)=0.247 > IG(Humidity)=0.152, 'Outlook' is chosen as the root split; ID3 then recurses on each Outlook branch (e.g., {Y|Outlook=sunny}=[2+,3-] is split further, next on Humidity)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "splitting-criteria",
+        "title": "Alternative Splitting Criteria",
+        "sections": [
+          {
+            "heading": "Gini Impurity (used by CART)",
+            "points": [
+              "Gini(S) = Σ_i (|S_i|/|S|)(1-|S_i|/|S|) = 1 - Σ_i (|S_i|/|S|)^2, where S_i is the subset of S with class label i.",
+              "Intuition: the probability that a randomly chosen element would be incorrectly labeled if it were randomly labeled according to the distribution of labels in the set.",
+              "Worked example: a node with 5 of one class and 5 of another has Gini(S)=1-(1/2)^2-(1/2)^2=1/2. Splitting at x=1.5 gives a left child (all one class, 4/10 of data) with Gini=0 and a right child (1 vs 5, 6/10 of data) with Gini=1-(1/6)^2-(5/6)^2=5/18. GiniGain = 1/2 - (0.4×0 + 0.6×5/18) = 1/2 - 1/6 = 1/3.",
+              "The 'best' attribute is chosen by maximizing Gini information gain (analogous to entropy-based information gain)."
+            ]
+          },
+          {
+            "heading": "Gain Ratio for Many-Valued Attributes",
+            "points": [
+              "An attribute with many distinct values (e.g., 'date' with 500 values) can appear to have unfairly high information gain versus a low-cardinality attribute (e.g., 'gender' with 2 values), because it can create many near-pure, tiny subsets.",
+              "SplitInfo(S,A) = -Σ_i (|S_i|/|S|) log(|S_i|/|S|) measures the entropy of the attribute's own value distribution.",
+              "GainRatio(S,A) = InfoGain(S,A) / SplitInfo(S,A) = I(class;A)/H(A); this penalizes attributes with many distinct values, correcting the bias of raw information gain.",
+              "Example: identifier-like attributes (e.g., 'Name' or 'Last log in' IP address) would be perfectly discriminating under raw ID3 but generalize terribly — Gain Ratio (or excluding such attributes) avoids selecting them."
+            ]
+          },
+          {
+            "heading": "Variance Reduction for Regression Trees",
+            "points": [
+              "When the target variable is continuous (regression rather than classification), splits are chosen by variance reduction instead of entropy/Gini: VarianceReduction(S,A) = Var(S) - Σ_i (|S_i|/|S|) Var(S_i).",
+              "This plays the same role for regression trees that information gain or Gini gain plays for classification trees — pick the split that most reduces the spread of the target within child nodes."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "continuous-attributes",
+        "title": "Handling Continuous-Valued Attributes",
+        "sections": [
+          {
+            "heading": "Discretizing and Thresholding",
+            "points": [
+              "Real-valued attributes can be pre-discretized into ranges (e.g., big/medium/small), or handled directly by choosing a threshold θ and splitting into A<θ vs A≥θ.",
+              "Example: speeds [0, 0.02, 0.04, 3.56, 0.45, 0.20, 0.95, 0.79, 4.43, 2.45] can be split by 'speed < 1?' into {0,0.02,0.04,0.45,0.95,0.79} vs {3.56,4.43,2.45}.",
+              "Algorithm: for each continuous feature A, sort examples by value of A; for each adjacent pair (x_i, x_{i+1}) in the sorted list whose class labels differ, propose threshold θ = midpoint(x_i, x_{i+1}); the information gain of each such threshold split is computed and compared just like a discrete split.",
+              "Worked example (Temp): sorted values 64(+) 65(-) 68(+) 69(+) 70(+) 71(-) 72(-) 72(+) 75(+) 75(+) 80(-) 81(+) 83(+) 85(-) yield candidate thresholds 64.5, 66.5, 70.5, 72, 77.5, 80.5, 84 — only at points where the class label changes."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "overfitting-pruning",
+        "title": "Overfitting and Pruning",
+        "sections": [
+          {
+            "heading": "Overfitting in Decision Trees",
+            "points": [
+              "Growing the full tree (splitting until every leaf is pure) is not always a good idea: adding a single noisy training example (e.g., sunny, hot, normal, true, no) can force extra splits that hurt generalization.",
+              "As tree size (number of nodes) increases, training accuracy keeps rising toward ~1.0 while test accuracy plateaus and then degrades — the classic overfitting curve.",
+              "Multiple trees can fit the training data equally well; the general principle is to prefer the simplest hypothesis that fits the data."
+            ]
+          },
+          {
+            "heading": "How to Avoid Overfitting",
+            "points": [
+              "1) Pre-pruning via stopping criteria: minimum samples required to split a node, minimum samples required for a terminal leaf, maximum tree depth, etc.",
+              "2) Post-pruning via reduced-error pruning: split data into training and test/validation sets, build a full tree on training data, then repeatedly and greedily remove whichever split most improves test-set accuracy, stopping when further pruning is harmful.",
+              "3) Ensemble methods (e.g., Random Forest) combine many trees to reduce variance — covered in the next lecture."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dt-pros-cons",
+        "title": "Prediction, Strengths, and Weaknesses",
+        "sections": [
+          {
+            "heading": "Prediction When Leaves Are Impure",
+            "points": [
+              "Leaves are not always perfectly pure/homogeneous (e.g., using only 'Outlook' to build the tree leaves {Y|Outlook=sunny}=[2+,3-] and {Y|Outlook=rainy}=[3+,2-] mixed).",
+              "At such leaves, the tree classifies by majority vote: {Outlook=sunny} predicts 'no' (3 of 5 negative), {Outlook=overcast} predicts 'yes' (4 of 4 positive), {Outlook=rainy} predicts 'yes' (3 of 5 positive)."
+            ]
+          },
+          {
+            "heading": "Pros and Cons",
+            "points": [
+              "Pros: easy to understand/interpret; useful for data exploration and feature selection; requires less data cleaning (fairly robust to scale and missing values); handles both numerical and categorical data; non-parametric (no assumption about data distribution or classifier structure); naturally handles multi-class problems.",
+              "Cons: overfitting is a major practical difficulty; not ideal for continuous variables since discretizing them during splitting loses information."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "w4_ensemble",
+    "title": "Hyperparameter Tuning, Ensemble Learning (Bagging, Boosting & Stacking) & Feature Engineering",
+    "subtitle": "04_ensemble.pdf",
+    "topics": [
+      {
+        "id": "hyperparameter-tuning",
+        "title": "Hyperparameter Tuning",
+        "sections": [
+          {
+            "heading": "What are hyperparameters",
+            "points": [
+              "Parameters not learned through the typical ML training process are hyperparameters (e.g., regularization weight, depth of a tree).",
+              "Hyperparameter tuning is the process of searching for the ideal model architecture governed by these hyperparameters."
+            ]
+          },
+          {
+            "heading": "Grid Search",
+            "points": [
+              "Picks out a grid of hyperparameter values, evaluates every combination, and returns the winner.",
+              "Exhaustively evaluates all combinations based on cross validation.",
+              "Example: number of leaves in a decision tree could be a grid of 10, 20, 30, ..., 100.",
+              "Regularization parameters commonly use an exponential scale: 1e-5, 1e-4, 1e-3, ..., 1.",
+              "In sklearn, GridSearchCV takes a parameter grid dict and a cross-validation splitter (e.g., StratifiedKFold), then exposes best_score_ and best_params_ after fit."
+            ]
+          },
+          {
+            "heading": "Random Search",
+            "points": [
+              "Instead of searching the entire grid, random search evaluates only a random sample of points on the grid.",
+              "Each setting is sampled from a distribution over possible values, making it much cheaper than grid search.",
+              "Bergstra and Bengio: if at least 5% of the points on the grid yield a close-to-optimal solution, random search with 60 trials will find that region with high probability."
+            ]
+          },
+          {
+            "heading": "Bayesian Optimization (Optional)",
+            "points": [
+              "Picks a few hyperparameter settings, evaluates their quality, then decides where to sample next.",
+              "Pseudo-algorithm: build a surrogate probability model of the objective function; find hyperparameters that perform best on the surrogate; apply them to the true objective function; update the surrogate with the new results; repeat until max iterations or time budget is reached."
+            ]
+          },
+          {
+            "heading": "Overfitting of Hyperparameter Tuning",
+            "points": [
+              "Evaluating candidate architectures on the test set causes 'data leakage' — the model architecture ends up fitted to the test data.",
+              "A validation dataset lets you evaluate the model on data different from what it was trained on, to select the best architecture.",
+              "Splitting into three sets (train/validation/test) drastically reduces the samples available for learning, and results can depend on the particular random train/validation split.",
+              "Cross-validation is recommended for a more trustable estimate while making full use of the training data.",
+              "Cross-validation is a resampling procedure used to evaluate ML models on a limited data sample."
+            ]
+          },
+          {
+            "heading": "Cross Validation",
+            "points": [
+              "Divide the entire dataset into k folds; for k iterations, train on k-1 folds and evaluate on the remaining fold; average the k scores as the overall performance estimate.",
+              "Plain KFold can produce folds with skewed class ratios or sequential class ordering.",
+              "StratifiedKFold maintains the class ratio in each fold and prevents classes from appearing in contiguous blocks."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ensemble-learning-intro",
+        "title": "Ensemble Learning: Motivation",
+        "sections": [
+          {
+            "heading": "Basic Idea",
+            "points": [
+              "Intuition: 'Unity is strength' — combine multiple classifiers into one hopefully better classifier, like combining independent expert opinions.",
+              "Instead of learning one model, learn several (on Data1, Data2, ..., Data m) and combine their outputs via a model combiner into a final model.",
+              "Typically improves accuracy, often by a lot."
+            ]
+          },
+          {
+            "heading": "Simple Ensemble: Voting",
+            "points": [
+              "Hard voting (majority class label) vs. soft voting (average predicted probabilities).",
+              "Unweighted voting (equal weight per classifier) vs. weighted voting (more weight to better classifiers)."
+            ]
+          },
+          {
+            "heading": "Why Ensemble? Bias-Variance Motivation",
+            "points": [
+              "Ensembles help by reducing bias and reducing variance.",
+              "Setup: training set D = {(x1,y1),...,(xn,yn)}, true relationship y = f(x) + epsilon with epsilon ~ N(0, sigma_y^2), and model's best guess h(x).",
+              "Expected squared error on an unseen sample x decomposes as: E[(f(x) - h(x))^2] = Bias^2(h(x)) + Var(h(x)) + sigma^2, where Bias(h(x)) = E[h(x)] - f(x) and Var(h(x)) = E[h(x)^2] - (E[h(x)])^2.",
+              "The expectation ranges over different choices of the training set D.",
+              "Bias: difference between the average prediction of the model and the correct value being predicted.",
+              "Variance: variability of the model's prediction for a given data point, i.e., the spread of predictions."
+            ]
+          },
+          {
+            "heading": "Reducing Bias via Voting",
+            "points": [
+              "Example: 25 independent classifiers, each with error rate epsilon = 0.35.",
+              "Probability the ensemble (majority vote) is wrong, i.e., 13 or more of the 25 classifiers misclassify, is sum_{i=13}^{25} C(25,i) * eps^i * (1-eps)^(25-i) ≈ 0.06 — much lower than the 0.35 error rate of a single classifier.",
+              "This illustrates why majority voting works: combining many independent, better-than-random classifiers drives the ensemble's error down."
+            ]
+          },
+          {
+            "heading": "Reducing Variance via Averaging",
+            "points": [
+              "Given n independent models M1, ..., Mn each with the same variance sigma^2, the ensemble formed by averaging them, M* = (1/n) * sum(Mi), has Var(M*) = sigma^2 / n.",
+              "Averaging independent models shrinks variance by a factor of n, which is the statistical basis for why bagging-style averaging reduces overfitting/instability."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bagging-and-random-forest",
+        "title": "Bagging and Random Forest",
+        "sections": [
+          {
+            "heading": "Three Camps of Ensemble Methods",
+            "points": [
+              "Bagging (Bootstrap AGGregatING): 'averaging' classifiers.",
+              "Boosting: incrementally 'adding' classifiers.",
+              "Stacking: combining predictions from previous models using another model."
+            ]
+          },
+          {
+            "heading": "Bootstrap Sampling",
+            "points": [
+              "Given a set D containing m training examples, create Dj by drawing m examples at random with replacement from D.",
+              "Probability a given sample is NOT selected into Dj is (1 - 1/m)^m, which converges to about 1/e ≈ 0.368 for large m.",
+              "So each bootstrap sample contains on average 1 - (1 - 1/m)^m ≈ 63% distinct data samples from D (the rest are duplicates)."
+            ]
+          },
+          {
+            "heading": "Bagging Algorithm",
+            "points": [
+              "Create k bootstrap samples D1, D2, ..., Dk from the original data (sampling with replacement, so some original indices repeat and others are omitted in each round).",
+              "Train a distinct base classifier hj on each Dj; the hj are usually weaker learners of the same type.",
+              "Classify a new instance x by classifier vote with equal weights across h1...hk.",
+              "In sklearn: ensemble.BaggingClassifier(tree.DecisionTreeClassifier(), max_samples=0.5, max_features=1, oob_score=True, random_state=2023).fit(x_train, y_train) — oob_score=True enables out-of-bag evaluation using the ~37% of samples not drawn into each bootstrap."
+            ]
+          },
+          {
+            "heading": "Random Forest",
+            "points": [
+              "A 'forest' is a collection of decision trees; decision trees recursively partition samples on an attribute value based on Gini coefficient or information gain until a stopping criterion is met.",
+              "Random Forest is a collection of random trees — randomness comes both from bootstrap sampling of training rows (like bagging) and from restricting each split to a random subset of features (max_features).",
+              "In sklearn: ensemble.RandomForestClassifier(n_estimators=10, max_features=1, oob_score=True, random_state=2023).fit(x_train, y_train).",
+              "Key difference from plain tree bagging: Random Forest additionally randomizes the subset of features considered at each split, not just the bootstrap sample of rows, further decorrelating the trees."
+            ]
+          },
+          {
+            "heading": "Limitations of Bagging",
+            "points": [
+              "Inefficient bootstrap sampling: every example has an equal chance of being sampled, with no distinction between 'easy' and 'difficult' examples.",
+              "Inefficient model combination: each classifier gets a constant (equal) weight, with no distinction between accurate and inaccurate classifiers."
+            ]
+          },
+          {
+            "heading": "Improving the Efficiency of Bagging",
+            "points": [
+              "Better sampling strategy: focus on examples that are difficult to classify -> leads to Boosting.",
+              "Better combination strategy: give accurate models larger weights, or use another ML model to combine results -> leads to Stacking."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "boosting",
+        "title": "Boosting (AdaBoost & Gradient Boosting)",
+        "sections": [
+          {
+            "heading": "Boosting: Intuition",
+            "points": [
+              "Boosting trains classifiers sequentially, where each new classifier focuses on the instances the previous ones got wrong.",
+              "Each classifier is trained on a re-weighted/re-sampled version of the training data emphasizing previously misclassified points.",
+              "Final prediction combines all sequential classifiers (Classifier1 + Classifier2 + Classifier3 + ...) rather than averaging independent models like bagging."
+            ]
+          },
+          {
+            "heading": "AdaBoost: Adaptive Boosting",
+            "points": [
+              "For each iteration t = 1..K: compute the weighted error rate err_t = sum of weights of misclassified instances / sum of all weights.",
+              "Compute alpha_t = (1/2) ln((1 - err_t) / err_t), the voting weight/importance of classifier t.",
+              "Update instance weights: increase weight for misclassified instances, decrease weight for correctly classified instances, then renormalize so weights sum to 1.",
+              "Final prediction is a weighted vote: H(x) = sign(sum_t alpha_t * h_t(x))."
+            ]
+          },
+          {
+            "heading": "Boosting: Worked Example",
+            "points": [
+              "Instances that are wrongly classified get their weight increased; correctly classified instances get their weight decreased.",
+              "Example: instance 4 is hard to classify, so its weight increases across rounds and it gets resampled more often (appearing 8, then 4, then 10 times across boosting rounds in the example table).",
+              "The AdaBoost example trace shows weights D0 -> D1 -> D2 evolving as each weak learner h1, h2, ... is trained and instances are resampled and reweighted.",
+              "Example shown: alpha_t = (1/2) ln 2, which corresponds to a weighted error rate of 1/3 for that weak learner."
+            ]
+          },
+          {
+            "heading": "AdaBoost Implementations: SAMME vs SAMME.R",
+            "points": [
+              "scikit-learn provides two implementations: SAMME (Stagewise Additive Modeling using a Multi-class Exponential loss function) and SAMME.R (Real).",
+              "SAMME adapts based on errors in the predicted class labels (discrete predictions).",
+              "SAMME.R adapts based on the predicted class probabilities (real-valued), typically converging faster and achieving lower test error with fewer boosting iterations."
+            ]
+          },
+          {
+            "heading": "Gradient Boosting",
+            "points": [
+              "Applicable to both regression and classification, but more commonly used for regression.",
+              "Base estimator is typically a Decision Tree Regressor.",
+              "At each stage m, gradient boosting looks for h(x) = F_{m+1}(x) - F_m(x), where F_{m+1}(x) is a better estimator of y than F_m(x).",
+              "Gradient boosting fits h(x) to the residual y - F_m(x) at each stage, i.e., each new tree corrects the errors of the current ensemble.",
+              "In the lecture's comparison example, gradient boosting was not as good as AdaBoost for that particular dataset."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "stacking-blending",
+        "title": "Stacking, Blending & Ensemble Pitfalls",
+        "sections": [
+          {
+            "heading": "Stacking",
+            "points": [
+              "Stacking often combines heterogeneous weak learners (different learning algorithms), whereas bagging and boosting mainly combine homogeneous weak learners.",
+              "Stacking learns to combine base models using a meta-model, whereas bagging and boosting combine weak learners via deterministic algorithms.",
+              "Procedure: 1) split train set into k parts; 2) train a base model on k-1 parts, predict on the held-out kth part (repeated for each fold) to create new 'meta' features; 3) fit the base model on the whole training set and predict on the test set to create test meta-features.",
+              "Steps 2-3 are repeated for each additional base model, producing multiple sets of meta-features for train and test.",
+              "The out-of-fold predictions on the train set become features to train a new meta-model, which is then used to make final predictions on the test meta-features."
+            ]
+          },
+          {
+            "heading": "Stacking Variation",
+            "points": [
+              "A variation: instead of retraining the base model on the whole training dataset in step 3, simply average the predictions from one base model across the different folds/folders."
+            ]
+          },
+          {
+            "heading": "Blending",
+            "points": [
+              "Blending differs from stacking in that it does not use cross-validation.",
+              "Procedure: 1) split train set into training and validation sets; 2) fit models on the training set and predict on both validation and test sets; 3) use the validation set and its predictions as features to build a new level-2 model; 4) this model makes final predictions on the test dataset's meta-features."
+            ]
+          },
+          {
+            "heading": "Ensemble Pitfalls",
+            "points": [
+              "Exponentially increasing training times and computational requirements as more models/stages are added.",
+              "Increased demand on infrastructure to maintain and update multiple models.",
+              "Greater chance of data leakage between models or stages across the whole training pipeline."
+            ]
+          },
+          {
+            "heading": "In a Nutshell",
+            "points": [
+              "No Free Lunch Theorem: there is no single algorithm that is always the most accurate across all problems.",
+              "Effort should focus on obtaining base models that make different kinds of errors, rather than obtaining individually highly accurate base models.",
+              "Base/weak learners only need to be more accurate than random guessing.",
+              "Feature engineering matters a great deal, and iterative experimentation/tuning is essential."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "feature-engineering",
+        "title": "Feature Engineering",
+        "sections": [
+          {
+            "heading": "From Data to Features",
+            "points": [
+              "Raw logs data (e.g., nested JSON/proto with user_info, impression details) does not arrive as ready-made feature vectors.",
+              "Feature engineering is the process of transforming raw data (user_info, ip_address, watch_history, impression fields) into numeric feature vectors usable by ML models.",
+              "Example (YouTube impression): real-valued fields like age can be copied directly into the feature vector, e.g., age_feature = [42.0].",
+              "String/categorical fields (e.g., video_id) are converted using one-hot encoding: a vector of length K (number of unique videos) with a 1 at the position for the observed value and 0s elsewhere."
+            ]
+          },
+          {
+            "heading": "Properties of Good Features",
+            "points": [
+              "Feature values should appear with non-zero value more than just a small handful of times in the dataset (avoid overly rare/sparse features like a unique device_id).",
+              "Feature names should clearly describe the value's meaning and indicate the unit of measurement where appropriate (e.g., price_usd rather than feature_7).",
+              "Features shouldn't take on 'magic' values (e.g., watch_time = -1.0 to mean undefined); instead use an additional boolean feature such as watch_time_is_defined.",
+              "The definition of a feature shouldn't change over time; be wary of depending on other ML systems whose outputs (e.g., inferred_city_cluster_id) might change/drift.",
+              "Feature distributions should not have crazy outliers (e.g., 50 rooms per person); consider capping/clipping to a reasonable max.",
+              "Ideally, transform all features to a similar range, such as (-1, 1) or (0, 5)."
+            ]
+          },
+          {
+            "heading": "Location Example & The Binning Trick",
+            "points": [
+              "Location (e.g., latitude) is known to be an important factor in house prices, but fitting a single linear coefficient to latitude implies a misleading global trend (e.g., 'as you go north, houses get cheaper').",
+              "The Binning Trick: create several Boolean bins from a continuous feature (e.g., LatitudeBin1: 32 < latitude <= 33, LatitudeBin6: 37 < latitude <= 38), each becoming its own new feature.",
+              "Binning allows a linear model to fit a different value/weight for each bin, capturing non-linear/localized effects."
+            ]
+          },
+          {
+            "heading": "Good Habits: Know Your Data",
+            "points": [
+              "Visualize: plot histograms, rank feature values from most to least common.",
+              "Debug: check for duplicate examples, missing values, outliers, and whether data agrees with dashboards; compare training and validation data distributions.",
+              "Monitor: track feature quantiles and the number of examples over time."
+            ]
+          },
+          {
+            "heading": "Feature Crosses",
+            "points": [
+              "Using non-linear features in a linear model: instead of trying to find a complex rule directly, define a new derived feature and use it in the linear model.",
+              "Feature crosses define templates of the form [A x B], and can be extended to more variables, e.g., [A x B x C x D x E].",
+              "When A and B are Boolean features (such as bins), the resulting crosses can be extremely sparse.",
+              "Examples: housing price predictor uses [latitude x num_bedrooms]; search ranking uses [words in query x words in snippet]; Tic-Tac-Toe predictor uses [pos1 x pos2 x ... x pos9].",
+              "Why feature crosses: linear learners scale well to massive data but have limited expressivity without crosses; feature crosses + massive data is an efficient strategy for learning highly complex models (neural nets provide another such strategy)."
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]

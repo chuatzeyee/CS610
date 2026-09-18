@@ -1012,5 +1012,299 @@ export const definitions: readonly Definition[] = [
     "definition": "When regularization is too strong the weights are forced too small, the boundary becomes too 'soft', and even test accuracy suffers.",
     "example": "C = 0.0001 (strongest regularization) has the WORST test accuracy in the sweep, 0.825, versus 0.8875 at C = 1.",
     "source": "Logistic"
+  },
+  {
+    "term": "Decision Tree",
+    "definition": "A decision-support tool that uses a tree-like graph or model of decisions and their possible consequences.",
+    "example": "The 'Should I accept a new job offer?' tree splits on salary ≥ $50k, then commute time, then free coffee, to reach accept/decline leaves.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Decision Tree Learning",
+    "definition": "Uses a decision tree as a predictive model; recursively partitions the input space and defines a local model (one leaf per region) that maps observations (branches) to a target value (leaves).",
+    "example": "ID3 recursively picks the best attribute to split the Play Tennis dataset until each leaf region is a pure combination of Outlook/Humidity/Windy.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Root Node",
+    "definition": "The node at the top of a decision tree representing the entire population or sample before any split.",
+    "example": "In the Play Tennis tree, 'Outlook' is the root node covering all 14 examples.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Decision Node",
+    "definition": "A sub-node that can be split further into additional sub-nodes based on a test of an attribute.",
+    "example": "The 'Humidity' node under Outlook=Sunny is a decision node because it splits into High/Normal branches.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Leaf / Terminal Node",
+    "definition": "A node that does not split further and outputs a class label (or value) for all examples that reach it.",
+    "example": "The 'Yes' node under Outlook=Overcast is a leaf because all 4 examples routed there are positive.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Splitting",
+    "definition": "The process of dividing a node into two or more sub-nodes based on the value of an attribute.",
+    "example": "Splitting the root on Outlook produces three branches: sunny, overcast, rainy.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Branch / Sub-Tree",
+    "definition": "A sub-section of the entire tree, consisting of a node and all of its descendants.",
+    "example": "The Outlook=Sunny sub-tree contains the Humidity split and its two leaf outcomes.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Entropy",
+    "definition": "A measure of the expected uncertainty (impurity) of a random variable: H(X) = -Σ p_i log p_i.",
+    "example": "The Play Tennis target Y=[9+,5-] has entropy H(Y) = 0.940 bits.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Information Gain",
+    "definition": "The expected reduction in entropy of the target variable achieved by partitioning on a given attribute; equals mutual information I(Y;X) = H(Y) - H(Y|X).",
+    "example": "IG(S,Outlook) = 0.940 - 0.694 = 0.247, higher than IG(S,Humidity) = 0.152, so Outlook is chosen first.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Conditional Entropy",
+    "definition": "The remaining uncertainty in Y after X is known: H(Y|X) = Σ p(X=x_i) H(Y|X=x_i).",
+    "example": "H(Y|Humidity) = 7/14·0.985 + 7/14·0.592 = 0.788.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Mutual Information",
+    "definition": "The amount of uncertainty about one variable that is resolved by knowing another: I(X;Y) = H(Y) - H(Y|X) = H(X) - H(X|Y).",
+    "example": "If X completely determines Y, I(X;Y) = H(Y) since H(Y|X) = 0.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "ID3 (Iterative Dichotomiser 3)",
+    "definition": "A greedy, top-down decision tree learning algorithm that at each step picks the attribute with the highest information gain to split on.",
+    "example": "ID3 chooses Outlook over Humidity at the root because IG(Outlook)=0.247 > IG(Humidity)=0.152.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Gini Impurity",
+    "definition": "A measure of node impurity, Gini(S) = 1 - Σ_i (|S_i|/|S|)^2, representing the probability of misclassifying a randomly labeled element drawn from the set's label distribution.",
+    "example": "A node with 5 examples of each of two classes has Gini(S) = 1 - 0.5^2 - 0.5^2 = 0.5.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Gain Ratio",
+    "definition": "Information gain normalized by the split's intrinsic information (SplitInfo), used to penalize attributes with many distinct values: GainRatio(S,A) = InfoGain(S,A) / SplitInfo(S,A).",
+    "example": "A 500-valued 'date' attribute may have high raw information gain but a much lower Gain Ratio once divided by its large SplitInfo.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "SplitInfo",
+    "definition": "The entropy of an attribute's own value distribution, SplitInfo(S,A) = -Σ_i (|S_i|/|S|) log(|S_i|/|S|), used as the denominator in Gain Ratio.",
+    "example": "An attribute that splits data into 14 singleton groups has a very high SplitInfo, shrinking its Gain Ratio.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Variance Reduction",
+    "definition": "A splitting criterion for regression trees (continuous target) that selects the split maximizing the decrease in variance of the target variable within child nodes.",
+    "example": "A regression tree predicting house price picks the split that most reduces price variance between the two resulting groups.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Overfitting (in decision trees)",
+    "definition": "When a tree grows large enough to perfectly fit noise in the training data, causing training accuracy to keep rising while test accuracy degrades.",
+    "example": "Adding one noisy example (sunny, hot, normal, true, no) can force extra splits that hurt generalization.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Reduced-Error Pruning",
+    "definition": "A post-pruning technique: grow a full tree, then greedily remove the split that most improves accuracy on a held-out validation/test set, repeating until further pruning is harmful.",
+    "example": "Starting from about 90 nodes, pruning back toward about 60 nodes raises test accuracy from around 0.80 toward its peak.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Majority Vote (leaf prediction)",
+    "definition": "The rule used at an impure leaf node: predict the class that occurs most frequently among the training examples that reached that leaf.",
+    "example": "A leaf with {Y|Outlook=rainy}=[3+,2-] predicts 'yes' by majority vote.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Non-Linear Decision Boundary",
+    "definition": "Because a decision tree partitions the input space with axis-aligned splits arranged hierarchically, it can separate classes that are not linearly separable by a single hyperplane.",
+    "example": "A dataset where positive and negative points are not linearly separable can still be perfectly separated by a tree with a few axis-aligned splits.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Hyperparameter",
+    "definition": "A parameter that is not learned through the typical ML training process (e.g., regularization weight, tree depth), whose value must be chosen/searched before or outside of training.",
+    "example": "Choosing max_depth and min_samples_split for a decision tree, or the regularization strength for logistic regression.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Grid Search",
+    "definition": "A hyperparameter tuning method that exhaustively evaluates every combination of hyperparameter values on a specified grid using cross-validation, then returns the best-scoring combination.",
+    "example": "GridSearchCV over criterion in {gini, entropy}, splitter in {best, random}, and max_depth in {2,3,4,5} for a DecisionTreeClassifier.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Random Search",
+    "definition": "A hyperparameter tuning method that evaluates only a random sample of points on the hyperparameter grid rather than the entire grid, making it cheaper than grid search while still likely to find near-optimal regions.",
+    "example": "Sampling 60 random hyperparameter combinations instead of exhaustively trying every combination in a large grid.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Bayesian Optimization",
+    "definition": "A hyperparameter search method that builds a surrogate probability model of the objective function, finds hyperparameters that perform best on the surrogate, evaluates them on the true objective, and updates the surrogate iteratively.",
+    "example": "Using a Gaussian Process surrogate to decide the next set of hyperparameters to try for tuning a neural network's learning rate and batch size.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Data Leakage (in tuning)",
+    "definition": "The problem of 'fitting' the model architecture to the test data by using the test set to evaluate hyperparameter choices, which invalidates the test set as an unbiased performance estimate.",
+    "example": "Repeatedly checking test accuracy while adjusting max_depth, then reporting that same test accuracy as the final generalization estimate.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Cross-Validation",
+    "definition": "A resampling procedure that evaluates ML models on a limited data sample by splitting the data into k folds, training on k-1 folds and testing on the remaining fold k times, then averaging the scores.",
+    "example": "10-fold cross-validation: train on 9 folds and test on the 10th, repeated 10 times, then average the 10 accuracy scores.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "StratifiedKFold",
+    "definition": "A cross-validation splitting strategy that maintains the class ratio in each fold, preventing folds with skewed class distributions or sequential runs of the same class.",
+    "example": "In a dataset with 90% negative and 10% positive labels, StratifiedKFold ensures each of the k folds also has roughly 90%/10% split.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Ensemble Learning",
+    "definition": "Combining multiple classifiers ('experts') into one model that is hopefully more accurate than any individual classifier, typically by training several models and combining their predictions.",
+    "example": "Training multiple decision trees on different data subsets and combining their votes into a Random Forest prediction.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Hard Voting",
+    "definition": "An ensemble combination rule where each classifier casts a vote for a class label and the majority label wins.",
+    "example": "Three classifiers predict classes A, A, B; hard voting selects A.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Soft Voting",
+    "definition": "An ensemble combination rule where classifiers output class probabilities, which are averaged (optionally weighted) across classifiers before choosing the class with the highest average probability.",
+    "example": "Classifier 1 gives P(A)=0.6; classifier 2 gives P(A)=0.3; soft voting averages to 0.45 and combines with other classes' probabilities to pick a final label.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Bias (statistical)",
+    "definition": "The difference between the average prediction of a model (averaged over different training sets) and the true value being predicted: Bias(h(x)) = E[h(x)] - f(x).",
+    "example": "A linear model fit to a truly quadratic relationship will systematically under- or over-predict in certain regions — that systematic error is bias.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Variance (statistical)",
+    "definition": "The variability of a model's prediction for a given data point across different training sets: Var(h(x)) = E[h(x)^2] - (E[h(x)])^2.",
+    "example": "A deep, unpruned decision tree trained on different bootstrap samples of the same data can produce very different predictions for the same test point — that's high variance.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Bootstrap Sampling",
+    "definition": "Given a dataset D with m examples, creating a new sample Dj of size m by drawing examples uniformly at random with replacement from D.",
+    "example": "From a 10-row dataset, drawing 10 rows with replacement so that some original rows appear multiple times and others (about 37%) are left out.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Bagging (Bootstrap Aggregating)",
+    "definition": "An ensemble method that creates k bootstrap samples from the training data, trains a base classifier on each sample, and combines their predictions by equal-weight majority vote.",
+    "example": "sklearn's BaggingClassifier wraps a DecisionTreeClassifier, training many trees on bootstrap samples and voting on the final label.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Out-of-Bag (OOB) Score",
+    "definition": "An internal validation estimate for bagging-style ensembles, computed by evaluating each training example only on the base models whose bootstrap sample did not include that example.",
+    "example": "Setting oob_score=True in BaggingClassifier or RandomForestClassifier lets you estimate generalization performance without a separate holdout set.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Random Forest",
+    "definition": "An ensemble of decision trees where each tree is trained on a bootstrap sample of the data and, at each split, considers only a random subset of features, decorrelating the trees beyond what plain bagging achieves.",
+    "example": "RandomForestClassifier(n_estimators=10, max_features=1) trains 10 trees, each split considering only 1 random feature at a time.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "AdaBoost (Adaptive Boosting)",
+    "definition": "A boosting algorithm that iteratively trains weak classifiers, computing a weighted error rate each round, assigning each classifier a voting weight alpha_t = (1/2)ln((1-err_t)/err_t), and reweighting instances so misclassified ones get more weight in the next round.",
+    "example": "If a weak classifier's weighted error rate is 1/3, its alpha_t = (1/2)ln(2) ≈ 0.347, and misclassified instances have their sampling weight increased for the next round.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "SAMME vs SAMME.R",
+    "definition": "Two scikit-learn implementations of multi-class AdaBoost: SAMME adapts based on errors in predicted class labels, while SAMME.R (Real) adapts based on predicted class probabilities and typically converges with fewer iterations.",
+    "example": "Using AdaBoostClassifier(algorithm='SAMME.R') leverages probability estimates from each weak learner instead of hard label predictions.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Gradient Boosting",
+    "definition": "An ensemble method (typically using decision tree regressors) that builds an additive model stage-by-stage, where each new tree h(x) = F_{m+1}(x) - F_m(x) is fit to the residual y - F_m(x) of the current ensemble.",
+    "example": "After stage m predicts F_m(x), the next tree is trained to predict the leftover residual error y - F_m(x), and its output is added to improve the overall prediction.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Stacking",
+    "definition": "An ensemble technique that combines predictions from multiple heterogeneous base models using a learned meta-model, typically via out-of-fold (k-fold) predictions used as new training features for the meta-model.",
+    "example": "Train a logistic regression, random forest, and SVM as base models on k-1 folds each, collect their out-of-fold predictions as new features, then train a meta-model on those features.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Blending",
+    "definition": "A simplified alternative to stacking that uses a single holdout validation split (instead of k-fold cross-validation) to generate meta-features for training a level-2 model.",
+    "example": "Split training data into train/validation; fit base models on train, predict on validation and test; use validation predictions as features to train a meta-model that predicts on the test meta-features.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "No Free Lunch Theorem",
+    "definition": "The principle that no single machine learning algorithm is universally the most accurate across all possible problems; effort should instead go into obtaining base models that make diverse kinds of errors.",
+    "example": "A random forest might outperform gradient boosting on one dataset but underperform it on another; no algorithm dominates in all cases.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Feature Engineering",
+    "definition": "The process of transforming raw logged data (e.g., nested JSON/proto records) into numeric feature vectors suitable for input to a machine learning model.",
+    "example": "Converting a raw impression log containing age, ip_address, and video_id into a numeric vector combining a real-valued age feature and a one-hot encoded video_id feature.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "The Binning Trick",
+    "definition": "A feature engineering technique that converts a continuous feature into several Boolean 'bin' features (each representing a value range), letting a linear model learn a different weight per bin.",
+    "example": "Converting latitude into bins like LatitudeBin1 (32 < latitude <= 33) through LatitudeBin6 (37 < latitude <= 38) so the model can capture non-linear regional price effects.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "Feature Cross",
+    "definition": "A synthetic feature formed by combining (multiplying/conjoining) two or more existing features, e.g., [A x B], used to give linear models more expressive power to capture non-linear interactions.",
+    "example": "[latitude x num_bedrooms] for housing price prediction, or [pos1 x pos2 x ... x pos9] for a Tic-Tac-Toe board predictor.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "CART (Classification and Regression Trees)",
+    "definition": "The greedy, binary-split tree-growing algorithm used by scikit-learn's DecisionTreeClassifier/DecisionTreeRegressor. At each node it picks the (feature, threshold) pair that most reduces impurity (Gini by default for classification, MSE for regression), recursing until a stopping condition (e.g. max_depth, min_samples_leaf) is met.",
+    "example": "DecisionTreeClassifier(max_depth=3, random_state=2022).fit(X, y) on the Iris petal length/width features finds its first split at petal length = 2.45cm.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "min_samples_leaf",
+    "definition": "A regularization hyperparameter that sets the minimum number of training samples a leaf node must contain; increasing it forces coarser, less overfit trees.",
+    "example": "DecisionTreeClassifier(min_samples_leaf=4) on the noisy make_moons dataset produces a visibly smoother decision boundary than the unrestricted tree.",
+    "source": "DecisionTree"
+  },
+  {
+    "term": "Bagging vs Boosting",
+    "definition": "Bagging trains estimators independently in parallel on random resamples to reduce variance (all votes weighted equally); boosting trains estimators sequentially, each correcting the previous ensemble's errors, primarily to reduce bias.",
+    "example": "BaggingClassifier/RandomForestClassifier average independent trees, whereas AdaBoostClassifier/GradientBoostingClassifier chain trees where each depends on the residual/weights left by the last.",
+    "source": "Ensemble"
+  },
+  {
+    "term": "One-hot Encoding (feature)",
+    "definition": "A technique for representing categorical/string features as a sparse binary vector with a single 1 at the index corresponding to the observed category and 0s elsewhere.",
+    "example": "impression_video_id_feature = [0, ..., 0, 1, 0, ..., 0] where the 1 marks the position of video 'xyz789' among K unique videos.",
+    "source": "Ensemble"
   }
 ]
