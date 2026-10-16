@@ -394,4 +394,162 @@ export const ensembleLab: Lab = {
   ]
 }
 
-export const labs: readonly Lab[] = [nbLab, regressionLab, logisticLab, dtLab, ensembleLab]
+export const w6CnnMnistLab: Lab = {
+  "id": "w6-cnn-mnist",
+  "week": "W6",
+  "title": "CS610 Week 6 Lab: From Softmax to CNNs on MNIST (Keras, five architectures)",
+  "overview": "This lab (06_cnn.ipynb) trains five Keras models on MNIST handwritten digits (60,000 training / 10,000 test images, 28 x 28 grayscale) under an identical recipe (SGD, categorical cross-entropy, batch size 100, 10 epochs) so that only the architecture changes. It moves from a softmax-only linear classifier (7,850 parameters, 0.9024 test accuracy), through one- and two-hidden-layer MLPs of 512 ReLU units with dropout (0.9318 and 0.9473), to two CNNs: (conv 5x5 + maxpool) x 2 with 184,586 parameters, the best at 0.9787, and conv 3x3 x 2 + one maxpool with 1,199,882 parameters at 0.9722. Every layer's parameter count and output shape is derived below and checked against model.summary(), showing why weight sharing and pooling beat simply adding parameters.",
+  "steps": [
+    {
+      "title": "Set up: imports, hyperparameters and a first look at MNIST",
+      "explanation": "The lab uses Keras' Sequential API with the layer types needed for every model in the notebook: Dense, Conv2D, MaxPooling2D, Dropout and Flatten. Three hyperparameters are fixed once and reused by all five models so the comparison is fair: batch_size = 100, num_classes = 10 and epochs = 10. mnist.load_data() returns the standard split of 60,000 training and 10,000 test images of handwritten digits (28 x 28 grayscale). The first 16 training images are shown in a 4 x 4 grid as a sanity check of what the models will see.",
+      "code": "batch_size = 100\nnum_classes = 10\nepochs = 10\n\n(x_train, y_train), (x_test, y_test) = mnist.load_data()\n\nplt.figure(figsize = (18, 18))\nfor i in range(16):\n    plt.subplot(4, 4, i + 1)\n    plt.imshow(x_train[i], cmap=plt.get_cmap('gray'))"
+    },
+    {
+      "title": "Preprocess: flatten to 784, scale to [0, 1], one-hot the labels",
+      "explanation": "The first three models are fully connected, so each 28 x 28 image is reshaped into a flat vector of 28 x 28 = 784 pixel values (shapes become (60000, 784) and (10000, 784)). Pixels are cast to float32 and divided by 255 so inputs lie in [0, 1], which keeps the initial activations and gradients in a sensible range for SGD. Labels are converted with to_categorical into 10-dimensional one-hot vectors because the loss used later is categorical_crossentropy, which compares a one-hot target with a 10-way softmax output. The cell prints '60000 train samples' and '10000 test samples'.",
+      "code": "x_train = x_train.reshape(60000, 784)\nx_test = x_test.reshape(10000, 784)\nx_train = x_train.astype('float32')\nx_test = x_test.astype('float32')\nx_train /= 255\nx_test /= 255\n\ny_train = keras.utils.to_categorical(y_train, num_classes)\ny_test = keras.utils.to_categorical(y_test, num_classes)"
+    },
+    {
+      "title": "Model 1: a softmax layer straight on the 784 pixels (7,850 parameters)",
+      "explanation": "The baseline is the simplest possible classifier: one Dense layer of 10 softmax units on the raw pixels, which is multinomial logistic regression. Its parameter count is 784 inputs x 10 units + 10 biases = 7,850, exactly matching model.summary() (output shape (None, 10), Total params: 7,850). Every pixel connects directly to every class score, so the model can only learn one linear template per digit; it has no hidden features and no notion of spatial neighbourhood.",
+      "code": "model_1 = Sequential()\nmodel_1.add(Dense(10, activation='softmax', input_shape=(784,)))\nmodel_1.summary()\n# dense (Dense)  (None, 10)  7850   ->  Total params: 7,850"
+    },
+    {
+      "title": "Train and evaluate Model 1: test accuracy 0.9024",
+      "explanation": "All five models are compiled identically: categorical_crossentropy loss, plain SGD optimizer (default settings) and accuracy as the metric, then fit for 10 epochs with batch_size 100, i.e. 60,000 / 100 = 600 gradient steps per epoch (the '600/600' in the log). Note that validation_data=(x_test, y_test), so the 'val_accuracy' printed each epoch is really test accuracy. Model 1 climbs from val_accuracy 0.8453 after epoch 1 to 0.9024 after epoch 10; model.evaluate reports Test loss 0.3614 and Test accuracy 0.9024. Roughly 90% is what a purely linear model on pixels can reach here.",
+      "code": "model_1.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.SGD(), metrics=['accuracy'])\nrun = model_1.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))\nscore = model_1.evaluate(x_test, y_test, verbose=0)\n# Test loss: 0.36144229769706726\n# Test accuracy: 0.902400016784668"
+    },
+    {
+      "title": "Model 2: one hidden layer of 512 ReLU units with Dropout(0.2)",
+      "explanation": "Adding a hidden layer lets the network learn non-linear features before classifying. Parameter counts: Dense(512) on 784 inputs = 784 x 512 + 512 = 401,920; Dropout has 0 parameters (it only randomly zeroes 20% of activations during training to reduce overfitting); the output Dense(10) on 512 inputs = 512 x 10 + 10 = 5,130. Total 401,920 + 5,130 = 407,050, matching the summary. Almost all (about 98.7%) of the weights sit in the first layer because every one of the 784 pixels connects to every hidden unit. Trained with the same recipe, test accuracy rises to 0.9318 (test loss 0.2406).",
+      "code": "model_2 = Sequential()\nmodel_2.add(Dense(512, activation='relu', input_shape=(784,)))\nmodel_2.add(Dropout(0.2))\nmodel_2.add(Dense(10, activation='softmax'))\n# dense_1 401920 | dropout 0 | dense_2 5130  ->  Total params: 407,050\n# Test accuracy: 0.9318000078201294"
+    },
+    {
+      "title": "Model 3: two hidden layers of 512 (669,706 parameters)",
+      "explanation": "A second 512-unit hidden layer (again followed by Dropout(0.2)) is inserted to test whether depth helps a fully connected network. The new layer has 512 x 512 + 512 = 262,656 parameters, so the total is 401,920 + 262,656 + 5,130 = 669,706, matching the summary. Test accuracy improves again to 0.9473 (test loss 0.1834), but each epoch is slower (about 4 to 7 s versus 2 s for Model 2). The network still treats the image as an unordered list of 784 numbers, so it must learn the same stroke pattern separately at every location.",
+      "code": "model_3 = Sequential()\nmodel_3.add(Dense(512, activation='relu', input_shape=(784,)))\nmodel_3.add(Dropout(0.2))\nmodel_3.add(Dense(512, activation='relu'))\nmodel_3.add(Dropout(0.2))\nmodel_3.add(Dense(10, activation='softmax'))\n# 401920 + 262656 + 5130 = 669,706\n# Test accuracy: 0.9473000168800354"
+    },
+    {
+      "title": "Reshape back to 28 x 28 x 1 images for the CNNs",
+      "explanation": "Convolutional layers need the spatial layout that the Dense models threw away. The flat 784-vectors are reshaped to (samples, 28, 28, 1): height 28, width 28 and a single channel because MNIST is grayscale (channels-last format, as Keras expects by default). The already-scaled [0, 1] values and one-hot labels are reused unchanged, so any accuracy difference below comes from the architecture alone.",
+      "code": "img_rows, img_cols = 28, 28\nx_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)\nx_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)"
+    },
+    {
+      "title": "Model 4 architecture: (Conv 5x5 + MaxPool 2x2) x 2, then Dense(128)",
+      "explanation": "Model 4 stacks two convolution and max-pooling blocks. With no padding ('valid') and stride 1, a k x k convolution shrinks each side by k - 1, and a 2 x 2 max-pool halves it. Shapes: 28 x 28 x 1, then Conv2D(32, 5x5) gives 24 x 24 x 32 (28 - 5 + 1 = 24), then MaxPooling gives 12 x 12 x 32, then Conv2D(64, 5x5) gives 8 x 8 x 64 (12 - 5 + 1 = 8), then MaxPooling gives 4 x 4 x 64, then Flatten gives 4 x 4 x 64 = 1,024, then Dense(128), then Dense(10). Dropout(0.2) follows each pooling layer and the 128-unit layer. All these shapes match the summary.",
+      "code": "model_4 = Sequential()\nmodel_4.add(Conv2D(32, kernel_size=(5, 5), activation='relu', input_shape=(img_rows, img_cols, 1)))\nmodel_4.add(MaxPooling2D(pool_size=(2, 2)))\nmodel_4.add(Dropout(0.2))\nmodel_4.add(Conv2D(64, kernel_size=(5, 5), activation='relu'))\nmodel_4.add(MaxPooling2D(pool_size=(2, 2)))\nmodel_4.add(Dropout(0.2))\nmodel_4.add(Flatten())\nmodel_4.add(Dense(128, activation='relu'))\nmodel_4.add(Dropout(0.2))\nmodel_4.add(Dense(10, activation='softmax'))"
+    },
+    {
+      "title": "Model 4 parameters (184,586) and the best test accuracy, 0.9787",
+      "explanation": "A Conv2D layer has (k x k x C_in) weights per filter plus one bias per filter, independent of image size, because each filter's weights are shared across all positions. Conv1: 5 x 5 x 1 x 32 + 32 = 832. Conv2: 5 x 5 x 32 x 64 + 64 = 51,264. Dense(128) on the 1,024 flattened values: 1,024 x 128 + 128 = 131,200. Output: 128 x 10 + 10 = 1,290. MaxPooling, Dropout and Flatten have 0. Total 832 + 51,264 + 131,200 + 1,290 = 184,586, matching the summary. That is fewer than half the weights of Model 2 (407,050), yet Model 4 reaches Test accuracy 0.9787 (test loss 0.0665), the best in the notebook. Weight sharing and pooling build in the assumption that a stroke means the same thing wherever it appears. The cost is compute: about 25 to 32 s per epoch versus 1 to 2 s for the Dense models.",
+      "code": "model_4.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.SGD(), metrics=['accuracy'])\nrun = model_4.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))\n# conv2d 832 | conv2d_1 51264 | dense_6 131200 | dense_7 1290 -> Total params: 184,586\n# Test loss: 0.06647618114948273\n# Test accuracy: 0.9786999821662903"
+    },
+    {
+      "title": "Model 5 architecture: two 3x3 convs back to back, then one MaxPool",
+      "explanation": "Model 5 changes the layout: two Conv2D layers with smaller 3 x 3 kernels come first, and only one 2 x 2 max-pool follows. Shapes: 28 x 28 x 1, then Conv2D(32, 3x3) gives 26 x 26 x 32, then Conv2D(64, 3x3) gives 24 x 24 x 64, then MaxPooling gives 12 x 12 x 64, then Dropout(0.2), then Flatten gives 12 x 12 x 64 = 9,216, then Dense(128), then Dropout(0.2), then Dense(num_classes = 10). Because there is only one pooling step, the feature map entering the dense layer is 9 times larger than in Model 4 (9,216 vs 1,024 values).",
+      "code": "model_5 = Sequential()\nmodel_5.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(img_rows, img_cols, 1)))\nmodel_5.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))\nmodel_5.add(MaxPooling2D(pool_size=(2, 2)))\nmodel_5.add(Dropout(0.2))\nmodel_5.add(Flatten())\nmodel_5.add(Dense(128, activation='relu'))\nmodel_5.add(Dropout(0.2))\nmodel_5.add(Dense(num_classes, activation='softmax'))"
+    },
+    {
+      "title": "Model 5 parameters (1,199,882) and test accuracy 0.9722",
+      "explanation": "Conv1: 3 x 3 x 1 x 32 + 32 = 320. Conv2: 3 x 3 x 32 x 64 + 64 = 18,496. Dense(128) on 9,216 inputs: 9,216 x 128 + 128 = 1,179,776. Output: 128 x 10 + 10 = 1,290. Total 320 + 18,496 + 1,179,776 + 1,290 = 1,199,882, matching the summary. The convolutions themselves are cheap (18,816 parameters together); about 98.3% of the model lives in the single dense layer, purely because the feature map was pooled only once. Despite having about 6.5 times as many parameters as Model 4, Model 5 scores slightly lower: Test accuracy 0.9722 (test loss 0.0883) versus 0.9787, and it is slower (about 39 to 45 s per epoch). More parameters did not buy more accuracy; downsampling before the dense layer mattered more.",
+      "code": "model_5.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.SGD(), metrics=['accuracy'])\nrun = model_5.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))\n# conv2d_2 320 | conv2d_3 18496 | dense_8 1179776 | dense_9 1290 -> Total params: 1,199,882\n# Test loss: 0.08834558725357056\n# Test accuracy: 0.9721999764442444"
+    },
+    {
+      "title": "Compare all five models side by side",
+      "explanation": "Test accuracy / total parameters after 10 epochs of SGD: Model 1 (softmax only) 0.9024 / 7,850; Model 2 (1 x 512) 0.9318 / 407,050; Model 3 (2 x 512) 0.9473 / 669,706; Model 4 ((conv 5x5 + pool) x 2) 0.9787 / 184,586; Model 5 (conv 3x3 x 2 + pool) 0.9722 / 1,199,882. Going from the linear model to the best CNN cuts the error rate from about 9.8% to about 2.1%. Also notice that in the training logs the epoch 'accuracy' is often below 'val_accuracy' (e.g. Model 4 epoch 10: 0.9613 vs 0.9787): the training figure is averaged over the epoch while the weights are still improving and is measured with dropout switched on, whereas validation uses the full network at the end of the epoch.",
+      "code": "# model    test_acc  total_params\n# model_1  0.9024    7,850\n# model_2  0.9318    407,050\n# model_3  0.9473    669,706\n# model_4  0.9787    184,586\n# model_5  0.9722    1,199,882"
+    }
+  ],
+  "takeaways": [
+    "Dense parameters = inputs x units + units (bias); Conv2D parameters = k x k x C_in x filters + filters. Pooling, Dropout and Flatten have 0 parameters.",
+    "Verified totals: Model 1 = 7,850; Model 2 = 407,050; Model 3 = 669,706; Model 4 = 184,586; Model 5 = 1,199,882.",
+    "Valid (no padding) convolution with stride 1 gives output side n - k + 1 (28 to 24 for 5x5, 28 to 26 for 3x3); 2x2 max-pooling halves each side (24 to 12, 8 to 4).",
+    "Best test accuracy: Model 4, (conv 5x5 + maxpool) x 2, at 0.9787 with only 184,586 parameters. The MLPs top out at 0.9473 (Model 3) and the softmax-only baseline at 0.9024.",
+    "Parameter count is not accuracy: Model 5 has about 6.5 times the parameters of Model 4 (98.3% of them in one Dense layer fed by a 9,216-value flatten) yet scores lower, 0.9722.",
+    "Convolutional weights are shared across positions, so their count does not depend on image size; the expensive part of a CNN is usually the first Dense layer after Flatten, which is controlled by how much pooling happens first.",
+    "Data must be shaped for the model: (N, 784) flat vectors for Dense models, (N, 28, 28, 1) images for Conv2D. Pixels are scaled by 1/255 and labels one-hot encoded for categorical_crossentropy.",
+    "The notebook passes the test set as validation_data, so the per-epoch val_accuracy is test accuracy; it is used here only for monitoring, not for model selection."
+  ]
+}
+
+export const w6ImageFiltersLab: Lab = {
+  "id": "w6-image-filters",
+  "week": "W6",
+  "title": "CS610 Week 6 Lab: Hand-Coded Image Filters and a Convolution Filter Bank in NumPy",
+  "overview": "This lab (06_filter.ipynb) opens up the convolution operation using only NumPy on a 512 x 768 RGB photo of macaws at Jurong Bird Park. It first shows that an image is a (height, width, 3) array of red, green and blue channels, then applies five hand-crafted kernels (10 x 10 blur, 20 x 20 diagonal motion blur, 3 x 3 edge detection, sharpen and emboss) with an explicit sliding-window loop, no padding and clipping to [0, 1]. Finally it stacks four 5 x 5 filters into a 5 x 5 x 4 bank and applies them all at once with np.tensordot, producing a 508 x 764 x 12 output that is displayed as four RGB feature maps, a hands-on preview of what a convolutional layer computes.",
+  "steps": [
+    {
+      "title": "Load the macaw photo as a NumPy array",
+      "explanation": "The second notebook shows what a convolution filter actually does, using plain NumPy instead of Keras so every multiply-and-add is visible. matplotlib.image.imread loads the photo of macaws at Singapore's Jurong Bird Park into an array img_orig, and plt.imshow displays it. A colour image is just a 3-D array of numbers, which is exactly the input format a CNN layer consumes.",
+      "code": "import numpy as np\nimport matplotlib.pyplot as plt\nimport matplotlib.image as mpimg\n\nimg_orig = mpimg.imread('dataset/Macaws_at_Singapore_Jurong_Bird_Park_768x512.png')\nplt.imshow(img_orig)"
+    },
+    {
+      "title": "An image is three stacked channels: shape (512, 768, 3)",
+      "explanation": "As the notebook's markdown explains, each image has 3 layers: values for red, green and blue, so each pixel is described by 3 numbers at the same position. An empty array with the same height and width and 3 channels is created, and its shape prints as (512, 768, 3): 512 rows (height), 768 columns (width), 3 channels. This (height, width, channels) layout is the same channels-last layout used for the 28 x 28 x 1 MNIST tensors in the CNN lab.",
+      "code": "img_filtered = np.zeros((img_orig.shape[0], img_orig.shape[1], 3))\nimg_filtered.shape\n# (512, 768, 3)"
+    },
+    {
+      "title": "Isolate the red channel",
+      "explanation": "Only channel 0 (red) is copied from the original into the all-zero array, leaving green and blue at 0. The displayed result is the picture rendered purely in shades of red: bright where the original had a strong red component (such as the red macaw feathers) and dark elsewhere. This shows that each channel is a separate 2-D grid of intensities, which is why the filters below are applied channel by channel.",
+      "code": "img_filtered[:,:,0] = img_orig[:,:,0]\nplt.imshow(img_filtered)"
+    },
+    {
+      "title": "Define five hand-crafted kernels",
+      "explanation": "Five 2-D kernels are defined. blur: a 10 x 10 matrix of 1/100, so each output is the mean of a 10 x 10 neighbourhood. motion: np.identity(20) / 20, which averages 20 pixels along the main diagonal and smears the image in one diagonal direction like camera shake. edge_detection: [[0,-1,0],[-1,4,-1],[0,-1,0]], centre minus its four neighbours. sharpen: the same but with 5 in the centre. emboss: [[-1,-1,0],[-1,0,1],[0,1,1]], negative on the top-left and positive on the bottom-right. These are the kind of patterns a CNN learns automatically in its first layer; here they are written by hand.",
+      "code": "blur_filter = np.ones((10, 10)) / 100\nmotion_filter = np.identity(20) / 20\nedge_detection_filter = np.array([[0, -1, 0], [-1, 4, -1], [0, -1, 0]])\nsharpen_filter = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])\nemboss_filter = np.array([[-1, -1,  0], [-1,  0,  1], [0,  1,  1]])"
+    },
+    {
+      "title": "Copy each 2-D kernel into all 3 channels",
+      "explanation": "For each kernel a (size, size, 3) array is built by copying the same 2-D kernel into each of the 3 colour channels. This lets one element-wise multiplication with a (size, size, 3) image patch apply the identical filter to red, green and blue at the same time, so the output keeps its colour.",
+      "code": "for i in range(len(all_filter)):\n    filter_size = all_filter[i].shape[0]\n    filter = np.empty((filter_size, filter_size, 3))\n    for j in range(3):\n        filter[:,:,j] = all_filter[i]"
+    },
+    {
+      "title": "Slide the window: a hand-written valid convolution",
+      "explanation": "Two nested loops move the kernel over every position where it fits entirely inside the image (no padding, stride 1). At each (j, k) the patch img_orig[j:j+f, k:k+f, :] is multiplied element-wise by the kernel and summed over axes (0, 1), the two spatial axes, giving one value per channel. Because the window must fit, the output is (512 - f + 1) x (768 - f + 1): 503 x 759 for the 10 x 10 blur, 493 x 749 for the 20 x 20 motion filter, and 510 x 766 for the 3 x 3 kernels. This is the same n - k + 1 shrinkage seen in the Keras summaries (28 to 24 for a 5 x 5 Conv2D).",
+      "code": "img_filtered = np.empty((img_orig.shape[0] - filter_size + 1, img_orig.shape[1] - filter_size + 1, 3))\nfor j in range(0, img_orig.shape[0] - filter_size + 1):\n    for k in range(0, img_orig.shape[1] -filter_size + 1):\n        img_filtered[j, k, :] = np.minimum(np.maximum(\n            np.sum(img_orig[j:j+filter_size, k:k+filter_size, :] * filter,\n                   axis=(0,1)), 0.0), 1.0)"
+    },
+    {
+      "title": "Clip results to [0, 1] before display",
+      "explanation": "The weighted sums can fall outside the valid pixel range: the edge, sharpen and emboss kernels contain negative weights, and sharpen can push bright pixels above 1. np.maximum(..., 0.0) followed by np.minimum(..., 1.0) clips every value into [0, 1], the float range imshow expects. The clipping plays a role similar to an activation function: for example, with edge detection all negative responses become 0 (black).",
+      "code": "np.minimum(np.maximum(np.sum(patch * filter, axis=(0,1)), 0.0), 1.0)"
+    },
+    {
+      "title": "Reading the five outputs: smoothing vs differencing kernels",
+      "explanation": "The weights of blur, motion and sharpen each sum to 1, so in a flat region of constant colour the output equals the input and overall brightness is preserved; blur and motion average neighbours (all-positive weights), softening detail or streaking it diagonally. Edge detection and emboss weights sum to 0, so any flat region maps to 0 (black) and only places where intensity changes respond: edge detection highlights outlines such as the feathers' borders, and emboss responds to intensity changes along the top-left to bottom-right diagonal, giving a relief-like look. Sharpen = original + edge response (centre 5 = 1 + 4), so it adds the edges back onto the image and makes it crisper.",
+      "code": "filter_name = ['blur', 'motion', 'edge_detection', 'sharpen', 'emboss']\n# sums of weights: blur 1, motion 1, edge_detection 0, sharpen 1, emboss 0"
+    },
+    {
+      "title": "Build a 5 x 5 x 4 filter bank",
+      "explanation": "Next, four filters are stacked into one tensor conv of shape (5, 5, 4), like the kernel of a convolutional layer with 4 filters. Slice 0 is a 5 x 5 blur (all 1/25). Slices 1 and 2 are the 3 x 3 edge-detection and sharpen kernels padded with a border of zeros to 5 x 5, so all filters share one size. Slice 3 is a larger 5 x 5 emboss kernel (-1 above the anti-diagonal, 0 on it, +1 below; its weights also sum to 0).",
+      "code": "filter_width = 5\nconv = np.zeros((filter_width, filter_width, 4))\nconv[:, :, 0] = np.ones((5, 5)) / 25 # blur_filter\nconv[:, :, 1] = np.array([[0, 0, 0, 0, 0], [0, 0, -1, 0, 0], [0, -1, 4, -1, 0], [0, 0, -1, 0, 0], [0, 0, 0, 0, 0]]) # edge_detection_filter\nconv[:, :, 2] = np.array([[0, 0, 0, 0, 0], [0, 0, -1, 0, 0], [0, -1, 5, -1, 0], [0, 0, -1, 0, 0], [0, 0, 0, 0, 0]]) # sharpen_filter\nconv[:, :, 3] = np.array([[-1, -1, -1, -1, 0], [-1, -1, -1, 0, 1], [-1, -1, 0, 1, 1], [-1, 0, 1, 1, 1], [0, 1, 1, 1, 1]]) # emboss_filter"
+    },
+    {
+      "title": "Apply all four filters at once with np.tensordot",
+      "explanation": "At each position the 5 x 5 x 3 image patch is contracted with the 5 x 5 x 4 bank using np.tensordot(..., axes=[(0,1), (0,1)]): multiply and sum over the two spatial axes of both tensors. What remains are the patch's channel axis (3) and the bank's filter axis (4), so each position yields 3 x 4 = 12 numbers, one per (colour channel, filter) pair. The output array is (512 - 5 + 1) x (768 - 5 + 1) x 12 = 508 x 764 x 12. One tensor operation replaces four separate filtering loops, which is how a convolutional layer evaluates all of its filters in parallel.",
+      "code": "img_filtered = np.empty((img_orig.shape[0] - filter_width + 1, img_orig.shape[1] - filter_width + 1, 12))\nfor i in range(0, img_orig.shape[0] - filter_width + 1):\n    for j in range(0, img_orig.shape[1] -filter_width + 1):\n        img_filtered[i, j, :] = np.minimum(np.maximum(\n            np.tensordot(img_orig[i:i+filter_width, j:j+filter_width, :], conv, axes=[(0,1), (0,1)]).flatten('F'),\n            0.0), 1.0)"
+    },
+    {
+      "title": "Why flatten('F'), and how the 12 channels are laid out",
+      "explanation": "The notebook's markdown calls the tensordot result a 4 x 3 matrix, but NumPy places the remaining axes of the first argument first, so the result is actually 3 x 4 (rows = R, G, B; columns = the 4 filters), which is confirmed by running it. flatten('F') reads column by column, so the 12-vector is [filter 0: R, G, B, filter 1: R, G, B, filter 2: R, G, B, filter 3: R, G, B]. That ordering is what makes the display step work: img_filtered[:, :, 3*i:3*i+3] picks out a 3-channel RGB image for filter i.",
+      "code": "# tensordot(5x5x3 patch, 5x5x4 conv, axes=[(0,1),(0,1)]).shape -> (3, 4)\n# .flatten('F') -> [f0_R, f0_G, f0_B, f1_R, f1_G, f1_B, f2_R, ..., f3_B]  (12 values)"
+    },
+    {
+      "title": "Display the four filtered images in a 2 x 2 grid",
+      "explanation": "Each consecutive group of 3 output channels is shown as one RGB image in a 2 x 2 subplot grid: blur (top-left), edge detection (top-right), sharpen (bottom-left) and 5 x 5 emboss (bottom-right). This is effectively a picture of the 4 feature maps a 4-filter convolutional layer would produce. One difference from a Keras Conv2D: here each filter is applied to each colour channel separately (giving 4 x 3 = 12 maps), whereas Conv2D kernels span all input channels and sum over them, giving one map per filter. That is why Conv2D's parameter count includes C_in (e.g. 5 x 5 x 1 x 32 + 32 = 832 in the CNN lab).",
+      "code": "plt.figure(figsize=(18, 12))\nfor i in range(4):\n    plt.subplot(2, 2, i+1)\n    plt.imshow(img_filtered[:, :, 3*i:3*i+3])\nplt.show()"
+    }
+  ],
+  "takeaways": [
+    "A colour image is a (height, width, 3) array; the macaw photo is (512, 768, 3), and each channel is its own 2-D intensity grid.",
+    "Convolution here = slide a k x k window, multiply element-wise with the kernel, sum over the spatial axes. With no padding and stride 1 the output side is n - k + 1 (e.g. 512 x 768 with a 10 x 10 blur gives 503 x 759).",
+    "Kernels whose weights sum to 1 (blur, motion, sharpen) keep flat regions unchanged; kernels whose weights sum to 0 (edge detection, emboss) send flat regions to 0 and respond only to changes in intensity.",
+    "Sharpen = identity + edge detection: centre 5 = 1 + 4 with the same -1 neighbours.",
+    "Outputs are clipped to [0, 1] with np.maximum / np.minimum because negative or above-1 responses are not displayable; for edge detection this zeroes all negative responses.",
+    "Smaller kernels can be zero-padded to a common size (3 x 3 to 5 x 5) so a whole bank stacks into one tensor of shape (5, 5, 4), like a conv layer's kernel.",
+    "np.tensordot over axes (0,1) applies all filters to a patch at once; for a 5 x 5 x 3 patch and a 5 x 5 x 4 bank the result is 3 x 4 (not 4 x 3 as the markdown says), and flatten('F') groups it by filter into RGB triples.",
+    "These hand-designed filters (blur, edges, sharpen, emboss) are the kind of features a CNN's first convolutional layer learns automatically from data instead of being written by hand."
+  ]
+}
+
+export const labs: readonly Lab[] = [nbLab, regressionLab, logisticLab, dtLab, ensembleLab, w6CnnMnistLab, w6ImageFiltersLab]

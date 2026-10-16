@@ -1847,5 +1847,957 @@ export const sessions: readonly Session[] = [
         ]
       }
     ]
+  },
+  {
+    "id": "w6_cnn",
+    "title": "Convolutional Neural Networks",
+    "subtitle": "06_cnn.pdf",
+    "topics": [
+      {
+        "id": "w6-fnn-limitations-for-images",
+        "title": "Why Plain FNNs Struggle with Images (and the CNN Pipeline)",
+        "sections": [
+          {
+            "heading": "Feeding images into a fully connected network",
+            "points": [
+              "An image (e.g. a handwritten 8) can be flattened into a vector of pixels and fed into a feedforward neural network (FNN) with several fully connected hidden layers (slide p.3).",
+              "This approach 'sort of works', reaching roughly 50+% accuracy on the slide's example, but it has serious drawbacks (slide p.3).",
+              "Drawback 1: too many parameters. Every input pixel connects to every hidden neuron, so e.g. a 32 x 32 x 3 image gives 3,072 weights for EACH neuron in the first hidden layer, and this multiplies by the number of neurons.",
+              "Drawback 2: no notion of spatial position. The same object part (e.g. the dog's nose in two shifted photos) lands on different input pixels, so different parts of different images mean completely different things to the network (slide p.4).",
+              "In an FNN the weights attached to two different input pixels (shown red and green on slide p.4) are independent, so a pattern learned at one location is not reused at another location; the network must relearn it everywhere."
+            ]
+          },
+          {
+            "heading": "What a CNN looks like",
+            "points": [
+              "A typical CNN pipeline (slide p.5, from Geron's Hands-on ML): Input, Convolution, Pooling, Convolution, Pooling, then Fully connected layers producing the output.",
+              "Convolution layers produce stacks of feature maps; pooling layers shrink their spatial size; the final fully connected layers perform the classification.",
+              "Each neuron in convolutional layer 1 looks only at a small local patch (receptive field) of the input layer, and each neuron in convolutional layer 2 looks at a small patch of layer 1, so deeper layers see progressively larger regions of the image (slide p.5 figure).",
+              "This hierarchical, local connectivity is what lets CNNs build up from simple local features (edges) to larger structures, unlike an FNN that connects everything to everything."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-spatial-filtering-basics",
+        "title": "Fundamentals and Mechanics of Spatial Filtering",
+        "sections": [
+          {
+            "heading": "What a filter is",
+            "points": [
+              "Spatial filtering is introduced as an image enhancement technique (slide p.6).",
+              "The term 'filter' is borrowed from signal processing (frequency domain), where filtering means accepting or rejecting certain frequency components.",
+              "Filters are also called masks, kernels, templates or windows.",
+              "Spatial filters are more versatile than their signal-processing counterparts, and the spatial domain permits non-linear filtering (slide p.6)."
+            ]
+          },
+          {
+            "heading": "Mechanics: neighbourhood + operation",
+            "points": [
+              "A spatial filter consists of (1) a neighbourhood, a rectangular region such as the 3 x 3 neighbourhood of pixel (x, y), and (2) a pre-defined operation on the pixels contained in that neighbourhood (slide p.7).",
+              "Filtering means visiting each pixel in the image and performing the localized operation there; the operation may be linear or non-linear.",
+              "For a 3 x 3 linear filter the response is g(x, y) = sum over i = -1..1, j = -1..1 of w(i, j) f(x+i, y+j): each filter coefficient multiplies the image pixel under it and the products are summed (slide p.8).",
+              "Generally, for a (2a+1) x (2b+1) filter, g(x, y) = sum over i = -a..a, j = -b..b of w(i, j) f(x+i, y+j) (slide p.8).",
+              "The centre coefficient w(0,0) sits on f(x, y); for example w(-1,-1) multiplies f(x-1, y-1) and w(1,1) multiplies f(x+1, y+1)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-smoothing-filters",
+        "title": "Smoothing (Averaging / Lowpass) Filters",
+        "sections": [
+          {
+            "heading": "Purpose of smoothing",
+            "points": [
+              "Blurring (averaging) removes small details from the image to enable extraction of large regions, and removes gaps between lines or curves (slide p.9).",
+              "Noise reduction works by repeated addition and averaging, which reduces 'sharp' intensity transitions in the image.",
+              "Good: smoothing removes random noise. Bad: it can also smudge actual edges in the image (slide p.9)."
+            ]
+          },
+          {
+            "heading": "Smoothing linear filters and examples",
+            "points": [
+              "The output of a smoothing linear spatial filter is the average value of the neighbourhood of the current pixel; these are also called averaging filters or lowpass filters (slide p.10).",
+              "Box filter: (1/9) x [[1,1,1],[1,1,1],[1,1,1]], giving R = (1/9) sum x_ij, the plain mean of the 3 x 3 neighbourhood. Example: a patch with values 10, 20, ..., 90 gives R = 50.",
+              "Weighted average filter: (1/16) x [[1,2,1],[2,4,2],[1,2,1]], which weights the centre most and the corners least; the slide labels it as giving a 'more smoothed effect' (slide p.10).",
+              "Both kernels' coefficients sum to 1 after normalisation, so a region of constant intensity is left unchanged.",
+              "Effect of box filter size (slide p.11): the test image filtered with 3x3, 5x5, 9x9, 15x15 and 35x35 box filters becomes progressively blurrier; at 35x35 small shapes and fine text are almost completely smeared out. Larger kernel = stronger blur."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-sharpening-filters",
+        "title": "Sharpening Filters and the Laplacian",
+        "sections": [
+          {
+            "heading": "Idea of sharpening",
+            "points": [
+              "Sharpening highlights transitions in intensity, the opposite behaviour to averaging/blur filters (slide p.12).",
+              "Mathematically, averaging is analogous to integration while sharpening is analogous to spatial differentiation.",
+              "Sharpening enhances edges and other discontinuities (including noise) and de-emphasises areas with slowly varying intensities.",
+              "A sharpening filter is therefore a high-pass filter (in contrast to the lowpass smoothing filters)."
+            ]
+          },
+          {
+            "heading": "Laplacian kernel on the moon image",
+            "points": [
+              "The Laplacian kernel is [[0,1,0],[1,-4,1],[0,1,0]]; its coefficients sum to 0, so flat regions give response 0 and only intensity changes (edges) produce non-zero output (slide p.13).",
+              "Applied to the 'North pole of the moon' image, the Laplacian output is mostly dark with bright crater rims and edges, i.e. an edge map (slide p.13).",
+              "Because the raw Laplacian output contains negative values, the slide rescales it for display: filtered -= Min(filtered); filtered *= (255 / Max(filtered)), giving a grey image where edges stand out (slide p.14).",
+              "Sharpened image = original minus the Laplacian-filtered image (with this negative-centre Laplacian): subtracting the edge map from the original gives a visibly crisper moon (slide p.14).",
+              "Worked example: on patch [[5,5,5],[5,9,5],[5,5,5]] the Laplacian gives 4 x 5 - 4 x 9 = -16; on a constant patch it gives 0."
+            ]
+          },
+          {
+            "heading": "Other sharpening kernels (room image)",
+            "points": [
+              "Kernel [[0,-1,0],[-1,5,-1],[0,-1,0]] (slide p.15) equals the identity minus the Laplacian, so it directly outputs a sharpened image; its coefficients sum to 1, preserving overall brightness. The result was then histogram-equalized to show detail.",
+              "On patch [[5,5,5],[5,9,5],[5,5,5]] the 5-centre kernel gives 5 x 9 - 4 x 5 = 25, amplifying the bright centre relative to its neighbours.",
+              "Kernel [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]] (slide p.16) also uses the diagonal neighbours; its coefficients sum to 0 so it outputs an edge map (mostly black image with white outlines of the window, frame and lamp), which after histogram equalization shows edges plus lots of amplified noise.",
+              "Rule of thumb from these examples: coefficients summing to 0 give an edge/detail map; summing to 1 give a sharpened version of the original image."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-convolution-mechanics",
+        "title": "Convolution in 1D and 2D: Kernel, Stride and Padding",
+        "sections": [
+          {
+            "heading": "1D convolution",
+            "points": [
+              "Instead of a fully connected layer where each output uses a separate weight for every input (sum w_j x_j with w_1..w_7), convolution uses a small shared weight vector (w1, w2, w3) that slides along the input (slide p.17).",
+              "Slide example: input (zero-padded) [0, 1, 2, -1, 1, -3, 0] with kernel (w1, w2, w3) = (1, 0, -1).",
+              "With stride 1 the output is [-2, 2, 1, 2, 1]; e.g. first output = 0x1 + 1x0 + 2x(-1) = -2, second = 1x1 + 2x0 + (-1)x(-1) = 2.",
+              "'You may also choose to jump by 2 every time': with stride 2 the output is [-2, 1, 1] (slide p.17-18).",
+              "The (1, 0, -1) kernel computes a difference between neighbours, i.e. a simple derivative / edge detector, linking back to sharpening as differentiation."
+            ]
+          },
+          {
+            "heading": "Hyperparameters: kernel size, padding, stride",
+            "points": [
+              "Kernel/filter size: the size of the filter (slide p.18).",
+              "Padding: adding additional pixels at the outer border of the image (the 1D example uses padding 1, the zeros at each end).",
+              "Stride: controls how the filter shifts and slides over the image (stride 1 vs stride 2 in the 1D example).",
+              "In practice it is common to zero-pad the border (slide p.26)."
+            ]
+          },
+          {
+            "heading": "2D convolution and local receptive fields",
+            "points": [
+              "In 2D, a hidden neuron connects only to a small local patch of input neurons (e.g. 5 x 5) using a weight matrix w11..w55 (slide p.19, MNIST digits example).",
+              "Sliding that same 5 x 5 weight matrix across the input produces the whole first hidden layer: each hidden neuron corresponds to one position of the window (slide p.20).",
+              "Worked example (slide p.21): zero-padded image patch [[0,0,0],[0,105,102],[0,103,99]] with kernel [[0,-1,0],[-1,5,-1],[0,-1,0]] gives 105x5 - 102 - 103 = 320 for the first output cell, with horizontal and vertical strides = 1.",
+              "Note the slide's operation does not flip the kernel; it multiplies element-wise and sums (what deep learning calls convolution)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-feature-map-sizes",
+        "title": "Feature Map Sizes, Channels and Multiple Filters",
+        "sections": [
+          {
+            "heading": "Output size examples (7 x 7 image, 3 x 3 kernel)",
+            "points": [
+              "Stride 1, no padding: the window fits in positions 1..5 along each axis, so the output feature map is 5 x 5 (slides p.22-23).",
+              "Stride 2, no padding: the window lands at positions 1, 3, 5, so the output feature map is 3 x 3 (slides p.24-25).",
+              "Stride 1 with zero padding of size 1 (padded image 9 x 9): output is (7 + 2 - 3)/1 + 1 = 7, so 7 x 7, the same size as the input (slide p.26 asks this as a question).",
+              "General formula: output = (N + 2P - F)/S + 1, with N input size, F filter size, P padding, S stride."
+            ]
+          },
+          {
+            "heading": "Channels and depth",
+            "points": [
+              "Colour digital images are made of pixels, and pixels are combinations of primary colours (slide p.27).",
+              "A channel is the grayscale image of the same size as the colour image made of just one primary colour; a standard camera image has 3 channels (R, G, B), while a grayscale image has 1 channel.",
+              "A 32 x 32 x 3 image has height 32, width 32, depth 3 (slide p.27).",
+              "Filters are typically defined in 2D (e.g. 5 x 5) but usually extend the full depth of the input volume, so a filter on a 32 x 32 x 3 image is 5 x 5 x 3 (slide p.28)."
+            ]
+          },
+          {
+            "heading": "Convolution layer computation and hyperparameters",
+            "points": [
+              "Convolving the filter with the image means sliding over the image spatially and computing dot products (slide p.28).",
+              "Each output value is the dot product of the 5 x 5 x 3 filter with a 5 x 5 x 3 chunk of the image plus a bias: w^T x + b, which involves 75 weights plus 1 bias (slide p.29).",
+              "An activation function is usually applied afterwards: sigma(w^T x + b) (slide p.29).",
+              "Multiple filters can be applied in one convolution layer, so the typical hyperparameters of a conv layer are: kernel/filter size, number of filters, padding and stride (slide p.28)."
+            ]
+          },
+          {
+            "heading": "Feature (activation) maps",
+            "points": [
+              "The result of one convolution operation is called a feature map or activation map (slide p.30).",
+              "Convolving (sliding) a 5 x 5 x 3 filter over all spatial locations of a 32 x 32 x 3 image (stride 1, no padding) gives a 28 x 28 x 1 activation map, since 32 - 5 + 1 = 28.",
+              "Adding one more 5 x 5 x 3 filter gives a second 28 x 28 activation map (slide p.31); each filter produces its own map, so K filters give an output of depth K (e.g. 2 filters give 28 x 28 x 2).",
+              "Each filter's weights are shared across all spatial positions, which is exactly what fixes the FNN problem on slide p.4: the same pattern detector is applied everywhere in the image."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-multiple-feature-maps-and-output-size",
+        "title": "Multiple Feature Maps, Stacked Convolutions and Output-Size Exercises",
+        "sections": [
+          {
+            "heading": "Multiple filters give multiple feature maps (slide p.32-33)",
+            "points": [
+              "A single convolution layer can apply many filters; each filter produces its own feature map (activation map), so the layer output has as many feature maps (depth channels) as there are filters.",
+              "Slide p.32 example: a 32×32×3 input passed through a convolution layer with 6 filters gives 6 activation maps of size 28×28, i.e. a 28×28×6 output volume. 32 to 28 is consistent with 5×5 filters, stride 1 and no padding: (32 − 5)/1 + 1 = 28.",
+              "Each filter spans the full depth of its input, so a 5×5 filter on a 3-channel input has 5×5×3 = 75 weights plus 1 bias; 6 such filters have 6 × 76 = 456 parameters.",
+              "Slide p.33 (Geron figure): convolutions are stacked. Convolutional layer 1 reads the Red/Green/Blue input channels and outputs several maps; convolutional layer 2 then reads ALL maps of layer 1 within its local receptive field, so each neuron in layer 2 combines features across every map below.",
+              "Why it matters: each filter learns to detect one kind of pattern (e.g. a horizontal or vertical line in the figure), and stacking layers lets later layers compose these into more complex features."
+            ]
+          },
+          {
+            "heading": "Output-size exercises (slide p.34)",
+            "points": [
+              "Output size per spatial dimension = (N − F + 2P)/S + 1, where N is the input size, F the filter size, P the padding and S the stride; the output depth equals the number of filters (input depth does not carry over).",
+              "Case One: image 256×256×1, 3×3 filters, 10 filters, stride 3, pad 1. Width/height = (256 − 3 + 2×1)/3 + 1 = 255/3 + 1 = 86, so the output is 86×86×10.",
+              "Case Two: image 4096×1024×3, 15×5 filters, 20 filters, stride 5×3, pad 7×2. Height = (4096 − 15 + 2×7)/5 + 1 = 4095/5 + 1 = 820; width = (1024 − 5 + 2×2)/3 + 1 = 1023/3 + 1 = 342; output is 820×342×20.",
+              "Case Two shows that filter size, stride and padding can differ per dimension: apply the formula separately to each spatial axis with that axis's own F, S and P.",
+              "The 3 input channels in Case Two do not appear in the output depth: each 15×5 filter is really 15×5×3 and collapses all channels into one map, so depth = number of filters = 20."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-pooling",
+        "title": "Pooling and Max-Pooling",
+        "sections": [
+          {
+            "heading": "What pooling is (slide p.35)",
+            "points": [
+              "A pooling function replaces the output of the net at a certain location with a summary statistic of the nearby outputs (e.g. the maximum); it is a form of non-linear down-sampling.",
+              "Worked example on a 4×4 single depth slice [[1,0,2,3],[4,6,6,8],[3,1,1,0],[1,2,2,4]] with 2×2 windows and stride 2 (four non-overlapping quadrants).",
+              "Max pooling takes the largest value in each quadrant: top-left max(1,0,4,6) = 6, top-right max(2,3,6,8) = 8, bottom-left max(3,1,1,2) = 3, bottom-right max(1,0,2,4) = 4, giving [[6,8],[3,4]].",
+              "Average pooling takes the mean of each quadrant: (1+0+4+6)/4 = 2.75, (2+3+6+8)/4 = 4.75, (3+1+1+2)/4 = 1.75, (1+0+2+4)/4 = 1.75, giving [[2.75,4.75],[1.75,1.75]].",
+              "Pooling has no learnable weights and operates on each depth slice independently, so it reduces width and height but keeps the number of feature maps."
+            ]
+          },
+          {
+            "heading": "Max-pooling properties (slide p.36-37)",
+            "points": [
+              "Max-pooling partitions the input into a set of NON-OVERLAPPING rectangles and outputs the maximum value for each sub-region.",
+              "It makes the representation approximately invariant to small translations of the input: if a feature shifts slightly within its pooling window the maximum is unchanged.",
+              "Invariance to local translation is useful when we care more about WHETHER a feature is present than exactly WHERE it is.",
+              "By eliminating non-maximal values it reduces computation for upper layers; because it also adds robustness to position, max-pooling is described as a \"smart\" way of reducing the dimensionality of intermediate representations.",
+              "Slide p.37 figure: a 24×24 grid of hidden neurons (output of one feature map) is pooled with 2×2 regions into a 12×12 grid of max-pooling units; each 2×2 block maps to one unit."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-simple-cnn-and-lenet",
+        "title": "Putting It Together: Simple CNN and LeNet",
+        "sections": [
+          {
+            "heading": "Convolution + max-pooling + fully connected (slide p.38-40)",
+            "points": [
+              "Slide p.38: 28×28 input neurons are convolved with 3 filters to give a first hidden layer of 3×24×24 neurons (three feature maps). 28 to 24 is consistent with a 5×5 receptive field, stride 1, no padding: 28 − 5 + 1 = 24.",
+              "Slide p.39: max-pooling is applied to each of the three feature maps separately, halving each 24×24 map to 12×12, giving 3×12×12 neurons.",
+              "Slide p.40 (simple CNN): 28×28 input, convolution layer (3×24×24), max-pooling layer (3×12×12), then a fully-connected output layer of 10 neurons (one per class).",
+              "The fully-connected layer connects every one of the 3×12×12 = 432 pooled neurons to every output neuron."
+            ]
+          },
+          {
+            "heading": "LeNet (LeCun et al., 1998) (slide p.41-42)",
+            "points": [
+              "LeNet is drawn as a Feature Extraction part (convolution and sub-sampling layers) followed by a Classifier part (fully connected MLP).",
+              "Its sequence is convolution layer, sub-sampling (pooling) layer, convolution layer, sub-sampling layer, fully connected MLP; the figure labels 4 feature maps after the first stages and 6 feature maps after the later ones.",
+              "Conv layer + pooling layer form a stacked building block that is repeated, then followed by fully connected layers.",
+              "Lower layers alternate between convolution and max-pooling; upper layers are fully connected and correspond to a traditional neural network (hidden layer + logistic regression).",
+              "The input to the first fully-connected layer is the set of ALL feature maps at the layer below (flattened)."
+            ]
+          },
+          {
+            "heading": "What the layers learn (slide p.44-45)",
+            "points": [
+              "Zeiler and Fergus (2013) visualisation with VGG-16: Conv1_1 filters show low-level features (edges, colour blobs), Conv3_2 shows mid-level features (textures, patterns), Conv5_3 shows high-level features (object-part-like structures).",
+              "The hierarchy is Low-level features, Mid-level features, High-level features, then a linearly separable classifier at the end.",
+              "Slide p.45 shows the Deep Visualization Toolbox video, where individual conv5 units respond to faces in the input."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-why-cnn-works",
+        "title": "Why CNNs Work So Well",
+        "sections": [
+          {
+            "heading": "Local receptive fields (slide p.46)",
+            "points": [
+              "CNNs exploit the spatial structure of data with local receptive fields, so each neuron focuses on a small, local region of the image at a time.",
+              "Local connectivity suits images because neighbouring pixels usually contain related or correlated information.",
+              "By sharing weights across regions, CNNs efficiently learn local patterns and capture hierarchical representations."
+            ]
+          },
+          {
+            "heading": "Parameter sharing (slide p.47)",
+            "points": [
+              "The same set of weights (a filter) is applied to many spatial locations in the input.",
+              "This drastically reduces the number of trainable parameters compared to fully connected networks.",
+              "Fewer parameters make CNNs more computationally efficient and less prone to overfitting."
+            ]
+          },
+          {
+            "heading": "Translation invariance (slide p.48)",
+            "points": [
+              "CNNs exhibit a degree of translation invariance: they can recognise patterns regardless of their location in the image.",
+              "This property comes from weight sharing together with pooling layers that down-sample the spatial dimensions.",
+              "By learning local features and then aggregating them, CNNs become robust to small spatial translations, so they suit tasks where the precise location of a pattern is not crucial."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-cnn-architecture-evolution",
+        "title": "Evolution of CNN Architectures (ImageNet, AlexNet, VGG, GoogLeNet, ResNet)",
+        "sections": [
+          {
+            "heading": "ImageNet and ILSVRC (slide p.50-52, 59-60)",
+            "points": [
+              "ImageNet is a large visual database for object recognition research with more than 14 million hand-annotated images.",
+              "The ImageNet Large Scale Visual Recognition Challenge (ILSVRC) evaluates algorithms for object detection and image classification at large scale.",
+              "Fine-grained classes make the task hard: slide p.52 contrasts a Czechoslovakian Wolfdog with a Siberian Husky, which look very similar.",
+              "ImageNet-2012 error rates (slide p.59): AlexNet 2012 16.4%, Clarifai 2013 11.2%, VGG-16 2014 7.4%, GoogLeNet-19 2014 6.7%, ResNet-152 2015 3.57%, Human 5%. ResNet-152 was the first in the chart to beat the human error rate.",
+              "Slide p.60 (paperswithcode): top-5 accuracy rose from about 74% (SIFT + FVs, 2011) to about 85% with AlexNet, then past 90% (SPPNet), around 95% with ResNet-152 (60M parameters), and close to 99% by 2020-2021 (FixResNeXt-101 32x48d)."
+            ]
+          },
+          {
+            "heading": "AlexNet (2012) and VGGNet (2014) (slide p.53-54)",
+            "points": [
+              "AlexNet (Krizhevsky, Sutskever, Hinton, 2012) was the first work to popularise CNNs in computer vision.",
+              "Its architecture is very similar to LeNet but deeper and bigger, and it stacked convolutional layers directly on top of each other; previously a single CONV layer was always immediately followed by a POOL layer.",
+              "AlexNet figure: 224×224×3 input, 11×11 filters with stride 4 giving 55×55×96, max pooling, 5×5 conv to 27×27×256, max pooling, three 3×3 conv layers at 13×13 (384, 384, 256 maps), max pooling, two dense layers of 4096, then the output layer. AlexNet has about 60M parameters (slide p.55).",
+              "VGGNet (Simonyan and Zisserman, 2014) showed that network DEPTH is a critical component for good performance; it was considered very deep at the time.",
+              "VGG-16 figure: 224×224×3 to 224×224×64, then 112×112×128, 56×56×256, 28×28×512, 14×14×512 and 7×7×512 after successive max-poolings (each halves width and height), then fully connected layers 1×1×4096, 1×1×4096, 1×1×1000 and softmax. Blocks are convolution+ReLU stacks separated by max pooling."
+            ]
+          },
+          {
+            "heading": "GoogLeNet / Inception (2014) (slide p.55-57)",
+            "points": [
+              "GoogLeNet (Szegedy et al., Google, 2014) introduced the Inception module and cut parameters dramatically: about 4M versus about 60M for AlexNet (15 times fewer).",
+              "An Inception module applies 1×1, 3×3 and 5×5 convolutions plus 3×3 max pooling in parallel on the previous activations and concatenates the outputs along depth (DepthConcat), so it extracts features at different scales.",
+              "1×1 convolutions reduce the input channel depth before the expensive 3×3 and 5×5 convolutions, and after the max-pool branch.",
+              "Operation count example (slide p.56): a direct 5×5 conv with 48 filters on 14×14×480 needs 14×14×48 × 5×5×480 = 112,896,000 (about 112.9M) multiplications. With a 1×1 bottleneck to 16 channels: 14×14×16 × 480 = 1,505,280 plus 14×14×48 × 5×5×16 = 3,763,200, total 5,268,480 (about 5.3M), about 21 times fewer.",
+              "GoogLeNet uses average pooling instead of fully connected layers at the top, removing many parameters that do not seem to matter much. Slide p.57: an FC layer from 7×7×1024 to 1024 needs 7×7×1024×1024 = 51,380,224 weights, while global average pooling reduces each 7×7 map to a single value (1×1×1024) with no weights.",
+              "The full GoogLeNet diagram also has auxiliary losses (side softmax classifiers) attached to intermediate layers."
+            ]
+          },
+          {
+            "heading": "ResNet (2015) (slide p.58)",
+            "points": [
+              "ResNet (Kaiming He et al.) won ILSVRC 2015; it features skip connections and heavy use of batch normalization.",
+              "Inside a residual block, the intermediate layers learn a residual function F(x) with reference to the block input x; the block outputs F(x) + x via an identity shortcut, followed by ReLU.",
+              "Block structure: x goes to weight layer, ReLU, weight layer to give F(x); the identity x is added; then ReLU.",
+              "ResNets are the default choice for using ConvNets in practice (the slide strikes out the older claim that they are \"by far state of the art\").",
+              "The figure compares a residual network with a plain network of the same depth: identical stacks of 3×3 conv layers (64, 128, 256, 512 channels), the residual version adding curved skip connections every two layers."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w6-layer-patterns",
+        "title": "CNN Layer Patterns and Keras Examples",
+        "sections": [
+          {
+            "heading": "Keras examples (slide p.61-62)",
+            "points": [
+              "model_4, (Convolution + Max-Pooling) × 2 + one dense layer + 10 outputs: Conv2D(32, 5×5, ReLU), MaxPooling2D(2×2), Dropout(0.2), Conv2D(64, 5×5, ReLU), MaxPooling2D(2×2), Dropout(0.2), Flatten, Dense(128, ReLU), Dropout(0.2), Dense(10, softmax).",
+              "model_5, Convolution × 2 + Max-Pooling + one dense layer + output: Conv2D(32, 3×3, ReLU), Conv2D(64, 3×3, ReLU), MaxPooling2D(2×2), Dropout(0.2), Flatten, Dense(128, ReLU), Dropout(0.2), Dense(num_classes, softmax).",
+              "Both are compiled with categorical cross-entropy loss, SGD optimizer and accuracy metric, trained with model.fit(batch_size, epochs, validation_data) and evaluated with model.evaluate to print test loss and accuracy.",
+              "Worked shapes for model_4 assuming a 28×28×1 input (img_rows and img_cols are not given on the slide): conv 5×5 gives 24×24×32 (5×5×1×32 + 32 = 832 params), pool gives 12×12×32, conv 5×5 gives 8×8×64 (5×5×32×64 + 64 = 51,264 params), pool gives 4×4×64 = 1,024 flattened, Dense(128) has 1,024×128 + 128 = 131,200 params, Dense(10) has 1,290.",
+              "Worked shapes for model_5 with 28×28×1 input: 26×26×32 (320 params), 24×24×64 (18,496 params), pool 12×12×64 = 9,216 flattened, Dense(128) has 1,179,776 params. Only one pooling layer leaves a large flattened vector, so the dense layer dominates the parameter count."
+            ]
+          },
+          {
+            "heading": "General ConvNet pattern (slide p.63)",
+            "points": [
+              "The most common ConvNet stacks a few CONV-RELU layers, follows them with POOL layers, and repeats until the image has been merged spatially to a small size; then it transitions to fully-connected layers.",
+              "Template: INPUT -> [[CONV -> RELU]*N -> POOL?]*M -> [FC -> RELU]*K -> FC, where * means repetition and POOL? is an optional pooling layer.",
+              "Constraints: N >= 0 and usually N <= 3; M >= 0; K >= 0 and usually K < 3.",
+              "Example: INPUT -> [CONV -> RELU -> CONV -> RELU -> POOL]*3 -> [FC -> RELU]*2 -> FC, i.e. N = 2, M = 3, K = 2. It has 6 conv layers, 3 pooling layers and 3 FC layers.",
+              "The final FC layer has no ReLU because it produces the class scores (e.g. fed to softmax)."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "w7_attention",
+    "title": "Sequence Models, Attention & Transformers",
+    "subtitle": "07_attention.pdf",
+    "topics": [
+      {
+        "id": "w7-three-network-types-and-problem-shapes",
+        "title": "Three Major Network Types and Sequence Problem Shapes",
+        "sections": [
+          {
+            "heading": "FNN vs CNN vs RNN (slides p.3-4)",
+            "points": [
+              "The lecture opens by contrasting the three major neural network families: the Feedforward / Fully Connected Neural Network (FNN), the Convolutional Neural Network (CNN, illustrated with LeNet-5: 32x32 input, C1 6@28x28, S2 6@14x14, C3 16@10x10, S4 16@5x5, C5 120, F6 84, output 10) and the Recurrent Neural Network (RNN, illustrated with a bidirectional chain of cells A and A').",
+              "Rule of thumb from the slides: FNN suits tabular / structured data; CNN suits image data or any problem that requires extracting local features; RNN suits sequence data such as time series, translation and audio.",
+              "These pairings are NOT strict: it is possible to solve a sequence problem with a pure FNN and still achieve state-of-the-art results, and CNNs also work well on sequence data because sequences usually involve local properties (slide p.4).",
+              "Why it matters: in an exam justification question, the choice of architecture should be argued from the structure of the data (tabular, spatially local, or temporally ordered), while acknowledging that alternatives can also work."
+            ]
+          },
+          {
+            "heading": "Input/output configurations (slides p.5-9)",
+            "points": [
+              "Five configurations are shown (figure from Geron, Hands-on ML): one to one, one to many, many to one, many to many with a delay (encoder then decoder), and many to many synchronised (one output per input step).",
+              "One to many: a single input produces a sequence of outputs. Example: image captioning, input = image, output = caption (slide p.6).",
+              "Many to one: a sequence of inputs produces a single output at the last step. Example: spam filtering, input = words in an email, output = spam or not spam (slide p.7).",
+              "Many to many (delayed / sequence-to-sequence): the whole input sequence is read before outputs are produced. Example: translation, input = Spanish, output = Mandarin; input and output lengths can differ (slide p.8).",
+              "Many to many (synchronised): one output per input time step. Example: speech recognition, input = windowed audio, output = sequence of letters (slide p.9).",
+              "One to one is the ordinary non-sequential case (a standard feedforward mapping from one input to one output)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-why-sequence-models-bag-of-words",
+        "title": "Why Sequence Models: Limits of Bag-of-Words",
+        "sections": [
+          {
+            "heading": "Feeding sentences to a normal neural network (slides p.11-13)",
+            "points": [
+              "RNNs are a family of neural networks (typically) for processing sequential data such as time series, text and audio (slide p.11).",
+              "An RNN looks very much like a feedforward network except that it also has connections pointing backward (the figure shows each hidden neuron with a self-loop, versus the FNN with no loops).",
+              "The most effective sequence models used in practice are gated RNNs, for example long short-term memory (LSTM) networks (slide p.11).",
+              "Problem with a plain FNN on text: sentences have variable length ('do you like apple and fruit juice ?' has 8 tokens, 'so many pretty birds' has 4), but an FNN needs a fixed-size input vector (slide p.12).",
+              "A common workaround is Embedding followed by Aggregation into a fixed-length vector that is fed to the FNN; the slide notes this is essentially the bag-of-words approach (slide p.13)."
+            ]
+          },
+          {
+            "heading": "Bag-of-words representation (slide p.14)",
+            "points": [
+              "Bag of words represents a document as a vector of word counts over a vocabulary, ignoring order.",
+              "Worked example: document 'Give a man a fish, and you feed him for a day. Teach a man to fish, and you feed him for a lifetime.'",
+              "With dimensions (give, man, fish, feed, day, teach, lifetime) the count vector is (1, 2, 2, 2, 1, 1, 1); stop words such as 'a', 'and', 'you', 'him', 'for', 'to' are not used as dimensions in the example.",
+              "'man', 'fish' and 'feed' each appear twice (once in each sentence), while 'give', 'day', 'teach' and 'lifetime' appear once."
+            ]
+          },
+          {
+            "heading": "Pros and cons of bag-of-words (slide p.15)",
+            "points": [
+              "Pro: allows variable-length data to be fed into a typical feedforward network.",
+              "Pro: variable-length features can easily be combined with fixed-length features.",
+              "Pro: widespread empirical success.",
+              "Con: destroys the structure of the input, e.g. 'The cat sat on the mat' is not the same as the multiset {cat, sat, the, the, mat, on}; word order is lost.",
+              "Con: words are all independent, so synonyms are ignored.",
+              "Con: high dimensionality and sparsity.",
+              "The latter two cons (independence / synonyms and high dimensionality / sparsity) are solved by word embeddings such as Word2Vec; the first con (lost order) motivates using neural networks that capture the sequential structure of words, i.e. RNNs."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-rnn-fundamentals",
+        "title": "Recurrent Neural Network Fundamentals",
+        "sections": [
+          {
+            "heading": "Two-dimensional view and the simplest RNN (slides p.16-17)",
+            "points": [
+              "When inputs are associated with time (e.g. images become video), networks must encode the time dimension and features must also be associated with time; the figure shows a grid with depth (layers) on the vertical axis and time on the horizontal axis, with arrows flowing both upward and forward in time (slide p.16).",
+              "The simplest possible RNN has one neuron that receives inputs, produces an output, and sends that output back to itself (slide p.17).",
+              "Simplest RNN equation: y(t) = σ(wᵀ x(t) + y(t-1) + b); unrolled through time it becomes a chain of copies of the same neuron with inputs x(0), x(1), x(2), x(3).",
+              "Unrolling (unfolding) the network through time turns the loop into a feedforward-looking chain, one copy per time step, all sharing the same weights."
+            ]
+          },
+          {
+            "heading": "A full RNN layer (slide p.18)",
+            "points": [
+              "One RNN layer consists of multiple neurons; every neuron receives both the input vector x(t) and the output vector from the previous time step y(t-1).",
+              "Layer equation: y(t) = σ(W_xᵀ x(t) + W_yᵀ y(t-1) + b), with W_x the input weights and W_y the recurrent weights.",
+              "y(t-1) is a function of x(t-1) and y(t-2), which is a function of x(t-2) and y(t-3), and so on.",
+              "Therefore y(t-1) (and y(t)) is a function of all the inputs since time t = 0, which is what gives an RNN its memory."
+            ]
+          },
+          {
+            "heading": "Memory cells and the RNN cell abstraction (slides p.19-20)",
+            "points": [
+              "Because the output at step t depends on all previous inputs, a recurrent neuron has a form of memory (slide p.19).",
+              "Memory cell (or simply cell): the practical building component of an RNN that preserves some state across time steps.",
+              "A cell keeps state h(t-1), takes input x(t), produces output y(t) and updates its preserved state to h(t): h(t) = σ(W_xᵀ x(t) + W_hᵀ h(t-1) + b) and y(t) = W_yᵀ h(t) + b_y.",
+              "Interface: output, end_state = rnn_cell(input, start_state); the start state h(t-1) and end state h(t) must have the same dimension (slide p.20).",
+              "Each cell (time step) is identical and they share weights, so training an RNN really means training a single cell that is used repeatedly; this keeps the parameter count independent of sequence length."
+            ]
+          },
+          {
+            "heading": "Deep RNNs (slide p.21)",
+            "points": [
+              "It is common to stack multiple layers of cells, giving a deep RNN; each layer's output sequence becomes the input sequence of the layer above.",
+              "The figure shows three stacked cells per time step, unrolled over X(0) ... X(t), producing outputs Y(0) ... Y(t).",
+              "Commonly used cell types: Vanilla RNN, GRU and LSTM."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-vanilla-rnn",
+        "title": "Vanilla RNN: Equations, tanh and a Worked Example",
+        "sections": [
+          {
+            "heading": "Vanilla RNN equations (slides p.23-24)",
+            "points": [
+              "The vanilla RNN is the simplest cell: a single block A that takes x(t) and h(t-1), and whose hidden state is passed to the next step (unrolled diagram from colah's blog, slide p.23).",
+              "Hidden state: h(t) = tanh(W_xᵀ x(t) + W_hᵀ h(t-1) + b). Output: y(t) = W_yᵀ h(t) + b_y (slide p.24).",
+              "Inside the cell there is a single tanh layer applied to the combination of x(t) and h(t-1); the y layer is omitted from the diagram.",
+              "Parameter count for input dimension d and hidden size n (excluding the output layer): W_x has d·n, W_h has n·n and b has n, so d·n + n² + n; e.g. d = 10, n = 20 gives 200 + 400 + 20 = 620 parameters, regardless of sequence length because weights are shared."
+            ]
+          },
+          {
+            "heading": "Hyperbolic tangent (slide p.25)",
+            "points": [
+              "tanh(x) = sinh(x)/cosh(x) = (eˣ - e⁻ˣ)/(eˣ + e⁻ˣ) = (e²ˣ - 1)/(e²ˣ + 1) = (1 - e⁻²ˣ)/(1 + e⁻²ˣ), with range (-1, 1).",
+              "tanh is a rescaled sigmoid: tanh(x) = 2·σ(2x) - 1 (e.g. tanh(0) = 2·0.5 - 1 = 0).",
+              "Sigmoid and tanh are almost the same shape; sigmoid ranges over (0, 1) and passes through 0.5 at x = 0, whereas tanh ranges over (-1, 1) and passes through 0 at x = 0 with a steeper slope.",
+              "Use tanh when desired outputs are expected to range between -1 and 1; tanh makes the convergence of RNNs faster."
+            ]
+          },
+          {
+            "heading": "Character-level example 'hello' (slide p.26)",
+            "points": [
+              "Vocabulary {h, e, l, o} with one-hot inputs of size 4; input characters 'h', 'e', 'l', 'l' and target characters 'e', 'l', 'l', 'o' (predict the next character).",
+              "The hidden layer has 3 units; hidden states shown are (0.3, -0.1, 0.9), (1.0, 0.3, 0.1), (0.1, -0.5, -0.3), (-0.3, 0.9, 0.7), connected by W_hh, with W_xh from input to hidden and W_hy from hidden to output.",
+              "Output scores (4 per step): step 1 (1.0, 2.2, -3.0, 4.1), step 2 (0.5, 0.3, -1.0, 1.2), step 3 (0.1, 0.5, 1.9, -1.1), step 4 (0.2, -1.5, -0.1, 2.2); the green number in each column is the score of the correct target.",
+              "Taking argmax, steps 3 and 4 are correct (1.9 for 'l', 2.2 for 'o') but steps 1 and 2 are wrong (4.1 for 'o' instead of 2.2 for 'e'; 1.2 for 'o' instead of -1.0 for 'l'), so training should raise the green scores.",
+              "The cell maintains a state h whose value h(t) updates with time; h(t) takes both input x(t) and previous state h(t-1), and y(t) is computed from h(t).",
+              "Parameter count for this toy model: W_xh 4x3 = 12, W_hh 3x3 = 9, b 3, W_hy 3x4 = 12, b_y 4, total 40."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-rnn-training-gradients",
+        "title": "Training RNNs: Loss, BPTT and Vanishing/Exploding Gradients",
+        "sections": [
+          {
+            "heading": "Loss and back-propagation through time (slides p.27-28)",
+            "points": [
+              "In the unrolled network each time step t produces y(t), which is compared with a target t(t) to give a per-step loss L(t) (slide p.27).",
+              "The total loss aggregates the per-step losses across all time steps (the figure on slide p.28 shows every output connected to a single Loss box).",
+              "Back-propagation through time (BPTT): the forward pass runs left to right through time, then gradients flow right to left (red arrow) back through every unrolled time step.",
+              "Because the same weights are shared across steps, the gradient for each weight is accumulated from all time steps."
+            ]
+          },
+          {
+            "heading": "Vanilla RNN gradient flow (slides p.29-30)",
+            "points": [
+              "The vanilla update can be rewritten by stacking: h_t = tanh(W_hᵀ h(t-1) + W_xᵀ x(t)) = tanh([W_hᵀ W_xᵀ] [h(t-1); x(t)]) = tanh(Wᵀ [h(t-1); x(t)]), i.e. one matrix W applied to the stacked vector.",
+              "Diagram: h(t-1) and x(t) are stacked, multiplied by W, passed through tanh to give h(t).",
+              "Backpropagation from h(t) to h(t-1) passes back through tanh and multiplies by W (or a related matrix) (slide p.30)."
+            ]
+          },
+          {
+            "heading": "Vanishing and exploding gradients (slide p.31)",
+            "points": [
+              "Computing the gradient with respect to h_0 across a chain h_0, h_1, h_2, h_3, h_4 involves many factors of W and repeated tanh.",
+              "If the largest singular value of W is > 1, gradients explode; remedy: gradient clipping, i.e. scale the gradient if its norm is too big.",
+              "If the largest singular value is < 1, gradients vanish; remedy: change the RNN architecture.",
+              "Illustration of the repeated multiplication: over 50 steps a factor of 1.1 grows to about 1.1⁵⁰ ≈ 117, while a factor of 0.9 shrinks to about 0.9⁵⁰ ≈ 0.005.",
+              "Consequence: long chain connections between inputs and outputs that are far apart are difficult to learn (long-range dependencies).",
+              "A solution is long short-term memory (LSTM) cells."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-lstm",
+        "title": "LSTM: Long Short-Term Memory Networks",
+        "sections": [
+          {
+            "heading": "Architecture and gates (slides p.33-35)",
+            "points": [
+              "An LSTM cell (diagram from Christopher Olah, Understanding LSTM Networks) carries two states between steps: the cell state C (top line) and the hidden state h (bottom line); it contains four neural network layers (three σ, one tanh) plus pointwise operations (x, +, tanh). Legend: neural network layer, pointwise operation, vector transfer, concatenate, copy.",
+              "Gate: an element-wise sigmoid followed by element-wise multiplication; it is differentiable and therefore trainable, and σ(·) ∈ [0, 1] decides how much information to let through (0 = block, 1 = pass) (slide p.34).",
+              "Cell state as a 'conveyor belt': it runs straight through the chain with only minor linear interactions (one multiply, one add), and the LSTM can 'add' or 'remove' information to it via gates (slide p.35).",
+              "Why it matters: the additive cell-state path lets information and gradients travel over long distances, addressing the vanishing-gradient / long-dependency problem of vanilla RNNs."
+            ]
+          },
+          {
+            "heading": "Gate equations (slides p.36-39)",
+            "points": [
+              "Forget gate: f_t = σ(W_f · [h_(t-1), x_t] + b_f), computed from the concatenation of previous hidden state and current input (slide p.36).",
+              "Input gate: i_t = σ(W_i · [h_(t-1), x_t] + b_i); candidate state: C̃_t = tanh(W_C · [h_(t-1), x_t] + b_C) (slide p.37).",
+              "Cell state update: C_t = f_t * C_(t-1) + i_t * C̃_t (element-wise), i.e. keep the fraction f_t of the old memory and add the fraction i_t of the new candidate (slide p.38).",
+              "Output gate: o_t = σ(W_o · [h_(t-1), x_t] + b_o); hidden state: h_t = o_t * tanh(C_t) (slide p.39).",
+              "Worked example: f = 0.5, C_(t-1) = 2, i = 0.8, C̃ = 0.5 gives C_t = 1.0 + 0.4 = 1.4; with o = 0.9, h_t = 0.9 · tanh(1.4) ≈ 0.797.",
+              "Since there are four weight matrices each acting on [h, x], an LSTM with input size d and hidden size n has 4·(n·(n + d) + n) parameters, four times a vanilla RNN cell; e.g. d = 10, n = 20 gives 2480 versus 620."
+            ]
+          },
+          {
+            "heading": "Role of each gate (slide p.40)",
+            "points": [
+              "Forget gate: controls which parts of the long-term state should be erased.",
+              "Input gate: controls which parts of the candidates should be added to the long-term state.",
+              "Output gate: controls which parts of the long-term state should be read and output at this time step, both to h(t) and y(t).",
+              "The long-term state is C_t; the short-term state / output is h_t."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-why-attention",
+        "title": "Motivation for Attention: Are All Words Equal?",
+        "sections": [
+          {
+            "heading": "Not all context is equally relevant",
+            "points": [
+              "The lecture opens the Self-Attention segment with the paper 'Attention Is All You Need' (Vaswani et al., NeurIPS 2017), whose core equation is Attention(Q, K, V) = softmax(QKᵀ / √d_k) V (slide p.43).",
+              "Word sense depends on selected context words: in 'The animal drank water from the river bank' vs 'The employee opened a new account at the city bank', you resolve 'bank' by paying attention to words like 'river'/'water' or 'account'/'employee' (slide p.44).",
+              "In 'Milo is very cute, and he is a dog', the word 'he' relates strongly to 'Milo' and 'dog' (more relevant) and only weakly to 'very' and 'cute' (less relevant) (slide p.46).",
+              "The same idea applies in vision: image-captioning attention maps (Xu et al., arXiv 1502.03044) light up the region of the image matching the underlined word, e.g. the frisbee, the dog, the stop sign or the trees (slide p.45).",
+              "A machine-translation attention matrix (English 'The agreement on the European Economic Area was signed in August 1992.' to French) is mostly diagonal, but shows reordering: 'zone économique européenne' attends to 'Area Economic European' in reversed order (slide p.47)."
+            ]
+          },
+          {
+            "heading": "From average to weighted average",
+            "points": [
+              "Statisticians handle 'not equal' importance by replacing a plain average with a weighted average (slide p.48).",
+              "Worked example: Milo = 0.1 x very + 0.3 x cute + 0.6 x dog, where 0.1, 0.3, 0.6 are attention scores (weights) and the word vectors are the values (slide p.48).",
+              "Numerically, first component: 0.1(0.01) + 0.3(0.11) + 0.6(0.23) = 0.172, reported as 0.17; last component: 0.1(0.02) + 0.3(0.18) + 0.6(0.06) = 0.092, reported as 0.09 (slide p.48).",
+              "The attention weights are calculated from queries and keys; the vectors being averaged are the values. This separation of roles (Q, K, V) is the basis of self-attention.",
+              "Why it matters: the output representation of a word becomes a context-dependent mixture of other words' information, rather than a fixed embedding."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-qkv-self-attention",
+        "title": "Self-Attention: Queries, Keys and Values",
+        "sections": [
+          {
+            "heading": "Queries and keys",
+            "points": [
+              "Plain similarity between two words is the dot product of their embeddings: similarity(word_i, word_j) = w_iᵀ w_j = w_jᵀ w_i, with 512-dimensional embeddings in the example 'Singapore (word_i) is one of the best locations (word_j) for conferences' (slide p.49).",
+              "Learned projections W^Q, W^K (each 512 x 3 in the toy example) turn the embedding into a 3-dimensional query q_j and key k_i; each row of W^Q / W^K is one learned 'question' or 'feature' (rows illustrated as 'not this / no, no / yes, it is' for queries and '-who?- / -what?- / -where?-' for keys) (slide p.49).",
+              "The query transforms a word embedding into 'the context I am looking for'; the key transforms a word embedding into its 'local context', i.e. what it offers to be matched (slide p.49).",
+              "Score: q_jᵀ k_i = ((W^Q)ᵀ w_j)ᵀ ((W^K)ᵀ w_i) = w_jᵀ W^Q (W^K)ᵀ w_i. Compared with plain w_jᵀ w_i, the learned matrix W^Q(W^K)ᵀ makes the similarity asymmetric and task-specific (slide p.51).",
+              "For a 300-word paragraph, stack queries into Q (300 rows q_1ᵀ ... q_300ᵀ) and keys into K; QKᵀ is a 300 x 300 matrix whose entry q_jᵀ k_i is the attention of word_i when generating word_j (slide p.51).",
+              "Analogy (Chinese medical hall drawers, slide p.50): the labels on drawers act as keys, what you ask for is the query, and the contents of the drawer you open are the values."
+            ]
+          },
+          {
+            "heading": "Values and the output",
+            "points": [
+              "Values are transformed input vectors: v_i = (W^V)ᵀ w_i with rows w_1^V ... w_{d_v}^V, giving d_v-dimensional values stacked into V (300 rows) (slide p.52).",
+              "Output of word j is a weighted average of the values of all words: o_j = Σ_{i=1}^{300} (q_jᵀ k_i) v_i, where the weight of word i is the attention weight, proportional to q_jᵀ k_i (slide p.52).",
+              "Softmax converts raw attention scores q_jᵀ k_i into attention weights that are positive and sum to 1 (slide p.52).",
+              "In matrix form this is exactly Attention(Q, K, V) = softmax(QKᵀ / √d_k) V (slide p.52, citing arXiv 1706.03762)."
+            ]
+          },
+          {
+            "heading": "Self-attention as a layer",
+            "points": [
+              "Word embeddings go into a self-attention block, which outputs one vector per word 'with context information'; each output vector then passes through a fully connected (FC) layer to produce output words (slide p.53).",
+              "Layers can be stacked: self-attention, then per-position FC, whose outputs are the input vectors for the next self-attention layer, then FC again (slides p.54, p.69).",
+              "Self-attention maps a sequence a¹..a⁴ to b¹..b⁴; every output bⁱ is connected to (considers) every input, as shown by the fully connected dotted lines (slide p.70)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-sa-vs-cnn",
+        "title": "Self-Attention vs CNN",
+        "sections": [
+          {
+            "heading": "Images as vector sets",
+            "points": [
+              "An image can be considered a vector set: a 5 x 10 RGB image has 3 channels, and the 3 channel values at each pixel form one vector (slide p.55).",
+              "So self-attention can be applied to images by treating each pixel (vector) as a token, just as words are tokens in text."
+            ]
+          },
+          {
+            "heading": "Receptive field comparison",
+            "points": [
+              "CNN is self-attention that can only attend within a fixed receptive field (e.g. a 3 x 3 window around the pixel), so CNN is a simplified self-attention (slide p.56).",
+              "Self-attention is a CNN with a learnable receptive field: a pixel can attend to any other pixel anywhere in the image, and which ones it attends to is learned (slide p.56).",
+              "Set relationship: the class of CNN functions is drawn as a subset inside the class of self-attention functions (Cordonnier, Loukas, Jaggi 2019, 'On the relationship between self-attention and convolutional layers') (slide p.56).",
+              "Implication: self-attention is the more flexible (complex) model; CNN's restriction acts as a built-in inductive bias."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-encoder-decoder",
+        "title": "Encoder-Decoder Architectures and Encoder-Decoder Attention",
+        "sections": [
+          {
+            "heading": "Encoder-decoder idea",
+            "points": [
+              "The encoder converts the input into an abstracted representation called the code; the decoder decodes the code to regenerate the input or to produce output in a different domain (slide p.58).",
+              "Many practical problems fit the encoder-decoder formulation: translation, captioning, speech-to-text and audio generation (slide p.58).",
+              "FNN-based encoder-decoder: 784-unit input, Hidden 1 = 100 units, Hidden 2 = 30 units (the codings), Hidden 3 = 100 units, 784-unit output giving reconstructions (slide p.59).",
+              "CNN-based encoder-decoder (ECRU road-scene segmentation): convolutional encoder (Conv + BN + ELU, 3x3 kernels, stride 1, padding 1; 2x2 max pooling, stride 2) and convolutional decoder (upsampling using pooling indices, De-Conv + BN + PReLU) ending in softmax over 11 classes; input is an RGB image, output a segmentation map (slide p.60).",
+              "RNN-based encoder-decoder (seq2seq): embedded English 'He loved to eat .' is read by the encoder RNN into a single state S; the decoder RNN starts from S with input NULL, then feeds back its previous word to emit 'Er liebte zu essen .' through a softmax (slide p.61)."
+            ]
+          },
+          {
+            "heading": "Attention between encoder and decoder",
+            "points": [
+              "Without attention there is one source summary: all source information passes through one final encoder state s, a bottleneck (slide p.62).",
+              "With attention there is a new read at each output step: the decoder query q_t (before prediction) attends over the contextual encoder states h_1..h_4 to form a context vector c_t = Σ_i α_{t,i} h_i (slide p.62).",
+              "Example 'I live in Singapore.' to Chinese: weights for 我 are (I 0.80, live 0.05, in 0.05, Singapore 0.10); for 住在 (0.05, 0.55, 0.35, 0.05); for 新加坡 (0.05, 0.10, 0.05, 0.80). Each row sums to 1 (slide p.62).",
+              "Hence c_2 = 0.05 h_I + 0.55 h_live + 0.35 h_in + 0.05 h_Singapore: '住在' (live in) mixes mainly 'live' and 'in' (slide p.62).",
+              "Key message: different predictions use different mixtures of the same source states (slide p.62)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-autoencoders",
+        "title": "Autoencoders: Standard, Denoising and Variational",
+        "sections": [
+          {
+            "heading": "Autoencoder",
+            "points": [
+              "Autoencoders learn to copy their inputs to their outputs using an encoder-decoder structure (slide p.63).",
+              "They learn dense representations of the input, called latent representations or codings, without any supervision (unsupervised) (slide p.63).",
+              "Codings typically have much lower dimensionality than the input (e.g. 784 to 30 units), making autoencoders useful for dimensionality reduction (slide p.63).",
+              "Toy example on the slide: an 8-input, 8-output network with a tiny hidden layer reproduces one-hot inputs (10000000 to 10000000, etc.), so the hidden layer must learn a compact code for 8 distinct patterns (slide p.63).",
+              "Parameter count of the 784-100-30-100-784 stacked autoencoder: weights 78,400 + 3,000 + 3,000 + 78,400 = 162,800 plus biases 100 + 30 + 100 + 784 = 1,014, total 163,814."
+            ]
+          },
+          {
+            "heading": "Denoising autoencoder",
+            "points": [
+              "To force the autoencoder to learn useful features, add noise to its inputs and train it to recover the original, noise-free inputs (slide p.64).",
+              "Two ways shown: add Gaussian noise to the input, or apply dropout to the input layer, before Hidden 1 (slide p.64).",
+              "Why it matters: the network cannot simply copy the input (identity), so it must capture the underlying structure of the data."
+            ]
+          },
+          {
+            "heading": "Variational autoencoder (VAE)",
+            "points": [
+              "Instead of producing a coding directly, the encoder outputs a mean coding μ and a standard deviation σ (slide p.65).",
+              "The actual coding is sampled randomly from a Gaussian with mean μ and standard deviation σ; in the diagram, Gaussian noise is multiplied by σ and added to μ (coding = μ + σ x noise) (slide p.65).",
+              "The decoder then decodes the sampled coding normally (Hidden 4, Hidden 5, Output) (slide p.65).",
+              "Training-instance walk-through: encoder produces μ and σ, a coding is sampled (not exactly located at μ), the coding is decoded, and the final output resembles the training instance (slide p.66).",
+              "Contrast: a standard autoencoder maps an input to one deterministic coding; a VAE maps it to a distribution in coding space, which makes the model probabilistic/generative."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-transformer-self-attention-mechanics",
+        "title": "The Transformer and Self-Attention Step by Step",
+        "sections": [
+          {
+            "heading": "Transformer overview",
+            "points": [
+              "Components to be covered: encoder, decoder, self-attention, multi-head self-attention, positional encoding, masked self-attention and cross attention (slide p.68).",
+              "Architecture figure: encoder (N x) = [Multi-Head Attention, Add & Norm, Feed Forward, Add & Norm]; input = input embedding + positional encoding (slide p.68).",
+              "Decoder (N x) = [Masked Multi-Head Attention, Add & Norm, Multi-Head Attention over encoder outputs (cross attention), Add & Norm, Feed Forward, Add & Norm]; input = output embedding (outputs shifted right) + positional encoding; then Linear and Softmax give output probabilities (slide p.68)."
+            ]
+          },
+          {
+            "heading": "Computing one output b¹",
+            "points": [
+              "Goal: find the relevance α between a¹ and each other vector in the sequence (slide p.71).",
+              "Two ways to compute α: dot-product, α = q · k with q = W^q(input), k = W^k(input); or additive, where W^q and W^k outputs are added, passed through tanh, then multiplied by W to give α. Dot-product is the one used (highlighted) (slide p.72).",
+              "q¹ = W^q a¹ is the query; kⁱ = W^k aⁱ are the keys; attention scores α_{1←i} = q¹ · kⁱ, including α_{1←1} = q¹ · k¹ with itself (slides p.73-74).",
+              "Softmax over the scores gives attention weights α'_{1←i} = exp(α_{1←i}) / Σ_j exp(α_{1←j}) (slide p.74).",
+              "Values vⁱ = W^v aⁱ; output b¹ = Σ_i α'_{1←i} vⁱ, the weighted sum by attention weights (slide p.75).",
+              "b², b³, b⁴ are computed the same way using q², q³, q⁴, e.g. b² = Σ_i α'_{2←i} vⁱ; all outputs can be computed in parallel, unlike an RNN (slides p.76-77)."
+            ]
+          },
+          {
+            "heading": "Matrix form",
+            "points": [
+              "Stack inputs as columns I = [a¹ a² a³ a⁴]; then [q¹..q⁴] = W^q I = Qᵀ, [k¹..k⁴] = W^k I = Kᵀ, [v¹..v⁴] = W^v I = Vᵀ. Only W^q, W^k, W^v are learned (slide p.78).",
+              "Row of scores for query 1: [α_{1←1} α_{1←2} α_{1←3} α_{1←4}] = q¹ᵀ [k¹ k² k³ k⁴] (slide p.79).",
+              "All scores at once: A = QKᵀ, a 4 x 4 matrix with row i holding query i's scores against every key (slide p.80).",
+              "A' is obtained by (1) scaling by 1/√d_k and (2) row-wise softmax, so each row of A' sums to 1 (slide p.80).",
+              "Output then is A'V, which is exactly softmax(QKᵀ/√d_k)V. Cost: with n tokens, A has n x n entries (16 for 4 tokens; 90,000 for 300 words)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-self-attention-matrix-form",
+        "title": "Self-Attention in Matrix Form and a Worked Example",
+        "sections": [
+          {
+            "heading": "From scores to outputs (slides p.79-82)",
+            "points": [
+              "For query q^1, the raw attention scores are dot products with every key: α(1 from j) = q^1 · k^j for j = 1..4; stacking all queries gives the raw score matrix A = QKᵀ, where row i holds query i's scores against all keys (slide p.80).",
+              "The raw matrix A is turned into the attention matrix A' in two steps: (1) scale every entry by 1/√d_k, then (2) apply a row-wise softmax so each row of A' sums to 1 (slide p.80).",
+              "Each output is a weighted sum of value vectors: b^1 = Σ_j α'(1 from j) v^j; in matrix form O = A'V = softmax(QKᵀ/√d_k)V, so row i of O is token i's contextualised output (slide p.81).",
+              "The slides justify the scaling: √d_k is the standard deviation of the raw attention scores, so dividing by √d_k is a standard normalisation that keeps scores from growing with the key dimension (slide p.81).",
+              "Summary (slide p.82): Q = W^q I, K = W^k I, V = W^v I, where I is the input; A = QKᵀ, A' = normalised A (the 'Attention Matrix'), and O = A'V. The only parameters to be learned are W^q, W^k and W^v; everything else is computed."
+            ]
+          },
+          {
+            "heading": "Worked example: two tokens, one head, d_k = 2 (slide p.83)",
+            "points": [
+              "Row convention: each token occupies one row of X. Here X = W_Q = W_K = I (2x2 identity) and W_V = [[2,0],[0,4]], so Q = XW_Q = X, K = XW_K = X, and V = XW_V = [[2,0],[0,4]].",
+              "Scaled scores: S = QKᵀ/√d_k = I/√2 = [[0.7071, 0],[0, 0.7071]], because each token's query matches only its own key.",
+              "Row softmax: e^0.7071/(e^0.7071 + e^0) ≈ 0.67, so A' ≈ [[0.67, 0.33],[0.33, 0.67]]; each token attends about two-thirds to itself and one-third to the other token.",
+              "Mix the values: O = A'V ≈ [[0.67x2, 0.33x4],[0.33x2, 0.67x4]] = [[1.34, 1.32],[0.66, 2.68]]. Each output row is a blend of both value rows, weighted by that row of A'.",
+              "Exam tip: the steps are always project (Q, K, V), score and scale (QKᵀ/√d_k), row-softmax, then multiply by V; dimension check: (n x d_k)(d_k x n) gives an n x n attention matrix, times (n x d_v) gives an n x d_v output."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-multi-head-add-norm",
+        "title": "Multi-Head Self-Attention and Add & Norm",
+        "sections": [
+          {
+            "heading": "Multi-head self-attention (slides p.84-86)",
+            "points": [
+              "Each input a^i is first projected to q^i = W^q a^i (and likewise k^i, v^i); with 2 heads, each is then split into head-specific versions, e.g. q^(i,1) = W^(q,1) q^i and q^(i,2) = W^(q,2) q^i, and similarly for keys and values (slide p.84).",
+              "Head 1 only uses head-1 vectors: q^(i,1) is dotted with k^(i,1) and k^(j,1), and the weights multiply v^(i,1) and v^(j,1) to give b^(i,1); head 2 does the same independently with the ,2 vectors to give b^(i,2) (slides p.84-85).",
+              "The head outputs are concatenated and mixed by a learned output matrix: b^i = W^O [b^(i,1); b^(i,2)] (slide p.86).",
+              "Why it matters: different heads can capture different kinds of relationships between tokens in parallel, and the heads are computed simultaneously, which is part of why transformers are fast (slide p.106 lists multi-head attention under parallelism)."
+            ]
+          },
+          {
+            "heading": "Add: residual connection (slide p.87)",
+            "points": [
+              "Each sub-layer (multi-head attention, feed-forward) in an encoder block is wrapped as 'Add & Norm'; the block is repeated N times (Nx in the diagram).",
+              "Add is a residual connection: the output is F(x) + x, where F(x) is the sub-layer and x is the identity shortcut, the same idea as ResNet's weight layer, relu, weight layer plus identity.",
+              "Self-attention is applied on residuals, and the shortcut helps prevent the vanishing gradient problem because gradients can flow directly through the identity path.",
+              "On slide p.88 this is drawn as the self-attention output b plus the original input a, giving a + b, which is then passed into the norm."
+            ]
+          },
+          {
+            "heading": "Norm: layer normalisation (slides p.87-88)",
+            "points": [
+              "Layer Normalisation normalises each element of a single vector using the mean m and standard deviation σ computed across all K elements of that same vector: x'_i = (x_i − m)/σ (slide p.88, arXiv 1607.06450).",
+              "Contrast with batch norm: layer norm uses statistics of one vector (one token), not statistics across a batch, so it works per token regardless of batch size.",
+              "Purpose given on the slide: stabilise activations and prevent Internal Covariate Shift (ICS).",
+              "Example: x = [1, 2, 3, 4] has m = 2.5 and σ ≈ 1.118, so x' ≈ [−1.34, −0.45, 0.45, 1.34]; scaling x to [2, 4, 6, 8] gives the same x', showing layer norm removes the vector's scale and shift."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-positional-encoding-bert",
+        "title": "Positional Encoding and Encoder-Only Transformers (BERT)",
+        "sections": [
+          {
+            "heading": "Sinusoidal positional encoding (slide p.89)",
+            "points": [
+              "Input to the Transformer = word embedding + positional encoding, because self-attention by itself does not take care of positional information (it treats the input as an unordered set).",
+              "One unique positional vector is hand-crafted for each position, and it must have the same length (d_model) as the word embeddings so the two can be added.",
+              "For 0 ≤ i < d_model/2: PE(pos, 2i) = sin(pos / 10000^(i/(d_model/2))) and PE(pos, 2i+1) = cos(pos / 10000^(i/(d_model/2))); each i gives one (sin, cos) pair.",
+              "Worked example with d_model = 4: there are two (sin, cos) pairs; i = 0 gives exponent 0 (divisor 10000^0 = 1) and i = 1 gives exponent 0.5 (divisor 10000^0.5 = 100).",
+              "For pos = 1: PE = [sin(1), cos(1), sin(0.01), cos(0.01)] ≈ [0.84, 0.54, 0.01, 1.00]. Low dimensions vary quickly with position; higher dimensions vary slowly."
+            ]
+          },
+          {
+            "heading": "BERT: encoder-only transformer (slides p.90-91)",
+            "points": [
+              "The transformer can be used without the decoder: this is BERT, Bidirectional Encoder Representations from Transformers (arXiv 1810.04805).",
+              "Each BERT input token is the sum of three embeddings: word embedding, segment embedding and positional embedding, giving one vector per token.",
+              "BERT learns a sequence of contextualised vectors, one per input token, each encoded with the contextual information from the whole sentence; this can be seen as 'feature extraction'.",
+              "BERT is paired with different downstream decoders/heads per task (slide p.91): sentence-pair or single-sentence classification uses the [CLS] output C to predict a class label (e.g. MNLI, QQP, RTE, SWAG); question answering (SQuAD v1.1) predicts start/end spans over the paragraph tokens from a [CLS] Question [SEP] Paragraph input; single-sentence tagging (CoNLL-2003 NER) predicts a label (e.g. O, B-PER) for every token."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-transformer-decoder",
+        "title": "The Full Transformer: Autoregressive Decoder, Masking and Cross Attention",
+        "sections": [
+          {
+            "heading": "Architecture overview and shifted-right inputs (slides p.92-93)",
+            "points": [
+              "The full Transformer combines: encoder, decoder, self-attention, multi-head self-attention, positional encoding, masked self-attention and cross attention (slide p.92).",
+              "Encoder block (xN): multi-head attention then Add & Norm, feed-forward then Add & Norm. Decoder block (xN): masked multi-head attention plus Add & Norm, multi-head (cross) attention over the encoder output plus Add & Norm, feed-forward plus Add & Norm, then a final Linear layer and Softmax giving output probabilities.",
+              "The decoder input is the output sequence 'shifted right': as in Seq2Seq (Sutskever et al., 2014), the encoder reads A, B, C, and the decoder is fed <EOS>, W, X, Y, Z while predicting W, X, Y, Z, <EOS>, i.e. each position receives the previous target token as input."
+            ]
+          },
+          {
+            "heading": "Autoregressive decoding and the stop token (slides p.94-102)",
+            "points": [
+              "Example task: speech recognition of the audio 'long short term memory'. The encoder turns audio frames into vectors; the decoder starts from a special START token.",
+              "At each step the decoder outputs a softmax distribution over a vocabulary of size V (common characters/words), e.g. short 0.02, long 0.08, term 0.01, memory 0.01, and the max ('long') is chosen (slide p.94).",
+              "Autoregressive: each chosen output is fed back as the next decoder input, so START gives 'long', then 'long' gives 'short', 'short' gives 'term', 'term' gives 'memory' (slides p.95-96).",
+              "Without a way to stop, the decoder never stops (it would continue with 'cell' after 'memory', slide p.100); the fix is to add an END (stop) token to the vocabulary, so the softmax is over V words plus END, and generation stops when END is the max (slides p.101-102)."
+            ]
+          },
+          {
+            "heading": "Masked self-attention (slides p.97-99)",
+            "points": [
+              "In ordinary self-attention every output b^i looks at all inputs a^1..a^4 (slide p.98).",
+              "In masked self-attention, b^2 may only use q^2 with k^1, k^2 and v^1, v^2; positions 3 and 4 are blocked, so token i can only attend to tokens at positions ≤ i (slide p.99).",
+              "Why masked: think about how the decoder works. It produces tokens one at a time, so when generating position i the later tokens do not exist yet; the mask makes training consistent with this left-to-right generation.",
+              "Counting example: for 4 tokens, a causal mask keeps 4 + 3 + 2 + 1 = 10 of the 16 attention weights and blocks the other 6."
+            ]
+          },
+          {
+            "heading": "Cross attention (slides p.103-105)",
+            "points": [
+              "Cross attention is the decoder's middle multi-head attention block; it connects the decoder to the encoder output.",
+              "Keys and values come from the encoder outputs a^1, a^2, a^3 (k^i, v^i), while the query q comes from the decoder's masked self-attention output for the current position.",
+              "Weights α'_1, α'_2, α'_3 are computed from q and each k^i, and the result v = Σ α'_i v^i is passed through an FC (feed-forward) layer (slide p.104).",
+              "At the next step, the decoder input is START plus 'long'; its new query q' attends again over the same encoder keys/values to produce v' (slide p.105)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-self-attention-vs-rnn",
+        "title": "Self-Attention vs RNN and Linear Attention (Optional)",
+        "sections": [
+          {
+            "heading": "Why transformers beat RNNs (slides p.106-108)",
+            "points": [
+              "Faster through parallelism: the transformer reads all word embeddings at once and uses multi-head attention, rather than processing tokens one by one (slide p.106).",
+              "Long-term relationships: every token can attend directly to every other token, so distance in the sequence does not weaken the connection (slide p.106 poses 'How does it memorise long-term relationship?').",
+              "Comparison table (slide p.107): inference, self-attention's compute and memory grow with sequence length, while an RNN's are fixed; training, self-attention is easy to parallelise, while an RNN is 'difficult to parallelise?' (questioned, citing 'Transformers are RNNs', arXiv 2006.16236).",
+              "Vanilla RNN recap (slide p.108): h(t) = tanh(W_xᵀ x(t) + W_hᵀ h(t−1) + b) and y(t) = W_yᵀ h(t) + b_y; the example is a character model taking 'h','e','l','l' as one-hot inputs to predict 'e','l','l','o'."
+            ]
+          },
+          {
+            "heading": "From a generalised RNN to linear attention (optional, slides p.109-114)",
+            "points": [
+              "Generalised RNN: H(t) = r(t)(H(t−1)) + f(t)(x(t)) and y(t) = g(t)(H(t)), where H is a memory cell (a moving window) and y is the output observed at each time step (slide p.109).",
+              "With H(0) = 0, unrolling gives nested recursion, e.g. H(3) = r(3)(r(2)(f(1)(x(1))) + f(2)(x(2))) + f(3)(x(3)); each H(t) needs H(t−1), so there is no parallelism (slides p.110-111).",
+              "Removing r (make it the identity) gives H(t) = H(t−1) + f(t)(x(t)) = f(1)(x(1)) + ... + f(t)(x(t)), a plain sum that can be computed in parallel (slide p.112).",
+              "Let f(t)(x(t)) = D(t) (a square matrix) and g(t)(H(t)) = H(t) q(t) with q(t) = W^Q x(t); then y(t) = D(1)q(t) + ... + D(t)q(t) (slide p.113).",
+              "Let D(t) = v(t) k(t)ᵀ be rank-1, with v(t) = W^V x(t) and k(t) = W^K x(t): y(t) = Σ_{s ≤ t} v(s) k(s)ᵀ q(t). This is self-attention without softmax, called linear attention, and it is causal (only s ≤ t), like masked self-attention (slide p.114)."
+            ]
+          },
+          {
+            "heading": "Linear attention models, Mamba and throughput (optional, slides p.115-117)",
+            "points": [
+              "Many modern models share the recurrence S_t = S_(t−1) + v_t k_tᵀ with read-out o_t = S_t q_t (linear attention); variants add decay or gating, e.g. RetNet S_t = γ S_(t−1) + v_t k_tᵀ and Mamba-2 S_t = γ_t S_(t−1) + v_t k_tᵀ (table from arXiv 2406.06484; RetNet, Mamba and Mamba-2 are highlighted).",
+              "Perplexity PP = exp(−(1/N) Σ log P(w_i | w_1..w_(i−1))) is the exponential of the average negative log-likelihood of the true next token; it measures a probabilistic model's uncertainty (lower is better). FLOPs (floating point operations) measure computational complexity (slide p.116).",
+              "Scaling-law plots on The Pile (sequence lengths 2048 and 8192) show perplexity falling with FLOPs for Hyena, RWKV, Transformer, RetNet, H3++, Transformer++ and Mamba, with Mamba among the lowest perplexity, matching or beating Transformer++ (slide p.116, arXiv 2312.00752).",
+              "Inference throughput on an A100 80GB with prompt length 2048 (slide p.117): Mamba 1.4B rises from 140 tokens/s at batch 1 to 1814 at batch 128; Transformer 1.3B reaches 364 at batch 32 then runs out of memory (OOM) from batch 64; Transformer 6.7B is OOM from batch 32; Mamba 6.9B reaches 515 at batch 128. This reflects that a recurrent state has fixed memory while attention memory grows with sequence length."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w7-vit-and-lab",
+        "title": "Vision Transformer and the Annotated Transformer Notebook",
+        "sections": [
+          {
+            "heading": "Vision Transformer, ViT (slide p.118)",
+            "points": [
+              "'An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale' (arXiv 2010.11929) applies attention to images by treating image patches as tokens.",
+              "The image is split into patches (9 in the figure), each patch is flattened and passed through a linear projection, and a position embedding is added (Patch + Position Embedding).",
+              "An extra learnable [class] embedding (position 0) is prepended, so the figure's encoder input is 9 + 1 = 10 tokens; the encoder output for the class token goes to an MLP head that predicts the class (e.g. bird, ball, car).",
+              "The ViT Transformer Encoder block (repeated L times) is: Norm, Multi-Head Attention, residual add, then Norm, MLP, residual add; note the Norm is applied before each sub-layer here, unlike the 'Add & Norm' after each sub-layer in the original transformer diagram."
+            ]
+          },
+          {
+            "heading": "Lab: AnnotatedTransformer.ipynb",
+            "points": [
+              "The Week 7 notebook contains only the setup cells for the Harvard 'Annotated Transformer': pip installs (torchdata 0.3.0, torchtext 0.12, spacy 3.2, altair, GPUtil, plus German and English spaCy models for translation) and PyTorch imports (nn, log_softmax, pad, LambdaLR learning-rate scheduler, DataLoader, DistributedDataParallel), so it is a starting point for implementing the encoder-decoder transformer covered in these slides."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

@@ -2002,5 +2002,1097 @@ export const questions: readonly QuizQuestion[] = [
     ],
     "answerIndex": 0,
     "explanation": "Random Forest = bagging + per-split random feature selection (max_features=1 in the notebook forces this to the extreme). Decorrelated trees average out each other's idiosyncratic overfitting, which is why the aggregated boundary is smoother than any individual tree's."
+  },
+  {
+    "id": "cnn1",
+    "topic": "CNN",
+    "question": "A 7 x 7 single-channel image is convolved with a 3 x 3 kernel, stride 2, no padding. What is the output feature map size?",
+    "options": [
+      "5 x 5",
+      "3 x 3",
+      "2 x 2",
+      "4 x 4"
+    ],
+    "answerIndex": 1,
+    "explanation": "(7 - 3)/2 + 1 = 3, so the output is 3 x 3 (slide p.25). 5 x 5 is the stride-1 answer; forgetting to divide by the stride is the common slip."
+  },
+  {
+    "id": "cnn2",
+    "topic": "CNN",
+    "question": "A 7 x 7 image, 3 x 3 kernel, stride 1 and zero padding of size 1. What is the output size?",
+    "options": [
+      "5 x 5",
+      "9 x 9",
+      "7 x 7",
+      "6 x 6"
+    ],
+    "answerIndex": 2,
+    "explanation": "(7 + 2x1 - 3)/1 + 1 = 7, so the output keeps the input size of 7 x 7 (slide p.26). 9 x 9 is the size of the padded input, not the output."
+  },
+  {
+    "id": "cnn3",
+    "topic": "CNN",
+    "question": "A 32 x 32 x 3 image is convolved with one 5 x 5 x 3 filter (stride 1, no padding). What is the activation map size?",
+    "options": [
+      "28 x 28 x 3",
+      "32 x 32 x 1",
+      "27 x 27 x 1",
+      "28 x 28 x 1"
+    ],
+    "answerIndex": 3,
+    "explanation": "32 - 5 + 1 = 28 spatially, and because the filter spans the full depth of 3 channels it produces a single depth-1 map: 28 x 28 x 1 (slide p.30). 28 x 28 x 3 wrongly assumes one output channel per input channel."
+  },
+  {
+    "id": "cnn4",
+    "topic": "CNN",
+    "question": "Using the 1D input [0, 1, 2, -1, 1, -3, 0] and kernel (1, 0, -1) with stride 1, what is the output?",
+    "options": [
+      "[-2, 2, 1, 2, 1]",
+      "[2, -2, -1, -2, -1]",
+      "[-2, 1, 1]",
+      "[3, 1, 2, -3, -2]"
+    ],
+    "answerIndex": 0,
+    "explanation": "Each output is x_i - x_(i+2): 0-2=-2, 1-(-1)=2, 2-1=1, -1-(-3)=2, 1-0=1 (slide p.17). [-2, 1, 1] is the stride-2 result, and the sign-flipped option is what you get if you flip the kernel."
+  },
+  {
+    "id": "cnn5",
+    "topic": "CNN",
+    "question": "On slide p.21, the zero-padded patch [[0,0,0],[0,105,102],[0,103,99]] is multiplied element-wise by [[0,-1,0],[-1,5,-1],[0,-1,0]] and summed. What is the result?",
+    "options": [
+      "525",
+      "320",
+      "309",
+      "411"
+    ],
+    "answerIndex": 1,
+    "explanation": "Only non-zero products: 105x5 = 525, minus 102 and minus 103 (the 0 terms vanish), giving 525 - 205 = 320. 525 ignores the negative neighbours; corner values are multiplied by 0 so 99 does not contribute."
+  },
+  {
+    "id": "cnn6",
+    "topic": "CNN",
+    "question": "How many learnable parameters does a single 5 x 5 x 3 convolution filter have, including its bias?",
+    "options": [
+      "25",
+      "75",
+      "76",
+      "26"
+    ],
+    "answerIndex": 2,
+    "explanation": "The filter has 5 x 5 x 3 = 75 weights and one bias b in w^T x + b, so 76 parameters (slide p.29). 26 forgets that the filter extends through all 3 input channels."
+  },
+  {
+    "id": "cnn7",
+    "topic": "CNN",
+    "question": "A conv layer applies two 5 x 5 x 3 filters to a 32 x 32 x 3 image (stride 1, no padding). What is the output volume?",
+    "options": [
+      "28 x 28 x 2",
+      "28 x 28 x 6",
+      "56 x 28 x 1",
+      "32 x 32 x 2"
+    ],
+    "answerIndex": 0,
+    "explanation": "Each filter produces one 28 x 28 activation map and the maps are stacked, so 2 filters give 28 x 28 x 2 (slide p.31). The output depth equals the number of filters, not filters times input channels."
+  },
+  {
+    "id": "cnn8",
+    "topic": "CNN",
+    "question": "Which is the main reason given on slide p.4 that an FNN handles images poorly?",
+    "options": [
+      "FNNs cannot use non-linear activations",
+      "FNNs need images to be grayscale",
+      "Weights for different pixel positions are independent, so a pattern learned in one location is not reused elsewhere",
+      "FNNs cannot be trained by backpropagation"
+    ],
+    "answerIndex": 2,
+    "explanation": "The slide shows the dog's nose at different pixel positions and notes the weights of the red and green inputs are independent, so the same feature must be relearned at every location. The other options are false; FNNs use non-linear activations and backprop normally."
+  },
+  {
+    "id": "cnn9",
+    "topic": "CNN",
+    "question": "The box filter (1/9) x ones(3,3) is applied to the patch [[10,20,30],[40,50,60],[70,80,90]]. What is the response R?",
+    "options": [
+      "450",
+      "90",
+      "45",
+      "50"
+    ],
+    "answerIndex": 3,
+    "explanation": "R = (1/9) x sum = 450/9 = 50, the mean of the neighbourhood (slide p.10). 450 forgets the 1/9 normalisation."
+  },
+  {
+    "id": "cnn10",
+    "topic": "CNN",
+    "question": "What is the Laplacian [[0,1,0],[1,-4,1],[0,1,0]] response on the patch [[5,5,5],[5,9,5],[5,5,5]]?",
+    "options": [
+      "-16",
+      "16",
+      "0",
+      "-36"
+    ],
+    "answerIndex": 0,
+    "explanation": "4 neighbours x 5 = 20, centre -4 x 9 = -36, total -16; corners have weight 0. 0 would be the answer only for a constant patch, since the Laplacian's coefficients sum to 0."
+  },
+  {
+    "id": "cnn11",
+    "topic": "CNN",
+    "question": "Why does the kernel [[0,-1,0],[-1,5,-1],[0,-1,0]] produce a sharpened image while [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]] produces mainly an edge map?",
+    "options": [
+      "The first is larger than the second",
+      "The first's coefficients sum to 1 (keeps the original plus edges); the second's sum to 0 (flat areas go to 0)",
+      "The second uses stride 2",
+      "The first is a lowpass filter"
+    ],
+    "answerIndex": 1,
+    "explanation": "Coefficients summing to 1 preserve flat-region brightness, so the output is the image with boosted edges (slide p.15); summing to 0 removes flat regions, leaving only edges (slide p.16). Both are 3 x 3 high-pass style filters, not lowpass."
+  },
+  {
+    "id": "cnn12",
+    "topic": "CNN",
+    "question": "Which statement about smoothing (averaging) filters is correct?",
+    "options": [
+      "They are high-pass filters analogous to differentiation",
+      "They enhance edges and noise",
+      "They reduce random noise but can also smudge real edges",
+      "Smaller box filters blur more than larger ones"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.9 lists removing random noise as good and smudging actual edges as bad. Smoothing is lowpass (analogous to integration), and slide p.11 shows larger box filters (e.g. 35x35) blur more."
+  },
+  {
+    "id": "cnn13",
+    "topic": "CNN",
+    "question": "Sharpening is mathematically analogous to which operation?",
+    "options": [
+      "Spatial differentiation",
+      "Integration",
+      "Averaging",
+      "Histogram equalization"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.12: averaging is like integration and sharpening is like spatial differentiation, which is why it highlights intensity transitions. Histogram equalization was only used to display the results."
+  },
+  {
+    "id": "cnn14",
+    "topic": "CNN",
+    "question": "Which list correctly gives the typical hyperparameters of a convolution layer according to slide p.28?",
+    "options": [
+      "Learning rate, batch size, epochs, momentum",
+      "Kernel size, number of filters, padding, stride",
+      "Kernel weights, bias, activation output, stride",
+      "Image height, width, depth, number of classes"
+    ],
+    "answerIndex": 1,
+    "explanation": "The slide lists kernel/filter size, number of filters, padding and stride. Kernel weights and biases are learned parameters, not hyperparameters."
+  },
+  {
+    "id": "cnn15",
+    "topic": "CNN",
+    "question": "A single fully connected neuron on a flattened 32 x 32 x 3 image needs how many weights (excluding bias), compared with 75 for a 5 x 5 x 3 conv filter?",
+    "options": [
+      "1,024",
+      "75",
+      "3,072",
+      "9,216"
+    ],
+    "answerIndex": 2,
+    "explanation": "32 x 32 x 3 = 3,072 inputs, each with its own weight, illustrating the 'too many parameters' problem (slide p.3). 1,024 ignores the 3 colour channels."
+  },
+  {
+    "id": "cnn16",
+    "topic": "CNN",
+    "question": "In the 1D example with input [0, 1, 2, -1, 1, -3, 0], kernel (1, 0, -1) and stride 2, how many outputs are produced?",
+    "options": [
+      "5",
+      "4",
+      "2",
+      "3"
+    ],
+    "answerIndex": 3,
+    "explanation": "(7 - 3)/2 + 1 = 3 outputs: [-2, 1, 1] (slide p.17-18). 5 is the stride-1 count."
+  },
+  {
+    "id": "cnn17",
+    "topic": "CNN",
+    "question": "An image of 256×256×1 is convolved with 10 filters of size 3×3, stride 3, padding 1. What is the output size?",
+    "options": [
+      "85×85×10",
+      "86×86×10",
+      "86×86×1",
+      "254×254×10"
+    ],
+    "answerIndex": 1,
+    "explanation": "(256 − 3 + 2×1)/3 + 1 = 255/3 + 1 = 86 per side, and depth equals the number of filters (10), giving 86×86×10 (slide p.34). 254 ignores the stride and padding, and depth 1 wrongly carries the input depth through."
+  },
+  {
+    "id": "cnn18",
+    "topic": "CNN",
+    "question": "Image 4096×1024×3, 20 filters of 15×5, stride 5×3, padding 7×2. What is the output volume?",
+    "options": [
+      "820×342×60",
+      "819×341×20",
+      "820×342×20",
+      "4096×1024×20"
+    ],
+    "answerIndex": 2,
+    "explanation": "Height (4096 − 15 + 14)/5 + 1 = 820; width (1024 − 5 + 4)/3 + 1 = 342; depth = 20 filters (slide p.34). 60 wrongly multiplies filters by input channels; 819×341 forgets the +1."
+  },
+  {
+    "id": "cnn19",
+    "topic": "CNN",
+    "question": "Apply 2×2 average pooling (stride 2) to the 4×4 slice [[1,0,2,3],[4,6,6,8],[3,1,1,0],[1,2,2,4]]. What is the top-right output?",
+    "options": [
+      "8",
+      "4.75",
+      "2.75",
+      "19"
+    ],
+    "answerIndex": 1,
+    "explanation": "The top-right quadrant is {2,3,6,8}; its mean is 19/4 = 4.75 (slide p.35). 8 is the max-pooling answer, 19 is the sum, and 2.75 belongs to the top-left quadrant."
+  },
+  {
+    "id": "cnn20",
+    "topic": "CNN",
+    "question": "For the same 4×4 slice, what does 2×2 max pooling with stride 2 produce?",
+    "options": [
+      "[[6,8],[3,4]]",
+      "[[4,8],[3,4]]",
+      "[[6,8],[2,4]]",
+      "[[2.75,4.75],[1.75,1.75]]"
+    ],
+    "answerIndex": 0,
+    "explanation": "The quadrant maxima are max(1,0,4,6) = 6, max(2,3,6,8) = 8, max(3,1,1,2) = 3 and max(1,0,2,4) = 4 (slide p.35). The last option is the average-pooling result, and the others misread a quadrant."
+  },
+  {
+    "id": "cnn21",
+    "topic": "CNN",
+    "question": "Why is max-pooling described as a \"smart\" way to reduce dimensionality?",
+    "options": [
+      "It learns optimal pooling weights by backpropagation",
+      "It keeps every activation while compressing storage",
+      "It down-samples while adding robustness to small shifts in position",
+      "It increases the number of feature maps"
+    ],
+    "answerIndex": 2,
+    "explanation": "Max-pooling reduces size and, because the max is unchanged under small shifts within a window, adds approximate translation invariance (slide p.36). It has no learnable weights, discards non-maximal values, and does not change the number of maps."
+  },
+  {
+    "id": "cnn22",
+    "topic": "CNN",
+    "question": "In the simple CNN example, a 28×28 input gives 3×24×24 after convolution. What is the size after 2×2 max-pooling?",
+    "options": [
+      "3×12×12",
+      "1×12×12",
+      "3×22×22",
+      "6×12×12"
+    ],
+    "answerIndex": 0,
+    "explanation": "Max-pooling acts on each feature map separately, halving 24 to 12 and keeping 3 maps (slide p.39-40). Pooling never merges or adds maps, so 1 or 6 maps are wrong; 22 would be another 3×3 convolution."
+  },
+  {
+    "id": "cnn23",
+    "topic": "CNN",
+    "question": "A conv layer maps 32×32×3 to 28×28×6 with stride 1 and no padding. How many parameters (weights + biases) does it have?",
+    "options": [
+      "150",
+      "456",
+      "4704",
+      "450"
+    ],
+    "answerIndex": 1,
+    "explanation": "28 = 32 − F + 1 gives F = 5; each filter has 5×5×3 = 75 weights + 1 bias, and 6 filters give 6 × 76 = 456 (slide p.32). 450 forgets the biases and 150 forgets that filters span all 3 input channels."
+  },
+  {
+    "id": "cnn24",
+    "topic": "CNN",
+    "question": "A 5×5 conv with 48 filters is applied directly to 14×14×480 (same padding). Roughly how many multiplications?",
+    "options": [
+      "About 5.3 million",
+      "About 1.5 million",
+      "About 112.9 million",
+      "About 2.4 billion"
+    ],
+    "answerIndex": 2,
+    "explanation": "Outputs 14×14×48 = 9,408, each needing 5×5×480 = 12,000 multiplications, giving 112,896,000 (slide p.56). About 5.3M is the cost WITH the 1×1 bottleneck to 16 channels; 1.5M is only the bottleneck's own cost."
+  },
+  {
+    "id": "cnn25",
+    "topic": "CNN",
+    "question": "With a 1×1 bottleneck (480 to 16 channels) before the 5×5×48 conv on 14×14, what is the total multiplication count?",
+    "options": [
+      "About 3.8 million",
+      "About 5.3 million",
+      "About 112.9 million",
+      "About 16.9 million"
+    ],
+    "answerIndex": 1,
+    "explanation": "1×1 stage: 14×14×16×480 = 1,505,280; 5×5 stage: 14×14×48×5×5×16 = 3,763,200; total 5,268,480, about 21 times cheaper than 112.9M (slide p.56). 3.8M counts only the 5×5 stage and forgets the 1×1 cost."
+  },
+  {
+    "id": "cnn26",
+    "topic": "CNN",
+    "question": "Replacing a fully connected layer from 7×7×1024 to 1024 units with global average pooling removes about how many weights?",
+    "options": [
+      "About 50 thousand",
+      "About 1 million",
+      "About 51.4 million",
+      "About 7.3 million"
+    ],
+    "answerIndex": 2,
+    "explanation": "An FC layer needs 7×7×1024 inputs × 1024 outputs = 51,380,224 weights, while global average pooling has no weights (slide p.57). 50 thousand (50,176) is just the number of inputs 7×7×1024, not the weight count."
+  },
+  {
+    "id": "cnn27",
+    "topic": "CNN",
+    "question": "What is the main purpose of the 1×1 convolutions inside an Inception module?",
+    "options": [
+      "To enlarge the spatial resolution",
+      "To reduce the input channel depth before expensive convolutions",
+      "To replace the softmax classifier",
+      "To add skip connections"
+    ],
+    "answerIndex": 1,
+    "explanation": "The slide states 1×1 convolutions reduce the input channel depth (slide p.55), making 3×3 and 5×5 branches cheap. They keep spatial size unchanged, and skip connections are the ResNet idea, not Inception."
+  },
+  {
+    "id": "cnn28",
+    "topic": "CNN",
+    "question": "Which statement correctly describes a ResNet residual block?",
+    "options": [
+      "It concatenates 1×1, 3×3 and 5×5 conv outputs",
+      "Its layers learn F(x) and the block outputs F(x) + x",
+      "It replaces all conv layers with fully connected layers",
+      "It removes batch normalization to speed training"
+    ],
+    "answerIndex": 1,
+    "explanation": "Intermediate layers learn a residual function F(x) relative to the input, and an identity skip connection adds x back to give F(x) + x (slide p.58). Concatenating multi-scale branches is the Inception module; ResNet uses batch normalization heavily."
+  },
+  {
+    "id": "cnn29",
+    "topic": "CNN",
+    "question": "What was VGGNet's main contribution, according to the lecture?",
+    "options": [
+      "Showing that network depth is critical for good performance",
+      "Introducing skip connections",
+      "Cutting parameters to 4M with Inception modules",
+      "Being the first CNN to popularise deep learning in vision"
+    ],
+    "answerIndex": 0,
+    "explanation": "VGGNet (Simonyan and Zisserman, 2014) showed depth is a critical component of performance (slide p.54). Skip connections are ResNet, the 4M-parameter Inception design is GoogLeNet, and the first CNN to popularise CNNs in vision was AlexNet."
+  },
+  {
+    "id": "cnn30",
+    "topic": "CNN",
+    "question": "Which design change did AlexNet introduce compared with earlier networks like LeNet?",
+    "options": [
+      "Using average pooling instead of FC layers",
+      "Stacking convolutional layers directly on top of each other",
+      "Removing pooling entirely",
+      "Residual skip connections"
+    ],
+    "answerIndex": 1,
+    "explanation": "Before AlexNet, a single CONV layer was always immediately followed by a POOL layer; AlexNet stacked conv layers directly (slide p.53). Average pooling instead of FC is GoogLeNet and skip connections are ResNet."
+  },
+  {
+    "id": "cnn31",
+    "topic": "CNN",
+    "question": "On ImageNet-2012, which model was the first in the slide's chart to beat the 5% human error rate?",
+    "options": [
+      "VGG-16 (7.4%)",
+      "GoogLeNet-19 (6.7%)",
+      "ResNet-152 (3.57%)",
+      "Clarifai (11.2%)"
+    ],
+    "answerIndex": 2,
+    "explanation": "Only ResNet-152 (2015) at 3.57% is below the 5% human error (slide p.59). GoogLeNet at 6.7% and VGG-16 at 7.4% were close but still above human error."
+  },
+  {
+    "id": "cnn32",
+    "topic": "CNN",
+    "question": "Which two mechanisms does the lecture credit for a CNN's translation invariance?",
+    "options": [
+      "Dropout and softmax",
+      "Weight sharing and pooling",
+      "Padding and stride",
+      "Fully connected layers and ReLU"
+    ],
+    "answerIndex": 1,
+    "explanation": "Translation invariance results from weight sharing and pooling layers that down-sample the spatial dimensions (slide p.48). Fully connected layers are position-specific, so they work against invariance rather than create it."
+  },
+  {
+    "id": "cnn33",
+    "topic": "CNN",
+    "question": "In Keras model_4 with a 28×28×1 input (5×5 conv, 2×2 pool, 5×5 conv with 64 filters, 2×2 pool), what is the Flatten output length?",
+    "options": [
+      "1,024",
+      "4,096",
+      "9,216",
+      "3,136"
+    ],
+    "answerIndex": 0,
+    "explanation": "28 to 24 (conv) to 12 (pool) to 8 (conv) to 4 (pool), giving 4×4×64 = 1,024 (slide p.61, assuming MNIST-sized input). 3,136 = 7×7×64 would come from same-padding convs; 9,216 is model_5's flatten size."
+  },
+  {
+    "id": "cnn34",
+    "topic": "CNN",
+    "question": "In INPUT -> [CONV -> RELU -> CONV -> RELU -> POOL]*3 -> [FC -> RELU]*2 -> FC, what are N, M and K?",
+    "options": [
+      "N=3, M=2, K=2",
+      "N=2, M=3, K=2",
+      "N=2, M=3, K=3",
+      "N=1, M=3, K=2"
+    ],
+    "answerIndex": 1,
+    "explanation": "In INPUT -> [[CONV -> RELU]*N -> POOL?]*M -> [FC -> RELU]*K -> FC, there are 2 CONV-RELU pairs per block (N=2), 3 blocks (M=3) and 2 FC-RELU layers before the final FC (K=2) (slide p.63). K=3 wrongly counts the final FC, which has no ReLU."
+  },
+  {
+    "id": "att1",
+    "topic": "Attention & Transformers",
+    "question": "Which input/output configuration best describes spam filtering of emails with an RNN?",
+    "options": [
+      "One to one",
+      "One to many",
+      "Many to one",
+      "Many to many (synchronised)"
+    ],
+    "answerIndex": 2,
+    "explanation": "The input is a sequence of words and the output is a single label (spam or not spam), so it is many to one (slide p.7). One to many is the reverse, e.g. image captioning where one image yields a sequence of words."
+  },
+  {
+    "id": "att2",
+    "topic": "Attention & Transformers",
+    "question": "Image captioning (input: an image, output: a caption) is an example of which configuration?",
+    "options": [
+      "Many to one",
+      "One to many",
+      "Many to many (delayed)",
+      "One to one"
+    ],
+    "answerIndex": 1,
+    "explanation": "A single input (the image) produces a sequence of output words, so it is one to many (slide p.6). Many to one would map a sequence to a single label, the opposite direction."
+  },
+  {
+    "id": "att3",
+    "topic": "Attention & Transformers",
+    "question": "Using the dimensions (give, man, fish, feed, day, teach, lifetime) for 'Give a man a fish, and you feed him for a day. Teach a man to fish, and you feed him for a lifetime.', what is the bag-of-words count vector?",
+    "options": [
+      "(1, 1, 1, 1, 1, 1, 1)",
+      "(2, 2, 2, 2, 1, 1, 1)",
+      "(1, 2, 2, 2, 1, 1, 1)",
+      "(1, 2, 2, 1, 1, 1, 1)"
+    ],
+    "answerIndex": 2,
+    "explanation": "'give' appears once; 'man', 'fish' and 'feed' each appear twice (once per sentence); 'day', 'teach' and 'lifetime' once (slide p.14). A common slip is counting 'feed' only once or counting 'Teach' as 'give'."
+  },
+  {
+    "id": "att4",
+    "topic": "Attention & Transformers",
+    "question": "According to the slides, which bag-of-words weaknesses are solved by word embeddings such as Word2Vec?",
+    "options": [
+      "Loss of word order and high dimensionality",
+      "Word independence (ignoring synonyms) and high dimensionality / sparsity",
+      "Loss of word order and word independence",
+      "Variable-length input and sparsity"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.15 states the latter two cons (words independent, high dimensionality and sparsity) are solved by word embeddings. Loss of word order ('The cat sat on the mat' vs a multiset) is what motivates sequence models like RNNs, not embeddings; variable-length input is a pro of bag-of-words."
+  },
+  {
+    "id": "att5",
+    "topic": "Attention & Transformers",
+    "question": "A vanilla RNN cell has input dimension 10 and hidden size 20. How many parameters are in W_x, W_h and b (excluding the output layer)?",
+    "options": [
+      "420",
+      "600",
+      "620",
+      "2480"
+    ],
+    "answerIndex": 2,
+    "explanation": "W_x is 10x20 = 200, W_h is 20x20 = 400 and b has 20, total 620, using h(t) = tanh(W_xᵀx(t) + W_hᵀh(t-1) + b). 2480 is the LSTM count (four such blocks), and 600 forgets the bias."
+  },
+  {
+    "id": "att6",
+    "topic": "Attention & Transformers",
+    "question": "An LSTM has input dimension 10 and hidden size 20. Using the four gate/candidate equations of the form W·[h_(t-1), x_t] + b, how many parameters does the cell have?",
+    "options": [
+      "620",
+      "1240",
+      "2400",
+      "2480"
+    ],
+    "answerIndex": 3,
+    "explanation": "Each of f, i, C̃ and o has a 20x30 weight matrix (600) plus 20 biases, i.e. 620, and there are four of them: 4 x 620 = 2480. 2400 forgets the biases; 620 is just one block (a vanilla RNN)."
+  },
+  {
+    "id": "att7",
+    "topic": "Attention & Transformers",
+    "question": "In an LSTM, f_t = 0.5, C_(t-1) = 2, i_t = 0.8 and C̃_t = 0.5. What is C_t?",
+    "options": [
+      "1.4",
+      "1.0",
+      "2.4",
+      "0.9"
+    ],
+    "answerIndex": 0,
+    "explanation": "C_t = f_t*C_(t-1) + i_t*C̃_t = 0.5*2 + 0.8*0.5 = 1.0 + 0.4 = 1.4 (slide p.38). 1.0 keeps only the forget term and 2.4 wrongly adds the full old state without the forget gate."
+  },
+  {
+    "id": "att8",
+    "topic": "Attention & Transformers",
+    "question": "Continuing with C_t = 1.4 and output gate o_t = 0.9, what is h_t (to 3 d.p.)?",
+    "options": [
+      "1.260",
+      "0.797",
+      "0.885",
+      "0.900"
+    ],
+    "answerIndex": 1,
+    "explanation": "h_t = o_t * tanh(C_t) = 0.9 * tanh(1.4) = 0.9 * 0.8854 ≈ 0.797 (slide p.39). 1.260 forgets the tanh (0.9*1.4), and 0.885 forgets the output gate."
+  },
+  {
+    "id": "att9",
+    "topic": "Attention & Transformers",
+    "question": "Using the simplest RNN y(t) = σ(wᵀx(t) + y(t-1) + b) with w = (1, 2), x(t) = (0.5, 0.25), y(t-1) = 0.2 and b = -0.2, what is y(t) (to 3 d.p.)?",
+    "options": [
+      "0.500",
+      "0.881",
+      "0.731",
+      "0.762"
+    ],
+    "answerIndex": 2,
+    "explanation": "wᵀx = 0.5 + 0.5 = 1.0; adding y(t-1) + b = 0.2 - 0.2 = 0 gives σ(1.0) ≈ 0.731 (slide p.17). 0.762 would be tanh(1.0) instead of the sigmoid, and 0.881 is σ(2), from doubling the dot product."
+  },
+  {
+    "id": "att10",
+    "topic": "Attention & Transformers",
+    "question": "Which identity relating tanh to the sigmoid σ is given in the slides?",
+    "options": [
+      "tanh(x) = σ(2x) - 1",
+      "tanh(x) = 2σ(x) - 1",
+      "tanh(x) = 2σ(2x) - 1",
+      "tanh(x) = σ(x)/2"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.25 gives tanh(x) = 2·σ(2x) - 1, mapping σ's (0,1) range to (-1,1) with the steeper slope. 2σ(x) - 1 has the right range but the wrong slope (it equals tanh(x/2))."
+  },
+  {
+    "id": "att11",
+    "topic": "Attention & Transformers",
+    "question": "During BPTT in a vanilla RNN, the largest singular value of the recurrent matrix W is less than 1. What happens and what remedy do the slides suggest?",
+    "options": [
+      "Exploding gradients; clip the gradient norm",
+      "Vanishing gradients; change the RNN architecture (e.g. LSTM)",
+      "Vanishing gradients; clip the gradient norm",
+      "Exploding gradients; change the activation to sigmoid"
+    ],
+    "answerIndex": 1,
+    "explanation": "Repeated multiplication by W with largest singular value < 1 shrinks the gradient, i.e. vanishing gradients, which the slides address by changing the architecture such as LSTM (slide p.31). Gradient clipping (scaling the gradient when its norm is too big) only fixes exploding gradients."
+  },
+  {
+    "id": "att12",
+    "topic": "Attention & Transformers",
+    "question": "A gradient path is multiplied by a factor of 0.9 at each of 50 time steps. Roughly what fraction of the gradient survives?",
+    "options": [
+      "About 0.45",
+      "About 0.05",
+      "About 0.005",
+      "About 0.9"
+    ],
+    "answerIndex": 2,
+    "explanation": "0.9⁵⁰ ≈ 0.0052, so the gradient almost vanishes, which is why long-range dependencies are hard for vanilla RNNs (slide p.31). 0.45 would be a linear (0.9 - 50*0.009) intuition; the effect is exponential."
+  },
+  {
+    "id": "att13",
+    "topic": "Attention & Transformers",
+    "question": "In the char-level 'hello' RNN example (vocab h, e, l, o), the step-1 output scores for input 'h' are (1.0, 2.2, -3.0, 4.1). Which character does the model currently predict, and is it correct?",
+    "options": [
+      "'e', correct",
+      "'o', incorrect (target is 'e')",
+      "'h', incorrect (target is 'e')",
+      "'l', incorrect (target is 'e')"
+    ],
+    "answerIndex": 1,
+    "explanation": "The argmax is 4.1 at index 3, which is 'o', but the target after 'h' is 'e' (score 2.2, shown in green), so the prediction is wrong (slide p.26). Picking 'e' confuses the highlighted target score with the highest score."
+  },
+  {
+    "id": "att14",
+    "topic": "Attention & Transformers",
+    "question": "How many parameters does the toy 'hello' RNN have (vocab 4 one-hot inputs, 3 hidden units, 4 outputs, with biases on the hidden and output layers)?",
+    "options": [
+      "33",
+      "36",
+      "40",
+      "28"
+    ],
+    "answerIndex": 2,
+    "explanation": "W_xh 4x3 = 12, W_hh 3x3 = 9, b 3, W_hy 3x4 = 12, b_y 4: total 40. 33 omits both bias vectors, and 36 omits only the output bias."
+  },
+  {
+    "id": "att15",
+    "topic": "Attention & Transformers",
+    "question": "Which LSTM gate controls which parts of the long-term state should be read and output at the current time step?",
+    "options": [
+      "Forget gate",
+      "Input gate",
+      "Output gate",
+      "Candidate state"
+    ],
+    "answerIndex": 2,
+    "explanation": "The output gate o_t selects what is read from the long-term state, h_t = o_t * tanh(C_t), sent to both h(t) and y(t) (slide p.40). The forget gate decides what is erased and the input gate what candidates are added."
+  },
+  {
+    "id": "att16",
+    "topic": "Attention & Transformers",
+    "question": "Why do the slides say that training an RNN is 'really training a single cell'?",
+    "options": [
+      "Only the last time step receives a loss",
+      "Each time step uses an identical cell with shared weights",
+      "The hidden state is reset at every step",
+      "Deep RNNs have only one layer"
+    ],
+    "answerIndex": 1,
+    "explanation": "All unrolled cells are identical and share weights, so a single cell is used repeatedly (slide p.20). Losses can occur at every step (slide p.27), and the hidden state is carried forward, not reset."
+  },
+  {
+    "id": "att17",
+    "topic": "Attention & Transformers",
+    "question": "What property of the LSTM cell state is described by the 'conveyor belt' analogy?",
+    "options": [
+      "It is recomputed from scratch by a tanh layer each step",
+      "It runs through the chain and is modified only via gated multiply and add operations",
+      "It is identical to the hidden state h_t",
+      "It stores only the current input x_t"
+    ],
+    "answerIndex": 1,
+    "explanation": "The cell state flows along the chain, with the LSTM adding or removing information only via gates (C_t = f_t*C_(t-1) + i_t*C̃_t), which preserves long-range information (slide p.35). Recomputing via a single tanh layer is what a vanilla RNN does to its hidden state."
+  },
+  {
+    "id": "att18",
+    "topic": "Attention & Transformers",
+    "question": "Using the slide example Milo = 0.1 x very + 0.3 x cute + 0.6 x dog with first components very = 0.01, cute = 0.11, dog = 0.23, what is the first component of Milo?",
+    "options": [
+      "0.117",
+      "0.350",
+      "0.172",
+      "0.115"
+    ],
+    "answerIndex": 2,
+    "explanation": "0.1(0.01) + 0.3(0.11) + 0.6(0.23) = 0.001 + 0.033 + 0.138 = 0.172, shown as 0.17 on slide p.48. 0.117 is the unweighted mean of the three components, which ignores the attention weights entirely."
+  },
+  {
+    "id": "att19",
+    "topic": "Attention & Transformers",
+    "question": "In self-attention, which quantities are used to compute the attention scores, and which are averaged to form the output?",
+    "options": [
+      "Scores from values and keys; queries are averaged",
+      "Scores from queries and keys; values are averaged",
+      "Scores from queries and values; keys are averaged",
+      "Scores from raw embeddings only; queries are averaged"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.48 labels the weights as 'calculated from Queries and Keys' and the averaged vectors as 'Values'. A common mix-up is to think keys are averaged, but keys only serve for matching."
+  },
+  {
+    "id": "att20",
+    "topic": "Attention & Transformers",
+    "question": "Raw attention scores for query 1 against keys 1-4 are (2, 1, 0, 1). What is the softmax attention weight on key 1 (to 2 d.p.)?",
+    "options": [
+      "0.50",
+      "0.25",
+      "0.73",
+      "0.53"
+    ],
+    "answerIndex": 3,
+    "explanation": "e²/(e² + e¹ + e⁰ + e¹) = 7.389/13.826 = 0.53. 0.50 is what you get by naive normalisation 2/(2+1+0+1), which is not softmax."
+  },
+  {
+    "id": "att21",
+    "topic": "Attention & Transformers",
+    "question": "With d_k = 64, unscaled scores (16, 8, 0, 8) are scaled before softmax. What are the scaled scores?",
+    "options": [
+      "(2, 1, 0, 1)",
+      "(0.25, 0.125, 0, 0.125)",
+      "(4, 2, 0, 2)",
+      "(16, 8, 0, 8) unchanged"
+    ],
+    "answerIndex": 0,
+    "explanation": "Scaling is by 1/√d_k = 1/8, giving (2, 1, 0, 1) (slide p.80). Dividing by d_k = 64 instead of its square root would give (0.25, 0.125, 0, 0.125)."
+  },
+  {
+    "id": "att22",
+    "topic": "Attention & Transformers",
+    "question": "For a 300-word paragraph, how many entries does the score matrix QKᵀ contain?",
+    "options": [
+      "300",
+      "600",
+      "90,000",
+      "153,600"
+    ],
+    "answerIndex": 2,
+    "explanation": "QKᵀ is 300 x 300 = 90,000 entries, one per (query word, key word) pair (slide p.51). 153,600 = 300 x 512 is the size of the embedding matrix, not the score matrix."
+  },
+  {
+    "id": "att23",
+    "topic": "Attention & Transformers",
+    "question": "In the slide example W^Q is 512 x 3. How many parameters do W^Q and W^K have together (no bias)?",
+    "options": [
+      "1,536",
+      "3,072",
+      "262,144",
+      "1,024"
+    ],
+    "answerIndex": 1,
+    "explanation": "Each is 512 x 3 = 1,536 parameters; two matrices give 3,072. 1,536 counts only one of them."
+  },
+  {
+    "id": "att24",
+    "topic": "Attention & Transformers",
+    "question": "Query q¹ = (1, 0, 2); keys k¹ = (1, 1, 0), k² = (0, 2, 1), k³ = (1, 0, 1), k⁴ = (2, 1, -1). After dot-product scores and softmax, which key gets the largest weight and roughly what is it?",
+    "options": [
+      "k⁴, about 0.64",
+      "k², about 0.24",
+      "k¹, about 0.09",
+      "k³, about 0.64"
+    ],
+    "answerIndex": 3,
+    "explanation": "Scores are q·k = (1, 2, 3, 0); softmax gives about (0.09, 0.24, 0.64, 0.03), so k³ wins with 0.64. k⁴ has the largest-magnitude first component but its -1 in the third coordinate makes its score 0."
+  },
+  {
+    "id": "att25",
+    "topic": "Attention & Transformers",
+    "question": "In the encoder-decoder attention example, with scalar encoder states h_I = 1, h_live = 2, h_in = 3, h_Singapore = 4 and weights for '住在' of (0.05, 0.55, 0.35, 0.05), what is c_2?",
+    "options": [
+      "2.5",
+      "2.4",
+      "1.1",
+      "3.0"
+    ],
+    "answerIndex": 1,
+    "explanation": "c_2 = 0.05(1) + 0.55(2) + 0.35(3) + 0.05(4) = 0.05 + 1.10 + 1.05 + 0.20 = 2.4 (weights from slide p.62). 2.5 is the unweighted mean of the four states."
+  },
+  {
+    "id": "att26",
+    "topic": "Attention & Transformers",
+    "question": "What problem does attention between encoder and decoder solve compared with a plain RNN seq2seq model?",
+    "options": [
+      "It removes the need for an encoder",
+      "It makes the decoder non-autoregressive",
+      "All source information no longer has to pass through a single final state; each output step reads a new mixture of encoder states",
+      "It reduces the vocabulary size of the output language"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.62 contrasts 'one source summary' (final state s) with 'a new read at each output step' via c_t = Σ α_{t,i} h_i. The encoder is still needed; attention only changes how the decoder accesses it."
+  },
+  {
+    "id": "att27",
+    "topic": "Attention & Transformers",
+    "question": "Which statement best describes the relationship between CNNs and self-attention given in the lecture?",
+    "options": [
+      "CNN is self-attention restricted to a fixed receptive field; self-attention is CNN with a learnable receptive field",
+      "Self-attention is a special case of CNN with 1x1 kernels",
+      "They are unrelated because self-attention only works on text",
+      "CNN has a learnable receptive field, self-attention a fixed one"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.56 states CNN is simplified self-attention and self-attention is CNN with a learnable receptive field, with CNN drawn as a subset. Self-attention also works on images, since an image is a vector set (slide p.55)."
+  },
+  {
+    "id": "att28",
+    "topic": "Attention & Transformers",
+    "question": "How many trainable parameters (weights + biases) does a fully connected 784-100-30-100-784 autoencoder have?",
+    "options": [
+      "162,800",
+      "163,814",
+      "158,414",
+      "1,014"
+    ],
+    "answerIndex": 1,
+    "explanation": "Weights: 784x100 + 100x30 + 30x100 + 100x784 = 162,800; biases: 100 + 30 + 100 + 784 = 1,014; total 163,814 (architecture from slide p.59). 162,800 forgets the biases."
+  },
+  {
+    "id": "att29",
+    "topic": "Attention & Transformers",
+    "question": "How does a denoising autoencoder differ from a basic autoencoder?",
+    "options": [
+      "It adds noise to the codings and reconstructs the noisy input",
+      "It uses labels to supervise the codings",
+      "It outputs a mean and standard deviation instead of a coding",
+      "It corrupts the input (Gaussian noise or dropout) and is trained to reconstruct the clean input"
+    ],
+    "answerIndex": 3,
+    "explanation": "Slide p.64: noise is added to the inputs and the target is the original noise-free input. Outputting μ and σ describes a variational autoencoder, not a denoising one."
+  },
+  {
+    "id": "att30",
+    "topic": "Attention & Transformers",
+    "question": "In a variational autoencoder, how is the coding passed to the decoder obtained?",
+    "options": [
+      "It is exactly the mean μ output by the encoder",
+      "It is sampled from a Gaussian with mean μ and standard deviation σ produced by the encoder",
+      "It is the input plus Gaussian noise",
+      "It is chosen by k-means over the training codings"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slides p.65-66: the encoder produces μ and σ and the coding is sampled randomly from N(μ, σ), so it is not exactly at μ. Adding noise to the input is the denoising autoencoder."
+  },
+  {
+    "id": "att31",
+    "topic": "Attention & Transformers",
+    "question": "In matrix-form self-attention with 4 inputs, which operations turn A = QKᵀ into A'?",
+    "options": [
+      "Column-wise softmax then scale by √d_k",
+      "Scale by d_k then sigmoid",
+      "Scale by 1/√d_k then row-wise softmax",
+      "Row-wise softmax only"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.80 lists '1. Scale by 1/√d_k, 2. Row-wise softmax'. Rows correspond to queries, so softmax must be row-wise so each query's weights sum to 1, not column-wise."
+  },
+  {
+    "id": "att32",
+    "topic": "Attention & Transformers",
+    "question": "Why can self-attention outputs b¹..b⁴ be computed in parallel, unlike an RNN?",
+    "options": [
+      "Because each bⁱ depends only on aⁱ",
+      "Because bⁱ depends on all inputs but not on other outputs, so all can be computed together via matrix multiplication",
+      "Because softmax is applied column-wise",
+      "Because the decoder is masked"
+    ],
+    "answerIndex": 1,
+    "explanation": "Each bⁱ = Σ_j α'_{i←j} vʲ uses all inputs but no previous output, so the whole layer is QKᵀ, softmax, then multiply by V (slides p.76-80). It is false that bⁱ depends only on aⁱ; every output looks at every input."
+  },
+  {
+    "id": "att33",
+    "topic": "Attention & Transformers",
+    "question": "In the slide p.83 example (X = W_Q = W_K = I, W_V = [[2,0],[0,4]], d_k = 2), what is the first row of O = A'V?",
+    "options": [
+      "[2, 0]",
+      "[1.00, 2.00]",
+      "[1.34, 1.32]",
+      "[0.66, 2.68]"
+    ],
+    "answerIndex": 2,
+    "explanation": "Row 1 of A' is about [0.67, 0.33], so O row 1 = 0.67x[2,0] + 0.33x[0,4] ≈ [1.34, 1.32]. [0.66, 2.68] is row 2; [2, 0] would be the result with no attention to the other token (pure self-copy)."
+  },
+  {
+    "id": "att34",
+    "topic": "Attention & Transformers",
+    "question": "In the same two-token example, why does each row of A' come out as about [0.67, 0.33] rather than [1, 0]?",
+    "options": [
+      "Because the scaled scores 0.7071 and 0 are passed through softmax, which gives e^0.7071/(e^0.7071 + 1) ≈ 0.67",
+      "Because W_V doubles the first value",
+      "Because d_k = 2 halves every score to 0.5",
+      "Because layer normalisation is applied before the softmax"
+    ],
+    "answerIndex": 0,
+    "explanation": "S = I/√2, so each row is [0.7071, 0] (or reversed) and softmax gives about 0.67 and 0.33. Softmax never outputs an exact 0 for a finite score, so [1, 0] is impossible; W_V only affects the values, not the weights."
+  },
+  {
+    "id": "att35",
+    "topic": "Attention & Transformers",
+    "question": "In a self-attention layer as summarised on slide p.82, which quantities are learned parameters?",
+    "options": [
+      "Q, K and V",
+      "The attention matrix A'",
+      "W^q, W^k and W^v",
+      "The scaling factor √d_k"
+    ],
+    "answerIndex": 2,
+    "explanation": "Only the projection matrices W^q, W^k, W^v are learned; Q, K, V and A' are computed from the input on every forward pass. √d_k is a fixed constant set by the key dimension."
+  },
+  {
+    "id": "att36",
+    "topic": "Attention & Transformers",
+    "question": "According to the slides, why are attention scores divided by √d_k?",
+    "options": [
+      "To make the attention matrix symmetric",
+      "To make the rows of A sum to 1",
+      "To reduce the number of parameters",
+      "√d_k is the standard deviation of the raw scores, so dividing normalises them before softmax"
+    ],
+    "answerIndex": 3,
+    "explanation": "Slide p.81 states √d_k is the standard deviation of the raw attention scores and dividing by it is a standard normalisation. Rows summing to 1 is the job of the softmax, not the scaling."
+  },
+  {
+    "id": "att37",
+    "topic": "Attention & Transformers",
+    "question": "With 2 heads, how is the final multi-head output b^i formed?",
+    "options": [
+      "b^i = b^(i,1) + b^(i,2)",
+      "b^i = W^O [b^(i,1); b^(i,2)], concatenation then a learned linear map",
+      "b^i is the head with the larger attention weight",
+      "b^i = softmax(b^(i,1) b^(i,2))"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.86 shows the head outputs stacked and multiplied by W^O. Simply adding the heads is a tempting guess but the slides use concatenation followed by a learned output projection."
+  },
+  {
+    "id": "att38",
+    "topic": "Attention & Transformers",
+    "question": "Apply layer normalisation (x' = (x − m)/σ, population σ) to x = [2, 4, 6, 8]. What is x'?",
+    "options": [
+      "[−1.34, −0.45, 0.45, 1.34]",
+      "[0.1, 0.2, 0.3, 0.4]",
+      "[−3, −1, 1, 3]",
+      "[−0.67, −0.22, 0.22, 0.67]"
+    ],
+    "answerIndex": 0,
+    "explanation": "m = 5 and σ = √5 ≈ 2.236, giving (−3, −1, 1, 3)/2.236 ≈ [−1.34, −0.45, 0.45, 1.34]. [−3, −1, 1, 3] forgets to divide by σ; [0.1..0.4] is dividing by the sum, which is not layer norm."
+  },
+  {
+    "id": "att39",
+    "topic": "Attention & Transformers",
+    "question": "How does layer normalisation differ from batch normalisation, as described on slides p.87-88?",
+    "options": [
+      "It normalises each element using the mean and std across all elements of that single vector",
+      "It normalises each feature across all samples in the batch",
+      "It only subtracts the mean, never divides",
+      "It is applied only to the decoder"
+    ],
+    "answerIndex": 0,
+    "explanation": "Layer norm computes m and σ over the K elements of one vector (one token). Normalising each feature across the batch is batch normalisation, the tempting distractor."
+  },
+  {
+    "id": "att40",
+    "topic": "Attention & Transformers",
+    "question": "With d_model = 4, what is the positional encoding for pos = 2? (PE(pos,2i) = sin(pos/10000^(i/(d_model/2))), PE(pos,2i+1) = cos(...))",
+    "options": [
+      "[0.84, 0.54, 0.01, 1.00]",
+      "[0.91, −0.42, 0.02, 1.00]",
+      "[0.91, −0.42, 0.91, −0.42]",
+      "[0.02, 1.00, 0.91, −0.42]"
+    ],
+    "answerIndex": 1,
+    "explanation": "i = 0 uses divisor 1: sin(2) ≈ 0.91, cos(2) ≈ −0.42; i = 1 uses divisor 10000^0.5 = 100: sin(0.02) ≈ 0.02, cos(0.02) ≈ 1.00. [0.84, 0.54, 0.01, 1.00] is pos = 1 from slide p.89; repeating the same pair ignores the frequency change."
+  },
+  {
+    "id": "att41",
+    "topic": "Attention & Transformers",
+    "question": "Why does the Transformer need positional encoding at all?",
+    "options": [
+      "To reduce the vocabulary size",
+      "Because softmax requires positive inputs",
+      "To replace the word embedding",
+      "Because self-attention does not take care of positional information"
+    ],
+    "answerIndex": 3,
+    "explanation": "Self-attention treats tokens symmetrically, so word order is lost unless a position vector is added (slide p.89). It is added to, not a replacement for, the word embedding, which is why it must have the same length."
+  },
+  {
+    "id": "att42",
+    "topic": "Attention & Transformers",
+    "question": "Which three embeddings are summed to form each BERT input token?",
+    "options": [
+      "Query, key and value embeddings",
+      "Word, segment and positional embeddings",
+      "Word, character and sentence embeddings",
+      "Patch, class and position embeddings"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.90 shows word + segment + positional embeddings. Patch, class and position embeddings describe ViT (slide p.118), and Q/K/V are projections inside attention, not input embeddings."
+  },
+  {
+    "id": "att43",
+    "topic": "Attention & Transformers",
+    "question": "For a 4-token decoder input with causal (masked) self-attention, how many of the 16 attention weights are allowed to be non-zero?",
+    "options": [
+      "4",
+      "6",
+      "10",
+      "16"
+    ],
+    "answerIndex": 2,
+    "explanation": "Token i may attend to positions 1..i, giving 1 + 2 + 3 + 4 = 10 allowed weights. 6 is the number blocked (the strict upper triangle); 16 would be ordinary unmasked self-attention."
+  },
+  {
+    "id": "att44",
+    "topic": "Attention & Transformers",
+    "question": "Why is the decoder's first attention block masked?",
+    "options": [
+      "Because the decoder generates tokens one at a time, so a position cannot use tokens that have not been produced yet",
+      "To save memory on long sequences",
+      "To stop the decoder attending to the encoder",
+      "Because masked attention removes the need for positional encoding"
+    ],
+    "answerIndex": 0,
+    "explanation": "The autoregressive decoder produces outputs left to right, so b^2 may only use positions 1 and 2 (slide p.99). Masking does not block the encoder; that connection is handled separately by cross attention."
+  },
+  {
+    "id": "att45",
+    "topic": "Attention & Transformers",
+    "question": "In cross attention, where do the queries, keys and values come from?",
+    "options": [
+      "Q, K and V all from the encoder",
+      "Q from the encoder; K and V from the decoder",
+      "Q from the decoder; K and V from the encoder outputs",
+      "Q, K and V all from the decoder"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.104 shows k^i, v^i computed from encoder outputs a^i, and q from the decoder's masked self-attention output. Reversing the roles is the common misconception; the decoder asks the question (query) about the encoded input."
+  },
+  {
+    "id": "att46",
+    "topic": "Attention & Transformers",
+    "question": "In the speech recognition example, what problem does adding the END token solve?",
+    "options": [
+      "The decoder cannot start without it",
+      "It shortens the encoder input",
+      "It replaces the START token",
+      "The autoregressive decoder would otherwise never stop generating"
+    ],
+    "answerIndex": 3,
+    "explanation": "Without END the decoder keeps going (e.g. 'cell' after 'memory', slide p.100); with END in the vocabulary, decoding stops when END is the max output. START is a separate special token that begins decoding."
+  },
+  {
+    "id": "att47",
+    "topic": "Attention & Transformers",
+    "question": "Which statement matches the self-attention vs RNN table on slide p.107?",
+    "options": [
+      "Self-attention inference cost is fixed; RNN cost grows with length",
+      "Self-attention inference compute and memory grow with sequence length; RNN's are fixed, but self-attention is easy to parallelise in training",
+      "Both are equally hard to parallelise in training",
+      "RNN inference memory grows quadratically with length"
+    ],
+    "answerIndex": 1,
+    "explanation": "The table says self-attention's inference load grows with sequence length while an RNN's is fixed, and that self-attention trains easily in parallel while RNNs are 'difficult to parallelise?'. Option A swaps the two models."
+  },
+  {
+    "id": "att48",
+    "topic": "Attention & Transformers",
+    "question": "In the optional derivation, what change to the generalised RNN H(t) = r(t)(H(t−1)) + f(t)(x(t)) makes parallel training possible?",
+    "options": [
+      "Making f(t) the identity",
+      "Setting H(0) to a random matrix",
+      "Adding a softmax to g(t)",
+      "Removing r, so H(t) = H(t−1) + f(t)(x(t)), a running sum of independent terms"
+    ],
+    "answerIndex": 3,
+    "explanation": "Without r, H(t) = f(1)(x(1)) + ... + f(t)(x(t)), and each term depends only on its own input, so they can be computed in parallel (slide p.112). Removing f would discard the input entirely; adding softmax is what linear attention removes."
+  },
+  {
+    "id": "att49",
+    "topic": "Attention & Transformers",
+    "question": "A language model assigns probabilities 0.5 and 0.25 to the two true next tokens of a sequence. What is its perplexity?",
+    "options": [
+      "0.375",
+      "2.67",
+      "2.83",
+      "8"
+    ],
+    "answerIndex": 2,
+    "explanation": "PP = exp(−(ln 0.5 + ln 0.25)/2) = exp(1.5 ln 2) = 2^1.5 ≈ 2.83. 2.67 is 1 over the arithmetic mean probability (1/0.375), and 8 is 1/(0.5x0.25) without the averaging."
+  },
+  {
+    "id": "att50",
+    "topic": "Attention & Transformers",
+    "question": "In the ViT figure on slide p.118 the image is split into 9 patches. How many tokens enter the Transformer encoder?",
+    "options": [
+      "9",
+      "10",
+      "16",
+      "18"
+    ],
+    "answerIndex": 1,
+    "explanation": "Each of the 9 patches becomes one token, and an extra learnable [class] embedding (position 0) is prepended, giving 10. 16 confuses the '16x16' patch size in the paper title with the token count."
   }
 ]

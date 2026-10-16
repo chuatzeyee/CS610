@@ -768,4 +768,412 @@ export const formulas: readonly Formula[] = [
     note: "Explains why gboost.staged_predict(x_train) shows accuracy improving monotonically as more of the 10 estimators are added — each new tree targets what the current ensemble still gets wrong.",
     week: 'W4',
   },
+  {
+    "name": "3 x 3 spatial filter response",
+    "formula": "g(x, y) = Σ_{i=-1..1} Σ_{j=-1..1} w(i, j) · f(x+i, y+j)",
+    "note": "Response at pixel (x, y): filter coefficients times pixels under them, summed (slide p.8).",
+    "week": "W6"
+  },
+  {
+    "name": "General linear spatial filter",
+    "formula": "g(x, y) = Σ_{i=-a..a} Σ_{j=-b..b} w(i, j) · f(x+i, y+j)",
+    "note": "Same operation for a (2a+1) x (2b+1) filter (slide p.8).",
+    "week": "W6"
+  },
+  {
+    "name": "Box filter response",
+    "formula": "R = (1/9) Σ_{i,j} x_{i,j}",
+    "note": "3 x 3 box filter = mean of the neighbourhood (slide p.10).",
+    "week": "W6"
+  },
+  {
+    "name": "Box (averaging) kernel",
+    "formula": "(1/9) × [[1,1,1],[1,1,1],[1,1,1]]",
+    "note": "Equal-weight smoothing / lowpass filter (slide p.10).",
+    "week": "W6"
+  },
+  {
+    "name": "Weighted averaging kernel",
+    "formula": "(1/16) × [[1,2,1],[2,4,2],[1,2,1]]",
+    "note": "Centre-weighted smoothing filter, 'more smoothed effect' (slide p.10).",
+    "week": "W6"
+  },
+  {
+    "name": "Laplacian kernel",
+    "formula": "[[0,1,0],[1,-4,1],[0,1,0]]",
+    "note": "Second-derivative edge detector; coefficients sum to 0 (slide p.13).",
+    "week": "W6"
+  },
+  {
+    "name": "Laplacian display rescaling",
+    "formula": "filtered ← filtered − min(filtered);  filtered ← filtered × (255 / max(filtered))",
+    "note": "Shift and scale Laplacian output into [0, 255] for display (slide p.14).",
+    "week": "W6"
+  },
+  {
+    "name": "Laplacian sharpening",
+    "formula": "sharpened = f − ∇²f   (with the −4-centre Laplacian)",
+    "note": "Subtract the Laplacian edge map from the original to sharpen (slide p.14).",
+    "week": "W6"
+  },
+  {
+    "name": "Sharpening kernel (5-centre)",
+    "formula": "[[0,-1,0],[-1,5,-1],[0,-1,0]]",
+    "note": "Identity minus Laplacian; coefficients sum to 1 so it outputs a sharpened image (slides p.15, p.21).",
+    "week": "W6"
+  },
+  {
+    "name": "8-neighbour edge kernel",
+    "formula": "[[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]",
+    "note": "Includes diagonals; sums to 0, outputs an edge map (slide p.16).",
+    "week": "W6"
+  },
+  {
+    "name": "1D convolution (stride s)",
+    "formula": "y_k = Σ_{j=1..m} w_j · x_{s·k + j}",
+    "note": "Shared kernel (w1..wm) slides along the input; example kernel (1, 0, -1) (slide p.17).",
+    "week": "W6"
+  },
+  {
+    "name": "Convolution output size",
+    "formula": "O = (N + 2P − F) / S + 1",
+    "note": "N input size, F filter size, P padding, S stride; e.g. 7,3,0,1 gives 5; 7,3,0,2 gives 3; 7,3,1,1 gives 7; 32,5,0,1 gives 28 (slides p.22-30).",
+    "week": "W6"
+  },
+  {
+    "name": "Conv neuron pre-activation",
+    "formula": "z = wᵀx + b",
+    "note": "Dot product of filter w (e.g. 5x5x3) with an image chunk x of the same shape, plus bias (slide p.29).",
+    "week": "W6"
+  },
+  {
+    "name": "Conv neuron activation",
+    "formula": "a = σ(wᵀx + b)",
+    "note": "Activation function applied after the convolution (slide p.29).",
+    "week": "W6"
+  },
+  {
+    "name": "Conv layer output volume",
+    "formula": "O × O × K   (K = number of filters)",
+    "note": "Each filter gives one O x O activation map; 2 filters on 32x32x3 with 5x5x3 give 28x28x2 (slide p.31).",
+    "week": "W6"
+  },
+  {
+    "name": "Conv layer parameter count",
+    "formula": "params = K × (F_h × F_w × C_in + 1)",
+    "note": "Each of K filters spans all C_in input channels plus one bias, e.g. 6 × (5×5×3 + 1) = 456.",
+    "week": "W6"
+  },
+  {
+    "name": "Pooling output size",
+    "formula": "O = (N − F)/S + 1; with F = S = 2 (non-overlapping), O = N/2; depth unchanged",
+    "note": "Max/avg pooling acts per feature map, e.g. 3×24×24 to 3×12×12.",
+    "week": "W6"
+  },
+  {
+    "name": "Max pooling",
+    "formula": "y = max over (i,j) in window of x_ij",
+    "note": "Outputs the largest activation in each non-overlapping window.",
+    "week": "W6"
+  },
+  {
+    "name": "Average pooling",
+    "formula": "y = (1/|window|) Σ over (i,j) in window of x_ij",
+    "note": "Outputs the mean of each window, e.g. (2+3+6+8)/4 = 4.75.",
+    "week": "W6"
+  },
+  {
+    "name": "Global average pooling",
+    "formula": "y_c = (1/(H·W)) Σ_i Σ_j x_ijc;  H×W×C becomes 1×1×C",
+    "note": "GoogLeNet replaces FC layers with this; zero parameters versus 7×7×1024×1024 ≈ 51.4M for FC.",
+    "week": "W6"
+  },
+  {
+    "name": "Convolution multiplication count",
+    "formula": "ops = H_out × W_out × K × (F_h × F_w × C_in)",
+    "note": "Slide p.56: 14×14×48×5×5×480 ≈ 112.9M direct versus ≈ 5.3M with a 1×1 bottleneck to 16 channels.",
+    "week": "W6"
+  },
+  {
+    "name": "Fully connected (Dense) parameter count",
+    "formula": "params = n_in × n_out + n_out",
+    "note": "E.g. Flatten 1,024 to Dense(128) gives 131,200 parameters.",
+    "week": "W6"
+  },
+  {
+    "name": "Residual block output",
+    "formula": "y = ReLU(F(x) + x)",
+    "note": "ResNet: layers learn residual F(x); the identity skip connection adds x back.",
+    "week": "W6"
+  },
+  {
+    "name": "ConvNet layer pattern",
+    "formula": "INPUT -> [[CONV -> RELU]*N -> POOL?]*M -> [FC -> RELU]*K -> FC   (N ≥ 0, usually N ≤ 3; M ≥ 0; K ≥ 0, usually K < 3)",
+    "note": "General template for stacking CNN layers (slide p.63).",
+    "week": "W6"
+  },
+  {
+    "name": "Simplest RNN (single neuron)",
+    "formula": "y(t) = σ(wᵀ x(t) + y(t-1) + b)",
+    "note": "One neuron feeding its own output back as input at the next step (slide p.17).",
+    "week": "W7"
+  },
+  {
+    "name": "RNN layer",
+    "formula": "y(t) = σ(W_xᵀ x(t) + W_yᵀ y(t-1) + b)",
+    "note": "Every neuron receives the input vector and the previous output vector; y(t) depends on all inputs since t = 0 (slide p.18).",
+    "week": "W7"
+  },
+  {
+    "name": "Memory cell output and state",
+    "formula": "y(t) = W_yᵀ h(t) + b_y,  h(t) = σ(W_xᵀ x(t) + W_hᵀ h(t-1) + b)",
+    "note": "Cell keeps hidden state h across steps and produces output from it (slide p.19).",
+    "week": "W7"
+  },
+  {
+    "name": "Vanilla RNN hidden state",
+    "formula": "h(t) = tanh(W_xᵀ x(t) + W_hᵀ h(t-1) + b)",
+    "note": "Vanilla RNN cell uses tanh; output y(t) = W_yᵀ h(t) + b_y (slide p.24).",
+    "week": "W7"
+  },
+  {
+    "name": "Stacked form of vanilla RNN",
+    "formula": "h_t = tanh(W_hᵀ h(t-1) + W_xᵀ x(t)) = tanh([W_hᵀ W_xᵀ] [h(t-1); x(t)]) = tanh(Wᵀ [h(t-1); x(t)])",
+    "note": "One matrix W on the stacked state and input; backprop from h(t) to h(t-1) multiplies by W (slides p.29-30).",
+    "week": "W7"
+  },
+  {
+    "name": "Hyperbolic tangent",
+    "formula": "tanh(x) = sinh(x)/cosh(x) = (eˣ - e⁻ˣ)/(eˣ + e⁻ˣ) = (e²ˣ - 1)/(e²ˣ + 1) = (1 - e⁻²ˣ)/(1 + e⁻²ˣ) ∈ (-1, 1)",
+    "note": "Zero-centred activation used in RNNs; makes convergence faster (slide p.25).",
+    "week": "W7"
+  },
+  {
+    "name": "tanh vs sigmoid",
+    "formula": "tanh(x) = 2·σ(2x) - 1",
+    "note": "tanh is a rescaled, shifted sigmoid (slide p.25).",
+    "week": "W7"
+  },
+  {
+    "name": "Vanilla RNN parameter count",
+    "formula": "params = d·n + n² + n  (input d, hidden n; add n·k + k for an output layer of size k)",
+    "note": "Derived from W_x, W_h, b; independent of sequence length due to weight sharing.",
+    "week": "W7"
+  },
+  {
+    "name": "Gradient growth / decay over T steps",
+    "formula": "gradient scale ≈ (largest singular value of W)^T, where T = number of steps;  > 1 explodes, < 1 vanishes",
+    "note": "Repeated factors of W in BPTT (slide p.31); e.g. 1.1⁵⁰ ≈ 117, 0.9⁵⁰ ≈ 0.005.",
+    "week": "W7"
+  },
+  {
+    "name": "LSTM forget gate",
+    "formula": "f_t = σ(W_f · [h_(t-1), x_t] + b_f)",
+    "note": "Decides which parts of the long-term state to erase (slide p.36).",
+    "week": "W7"
+  },
+  {
+    "name": "LSTM input gate",
+    "formula": "i_t = σ(W_i · [h_(t-1), x_t] + b_i)",
+    "note": "Decides which parts of the candidate to add to the cell state (slide p.37).",
+    "week": "W7"
+  },
+  {
+    "name": "LSTM candidate state",
+    "formula": "C̃_t = tanh(W_C · [h_(t-1), x_t] + b_C)",
+    "note": "New candidate values for the cell state, in (-1, 1) (slide p.37).",
+    "week": "W7"
+  },
+  {
+    "name": "LSTM cell state update",
+    "formula": "C_t = f_t * C_(t-1) + i_t * C̃_t",
+    "note": "Element-wise: keep part of old memory, add part of new candidate (slide p.38).",
+    "week": "W7"
+  },
+  {
+    "name": "LSTM output gate and hidden state",
+    "formula": "o_t = σ(W_o · [h_(t-1), x_t] + b_o),  h_t = o_t * tanh(C_t)",
+    "note": "Selects which parts of the long-term state are output (slide p.39).",
+    "week": "W7"
+  },
+  {
+    "name": "LSTM parameter count",
+    "formula": "params = 4 · (n·(n + d) + n)",
+    "note": "Four weight matrices (f, i, C̃, o) on [h, x] of size n + d; four times a vanilla RNN cell.",
+    "week": "W7"
+  },
+  {
+    "name": "Scaled dot-product attention",
+    "formula": "Attention(Q, K, V) = softmax(QKᵀ / √d_k) V",
+    "note": "Core Transformer equation; scores scaled by 1/√d_k, softmax row-wise, then weight the values (slides p.43, p.52, p.80).",
+    "week": "W7"
+  },
+  {
+    "name": "Embedding similarity",
+    "formula": "similarity(word_i, word_j) = w_iᵀ w_j = w_jᵀ w_i",
+    "note": "Plain symmetric dot-product similarity of 512-d word embeddings, the baseline before learned projections (slide p.49).",
+    "week": "W7"
+  },
+  {
+    "name": "Query/key score via projections",
+    "formula": "q_jᵀ k_i = ((W^Q)ᵀ w_j)ᵀ ((W^K)ᵀ w_i) = w_jᵀ W^Q (W^K)ᵀ w_i",
+    "note": "Learned, asymmetric similarity: attention of word_i when generating word_j (slide p.51).",
+    "week": "W7"
+  },
+  {
+    "name": "Unnormalised attention output",
+    "formula": "o_j = Σ_{i=1}^{300} (q_jᵀ k_i) v_i",
+    "note": "Output of word j as attention-weighted sum of values; softmax turns the scores into weights (slide p.52).",
+    "week": "W7"
+  },
+  {
+    "name": "Q, K, V projections",
+    "formula": "qⁱ = W^q aⁱ,  kⁱ = W^k aⁱ,  vⁱ = W^v aⁱ;  Qᵀ = W^q I, Kᵀ = W^k I, Vᵀ = W^v I with I = [a¹ a² a³ a⁴]",
+    "note": "Every input produces a query, key and value using shared learned matrices (slides p.73-78).",
+    "week": "W7"
+  },
+  {
+    "name": "Dot-product attention score",
+    "formula": "α_{1←i} = q¹ · kⁱ",
+    "note": "Relevance of input i to query 1 (slides p.72-73).",
+    "week": "W7"
+  },
+  {
+    "name": "Additive attention score",
+    "formula": "α = W tanh(W^q x_q + W^k x_k)",
+    "note": "Alternative relevance function from the figure: add projections, tanh, then linear map W (slide p.72).",
+    "week": "W7"
+  },
+  {
+    "name": "Softmax attention weights",
+    "formula": "α'_{1←i} = exp(α_{1←i}) / Σ_j exp(α_{1←j})",
+    "note": "Normalises scores into positive weights summing to 1 (slide p.74).",
+    "week": "W7"
+  },
+  {
+    "name": "Self-attention output",
+    "formula": "bⁱ = Σ_j α'_{i←j} vʲ   (e.g. b¹ = Σ_j α'_{1←j} vʲ)",
+    "note": "Each output is the weighted sum of all values by its attention weights (slides p.75, p.77).",
+    "week": "W7"
+  },
+  {
+    "name": "Attention matrix",
+    "formula": "A = QKᵀ;  A' = row-wise softmax(A / √d_k);  output = A'V",
+    "note": "All pairwise scores at once; n tokens give an n x n matrix (slide p.80).",
+    "week": "W7"
+  },
+  {
+    "name": "Encoder-decoder context vector",
+    "formula": "c_t = Σ_i α_{t,i} h_i",
+    "note": "Decoder step t reads a new mixture of encoder states; e.g. c_2 = 0.05 h_I + 0.55 h_live + 0.35 h_in + 0.05 h_Singapore (slide p.62).",
+    "week": "W7"
+  },
+  {
+    "name": "Weighted average (attention intuition)",
+    "formula": "Milo = 0.1 x very + 0.3 x cute + 0.6 x dog",
+    "note": "Attention as a weighted average of value vectors with weights from queries and keys (slide p.48).",
+    "week": "W7"
+  },
+  {
+    "name": "VAE sampled coding",
+    "formula": "coding = μ + σ x ε,  ε ~ N(0, 1)  (i.e. coding ~ N(μ, σ²))",
+    "note": "Encoder outputs μ and σ; Gaussian noise times σ is added to μ as in the diagram (slides p.65-66).",
+    "week": "W7"
+  },
+  {
+    "name": "Dense layer parameter count (autoencoder)",
+    "formula": "params = Σ_layers (n_in x n_out + n_out); 784-100-30-100-784 gives 162,800 + 1,014 = 163,814",
+    "note": "Standard count for the FNN encoder-decoder on slide p.59.",
+    "week": "W7"
+  },
+  {
+    "name": "Raw attention score",
+    "formula": "α(i from j) = qⁱ · kʲ;  A = QKᵀ",
+    "note": "Dot product of query i with key j; stacking gives the n x n raw score matrix (slide p.80).",
+    "week": "W7"
+  },
+  {
+    "name": "Row-wise softmax",
+    "formula": "A'ᵢⱼ = exp(Sᵢⱼ) / Σₖ exp(Sᵢₖ)",
+    "note": "Normalises each row of scaled scores to sum to 1.",
+    "week": "W7"
+  },
+  {
+    "name": "Multi-head projections",
+    "formula": "q^(i,h) = W^(q,h) qⁱ  (same for k, v), with qⁱ = W^q aⁱ",
+    "note": "Each head h gets its own projected q, k, v (slide p.84).",
+    "week": "W7"
+  },
+  {
+    "name": "Multi-head output",
+    "formula": "bⁱ = W^O [b^(i,1); b^(i,2); ...]",
+    "note": "Concatenate head outputs and mix with a learned output matrix (slide p.86).",
+    "week": "W7"
+  },
+  {
+    "name": "Residual connection",
+    "formula": "output = F(x) + x",
+    "note": "Add step of Add & Norm; helps prevent vanishing gradients (slide p.87).",
+    "week": "W7"
+  },
+  {
+    "name": "Layer normalisation",
+    "formula": "x'ᵢ = (xᵢ − m) / σ,  m = mean(x₁..x_K), σ = std(x₁..x_K)",
+    "note": "Statistics are taken across the elements of a single vector (slide p.88).",
+    "week": "W7"
+  },
+  {
+    "name": "Sinusoidal positional encoding (even dims)",
+    "formula": "PE(pos, 2i) = sin( pos / 10000^(i / (d_model/2)) ),  0 ≤ i < d_model/2",
+    "note": "Added to word embeddings; same length d_model (slide p.89).",
+    "week": "W7"
+  },
+  {
+    "name": "Sinusoidal positional encoding (odd dims)",
+    "formula": "PE(pos, 2i+1) = cos( pos / 10000^(i / (d_model/2)) )",
+    "note": "Pairs with the sine term; d_model = 4, pos = 1 gives [0.84, 0.54, 0.01, 1.00].",
+    "week": "W7"
+  },
+  {
+    "name": "Transformer input",
+    "formula": "input = word embedding + positional encoding",
+    "note": "Injects order information that self-attention lacks (slide p.89).",
+    "week": "W7"
+  },
+  {
+    "name": "Generalised RNN",
+    "formula": "H(t) = r(t)(H(t−1)) + f(t)(x(t));  y(t) = g(t)(H(t))",
+    "note": "Optional; nested r calls block parallel training (slides p.109-111).",
+    "week": "W7"
+  },
+  {
+    "name": "RNN without r (parallelisable)",
+    "formula": "H(t) = H(t−1) + f(t)(x(t)) = f(1)(x(1)) + f(2)(x(2)) + ... + f(t)(x(t))",
+    "note": "Optional; a running sum whose terms can be computed in parallel (slide p.112).",
+    "week": "W7"
+  },
+  {
+    "name": "Linear attention",
+    "formula": "y(t) = Σ_{s=1..t} v(s) k(s)ᵀ q(t),  with q = W^Q x, k = W^K x, v = W^V x",
+    "note": "Optional; self-attention without softmax, causal by construction (slide p.114).",
+    "week": "W7"
+  },
+  {
+    "name": "Linear attention recurrence",
+    "formula": "S_t = S_(t−1) + v_t k_tᵀ;  o_t = S_t q_t",
+    "note": "Optional; RetNet uses S_t = γ S_(t−1) + v_t k_tᵀ, Mamba-2 uses γ_t (slide p.115).",
+    "week": "W7"
+  },
+  {
+    "name": "Perplexity",
+    "formula": "PP = exp( −(1/N) Σᵢ log P(wᵢ | w₁, ..., wᵢ₋₁) )",
+    "note": "Exponential of average negative log-likelihood; lower means less uncertainty (slide p.116).",
+    "week": "W7"
+  },
+  {
+    "name": "Causal mask count",
+    "formula": "allowed weights = n(n+1)/2 out of n²",
+    "note": "Derived: token i attends to positions 1..i; n = 4 gives 10 of 16.",
+    "week": "W7"
+  }
 ]

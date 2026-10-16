@@ -6,11 +6,12 @@ Study guide portal for SMU CS610 Applied Machine Learning.
 
 - **Topics & Glossary** — lecture content by segment + searchable term glossary
 - **Practice Quiz** — MCQ bank with worked explanations (incl. Bayes calculation drills)
-- **Math Trainer** — progressive calculation drills (6 skill levels × 3 tiers, guided → exam-style) with fresh random numbers, worked solutions, and a cheat-sheet formula bank with self-test mode
-- **Lab Walkthrough** — naive Bayes notebook explained step by step
+- **Math Trainer** — progressive calculation drills (16 skill levels × 3 tiers, guided → exam-style) with fresh random numbers, worked solutions, and a cheat-sheet formula bank with self-test mode
+- **Lab Walkthroughs** — the weekly notebooks (naive Bayes through CNNs and image filters) explained step by step
+- **Kahoot Practice** — timed, speed-scored quick-fire rounds: the instructor's in-class Kahoot (ensembles & NN) plus Week 6 CNN lecture and lab questions
 - **Course Map** — assessment weights, schedule, policies
 
-Currently covers **Week 1** (Introduction, Bayesian Learning & Naive Bayes). More weeks added as the term progresses.
+Currently covers **Weeks 1–4 and 6–7**: introduction and naive Bayes, probability/linear algebra/information theory, regression, logistic regression, decision trees and ensembles, CNNs, and sequence models/attention/Transformers. Week 5 (neural networks) not yet ingested.
 
 ## Dev
 

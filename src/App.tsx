@@ -7,6 +7,7 @@ import Quiz from './pages/Quiz'
 import MathTrainer from './pages/MathTrainer'
 import Lab from './pages/Lab'
 import Course from './pages/Course'
+import Kahoot from './pages/Kahoot'
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/math" element={<MathTrainer />} />
           <Route path="/lab" element={<Lab />} />
+          <Route path="/kahoot" element={<Kahoot />} />
           <Route path="/course" element={<Course />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

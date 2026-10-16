@@ -1306,5 +1306,583 @@ export const definitions: readonly Definition[] = [
     "definition": "A technique for representing categorical/string features as a sparse binary vector with a single 1 at the index corresponding to the observed category and 0s elsewhere.",
     "example": "impression_video_id_feature = [0, ..., 0, 1, 0, ..., 0] where the 1 marks the position of video 'xyz789' among K unique videos.",
     "source": "Ensemble"
+  },
+  {
+    "term": "Feedforward neural network (FNN) for images",
+    "definition": "A fully connected network fed with the flattened pixel vector of an image; it works somewhat (about 50+% accuracy on the slide example) but has too many parameters and treats each pixel position independently.",
+    "source": "CNN"
+  },
+  {
+    "term": "Convolutional Neural Network (CNN)",
+    "definition": "A neural network built from convolution and pooling layers followed by fully connected layers, where each neuron looks at a local patch of the previous layer using shared filter weights.",
+    "example": "Input, Conv, Pool, Conv, Pool, Fully connected (slide p.5).",
+    "source": "CNN"
+  },
+  {
+    "term": "Filter (kernel, mask, template, window)",
+    "definition": "A small array of coefficients applied over a neighbourhood of pixels; the term is borrowed from signal processing where filtering accepts or rejects certain frequency components.",
+    "example": "3 x 3 box filter (1/9) x all-ones.",
+    "source": "CNN"
+  },
+  {
+    "term": "Spatial filtering",
+    "definition": "Visiting each pixel of an image and applying a pre-defined operation (linear or non-linear) to the pixels in a rectangular neighbourhood around it.",
+    "example": "g(x,y) = sum_i sum_j w(i,j) f(x+i, y+j).",
+    "source": "CNN"
+  },
+  {
+    "term": "Neighbourhood",
+    "definition": "The rectangular region of pixels around the current pixel (x, y) on which the filter operation is performed.",
+    "example": "The 3 x 3 neighbourhood of (x, y).",
+    "source": "CNN"
+  },
+  {
+    "term": "Smoothing filter",
+    "definition": "A filter that blurs the image to remove small details, close gaps between lines, and reduce random noise, at the risk of smudging real edges.",
+    "source": "CNN"
+  },
+  {
+    "term": "Averaging (lowpass) filter",
+    "definition": "A smoothing linear filter whose output is the (possibly weighted) average of the neighbourhood of the current pixel.",
+    "example": "(1/16) x [[1,2,1],[2,4,2],[1,2,1]].",
+    "source": "CNN"
+  },
+  {
+    "term": "Box filter",
+    "definition": "An averaging filter in which all coefficients are equal, e.g. (1/9) x a 3 x 3 matrix of ones, giving the plain mean of the neighbourhood; larger box sizes give stronger blur.",
+    "example": "R = (1/9) sum x_ij.",
+    "source": "CNN"
+  },
+  {
+    "term": "Sharpening filter",
+    "definition": "A high-pass filter, analogous to spatial differentiation, that highlights intensity transitions such as edges (and noise) and de-emphasises slowly varying regions.",
+    "source": "CNN"
+  },
+  {
+    "term": "High-pass filter",
+    "definition": "A filter that keeps rapid intensity changes (high frequencies) and suppresses slowly varying areas; sharpening filters are high-pass.",
+    "source": "CNN"
+  },
+  {
+    "term": "Laplacian kernel",
+    "definition": "The second-derivative sharpening kernel [[0,1,0],[1,-4,1],[0,1,0]] whose coefficients sum to 0, producing an edge map that can be subtracted from the original to sharpen it.",
+    "example": "Moon image: original minus Laplacian output gives a sharper image (slide p.14).",
+    "source": "CNN"
+  },
+  {
+    "term": "Histogram equalization",
+    "definition": "A contrast-enhancement step applied to the sharpened/filtered room images on slides p.15-16 to make details (and noise) more visible.",
+    "source": "CNN"
+  },
+  {
+    "term": "Convolution",
+    "definition": "Sliding a small filter over the input spatially and computing the dot product between the filter and each local patch, using the same weights at every position.",
+    "example": "1D input [0,1,2,-1,1,-3,0] with kernel (1,0,-1) gives [-2,2,1,2,1].",
+    "source": "CNN"
+  },
+  {
+    "term": "Kernel/filter size",
+    "definition": "The spatial size of the filter (e.g. 3 x 3 or 5 x 5); in CNNs a filter also extends the full depth of the input volume.",
+    "source": "CNN"
+  },
+  {
+    "term": "Stride",
+    "definition": "How many positions the filter shifts each time it slides over the image; larger stride gives a smaller output.",
+    "example": "7 x 7 image, 3 x 3 kernel: stride 1 gives 5 x 5, stride 2 gives 3 x 3.",
+    "source": "CNN"
+  },
+  {
+    "term": "Padding (zero padding)",
+    "definition": "Adding extra pixels (commonly zeros) around the outer border of the image so the filter can be centred on edge pixels and the output size can be controlled.",
+    "example": "7 x 7 image, 3 x 3 kernel, stride 1, padding 1 gives a 7 x 7 output.",
+    "source": "CNN"
+  },
+  {
+    "term": "Channel",
+    "definition": "A grayscale image of the same size as a colour image made of just one primary colour; RGB images have 3 channels and grayscale images have 1.",
+    "source": "CNN"
+  },
+  {
+    "term": "Depth (of an input volume)",
+    "definition": "The number of channels of the input, the third dimension after height and width.",
+    "example": "A 32 x 32 x 3 image has depth 3.",
+    "source": "CNN"
+  },
+  {
+    "term": "Feature map (activation map)",
+    "definition": "The 2D output produced by sliding one filter over all spatial locations of the input; each filter produces one feature map.",
+    "example": "32 x 32 x 3 image with a 5 x 5 x 3 filter gives a 28 x 28 x 1 activation map.",
+    "source": "CNN"
+  },
+  {
+    "term": "Convolution layer hyperparameters",
+    "definition": "The settings that define a conv layer: kernel/filter size, number of filters, padding and stride.",
+    "source": "CNN"
+  },
+  {
+    "term": "Local receptive field",
+    "definition": "The small patch of the input (e.g. 5 x 5) that a single hidden neuron in a convolutional layer is connected to.",
+    "example": "Each hidden neuron on slide p.19 connects to a 5 x 5 region of input neurons.",
+    "source": "CNN"
+  },
+  {
+    "term": "Weight sharing",
+    "definition": "Using the same filter weights at every spatial position of the input, so a feature detector learned in one place is applied everywhere, unlike the independent weights of an FNN.",
+    "source": "CNN"
+  },
+  {
+    "term": "Pooling",
+    "definition": "An operation that replaces the net's output at a location with a summary statistic (e.g. max or average) of nearby outputs; a form of non-linear down-sampling with no learnable weights.",
+    "example": "2×2 max pooling turns a 4×4 slice into 2×2.",
+    "source": "CNN"
+  },
+  {
+    "term": "Max-pooling",
+    "definition": "Pooling that partitions the input into non-overlapping rectangles and outputs the maximum of each, giving approximate invariance to small translations and less computation for upper layers.",
+    "example": "Quadrant [1,0;4,6] becomes 6.",
+    "source": "CNN"
+  },
+  {
+    "term": "Average pooling",
+    "definition": "Pooling that outputs the mean of each window instead of the maximum.",
+    "example": "Quadrant [2,3;6,8] becomes 4.75 (slide p.35).",
+    "source": "CNN"
+  },
+  {
+    "term": "Global average pooling",
+    "definition": "Averaging each whole feature map to a single number, turning H×W×C into 1×1×C with no parameters; GoogLeNet uses it in place of large FC layers.",
+    "example": "7×7×1024 becomes 1×1×1024 (slide p.57).",
+    "source": "CNN"
+  },
+  {
+    "term": "Parameter (weight) sharing",
+    "definition": "Using the same filter weights at every spatial location of the input, which drastically cuts parameters versus fully connected layers and reduces overfitting.",
+    "source": "CNN"
+  },
+  {
+    "term": "Translation invariance",
+    "definition": "The ability to recognise a pattern regardless of where it appears in the image; in CNNs it comes from weight sharing plus pooling.",
+    "source": "CNN"
+  },
+  {
+    "term": "LeNet",
+    "definition": "LeCun et al.'s 1998 CNN for document recognition: alternating convolution and sub-sampling layers for feature extraction, followed by a fully connected MLP classifier.",
+    "source": "CNN"
+  },
+  {
+    "term": "AlexNet",
+    "definition": "The 2012 CNN by Krizhevsky, Sutskever and Hinton that popularised CNNs in computer vision; LeNet-like but deeper and bigger, with conv layers stacked directly on each other (about 60M parameters).",
+    "source": "CNN"
+  },
+  {
+    "term": "VGGNet",
+    "definition": "The 2014 CNN by Simonyan and Zisserman showing that depth is critical for performance; stacks of conv+ReLU layers separated by max pooling, ending in FC-4096, FC-4096, FC-1000 and softmax.",
+    "source": "CNN"
+  },
+  {
+    "term": "GoogLeNet",
+    "definition": "Google's 2014 CNN built from Inception modules, with about 4M parameters versus AlexNet's 60M, using average pooling instead of FC layers at the top.",
+    "source": "CNN"
+  },
+  {
+    "term": "Inception module",
+    "definition": "A block that runs 1×1, 3×3 and 5×5 convolutions and 3×3 max pooling in parallel and concatenates the outputs along depth, extracting features at several scales.",
+    "source": "CNN"
+  },
+  {
+    "term": "1×1 convolution (bottleneck)",
+    "definition": "A convolution with a 1×1 kernel that mixes channels at each pixel; used in Inception to reduce channel depth before expensive convolutions.",
+    "example": "14×14×480 to 14×14×16 before a 5×5 conv cuts operations from about 112.9M to about 5.3M.",
+    "source": "CNN"
+  },
+  {
+    "term": "DepthConcat",
+    "definition": "Channel-wise concatenation of the outputs of an Inception module's parallel branches.",
+    "source": "CNN"
+  },
+  {
+    "term": "ResNet (Residual Network)",
+    "definition": "Kaiming He et al.'s CNN that won ILSVRC 2015, using skip connections and heavy batch normalization; the default ConvNet choice in practice.",
+    "source": "CNN"
+  },
+  {
+    "term": "Skip (residual) connection",
+    "definition": "An identity shortcut that adds a block's input x to its output, so the block outputs F(x) + x.",
+    "source": "CNN"
+  },
+  {
+    "term": "Residual function",
+    "definition": "The function F(x) learned by a residual block's intermediate layers relative to the block input, so the desired mapping is F(x) + x.",
+    "source": "CNN"
+  },
+  {
+    "term": "ImageNet",
+    "definition": "A large visual database for object recognition research with more than 14 million hand-annotated images.",
+    "source": "CNN"
+  },
+  {
+    "term": "ILSVRC",
+    "definition": "The ImageNet Large Scale Visual Recognition Challenge, which evaluates object detection and image classification algorithms at large scale.",
+    "source": "CNN"
+  },
+  {
+    "term": "Top-5 accuracy",
+    "definition": "The fraction of images whose true label is among the model's 5 highest-scoring predictions; used to track ImageNet progress (slide p.60).",
+    "source": "CNN"
+  },
+  {
+    "term": "Auxiliary loss",
+    "definition": "Extra softmax classifier heads attached to intermediate layers of GoogLeNet, shown in its architecture diagram.",
+    "source": "CNN"
+  },
+  {
+    "term": "ConvNet layer pattern",
+    "definition": "The common template INPUT -> [[CONV -> RELU]*N -> POOL?]*M -> [FC -> RELU]*K -> FC, with usually N <= 3 and K < 3.",
+    "source": "CNN"
+  },
+  {
+    "term": "Flatten",
+    "definition": "A Keras layer that reshapes the stack of feature maps into a 1D vector so it can feed the first fully connected (Dense) layer.",
+    "source": "CNN"
+  },
+  {
+    "term": "Feedforward Neural Network (FNN)",
+    "definition": "A fully connected network in which information flows only forward from input to output layers with no loops; typically suited to tabular data.",
+    "example": "An MLP with three hidden layers predicting a class from tabular features (slide p.3).",
+    "source": "Attention"
+  },
+  {
+    "term": "Recurrent Neural Network (RNN)",
+    "definition": "A family of neural networks for processing sequential data that looks like a feedforward network but also has connections pointing backward, so the output at time t depends on all previous inputs.",
+    "example": "Time series, text, audio (slide p.11).",
+    "source": "Attention"
+  },
+  {
+    "term": "One to many",
+    "definition": "Sequence configuration where a single input produces a sequence of outputs.",
+    "example": "Image captioning: image in, caption out (slide p.6).",
+    "source": "Attention"
+  },
+  {
+    "term": "Many to one",
+    "definition": "Sequence configuration where a sequence of inputs produces a single output.",
+    "example": "Spam filtering: words of an email in, spam / not spam out (slide p.7).",
+    "source": "Attention"
+  },
+  {
+    "term": "Many to many",
+    "definition": "Sequence configuration mapping an input sequence to an output sequence, either after reading the whole input (delayed, e.g. translation) or one output per input step (synchronised).",
+    "example": "Spanish to Mandarin translation (p.8); speech recognition from windowed audio to letters (p.9).",
+    "source": "Attention"
+  },
+  {
+    "term": "Bag of words",
+    "definition": "Representing a document as a vector of word counts over a vocabulary, discarding word order.",
+    "example": "Count vector (1,2,2,2,1,1,1) over (give, man, fish, feed, day, teach, lifetime) (slide p.14).",
+    "source": "Attention"
+  },
+  {
+    "term": "Word embedding",
+    "definition": "A dense learned vector representation of words that addresses bag-of-words problems of word independence (synonyms) and high dimensionality / sparsity.",
+    "example": "Word2Vec (slide p.15).",
+    "source": "Attention"
+  },
+  {
+    "term": "Unrolling (unfolding) through time",
+    "definition": "Drawing a recurrent network as a chain of identical copies of the cell, one per time step, so that it can be treated like a deep feedforward network for computation and training.",
+    "source": "Attention"
+  },
+  {
+    "term": "Memory cell",
+    "definition": "The practical building component of an RNN that preserves some state h across time steps: it takes h(t-1) and x(t), produces y(t) and updates the state to h(t).",
+    "source": "Attention"
+  },
+  {
+    "term": "Hidden state h(t)",
+    "definition": "The vector carried from one time step to the next in an RNN; summarises all inputs seen so far. Start and end state must have the same dimension.",
+    "source": "Attention"
+  },
+  {
+    "term": "Weight sharing (RNN)",
+    "definition": "All time steps use the same cell with the same weights, so training an RNN is really training a single cell used repeatedly.",
+    "source": "Attention"
+  },
+  {
+    "term": "Deep RNN",
+    "definition": "An RNN built by stacking multiple layers of recurrent cells, where each layer's outputs are the next layer's inputs at each time step.",
+    "source": "Attention"
+  },
+  {
+    "term": "Vanilla RNN",
+    "definition": "The simplest RNN cell, with a single tanh layer: h(t) = tanh(W_xᵀ x(t) + W_hᵀ h(t-1) + b) and y(t) = W_yᵀ h(t) + b_y.",
+    "source": "Attention"
+  },
+  {
+    "term": "Hyperbolic tangent (tanh)",
+    "definition": "Activation tanh(x) = (eˣ - e⁻ˣ)/(eˣ + e⁻ˣ) = 2σ(2x) - 1 with range (-1, 1); used in RNNs because outputs centred on zero make convergence faster.",
+    "source": "Attention"
+  },
+  {
+    "term": "Back-propagation through time (BPTT)",
+    "definition": "Training an RNN by unrolling it, computing the loss over all time steps, and propagating gradients backward through every time step to the shared weights.",
+    "source": "Attention"
+  },
+  {
+    "term": "Exploding gradients",
+    "definition": "Gradients grow uncontrollably when backpropagating through many steps because the largest singular value of the recurrent matrix W is greater than 1; handled by scaling (clipping) the gradient when its norm is too big.",
+    "source": "Attention"
+  },
+  {
+    "term": "Vanishing gradients",
+    "definition": "Gradients shrink towards zero over many time steps because the largest singular value of W is less than 1 (and tanh is repeated), making long-range dependencies hard to learn; handled by changing the architecture, e.g. LSTM.",
+    "source": "Attention"
+  },
+  {
+    "term": "Long Short-Term Memory (LSTM)",
+    "definition": "A gated RNN cell with a separate cell state (long-term memory) and hidden state (short-term), using forget, input and output gates to control what is erased, added and read.",
+    "source": "Attention"
+  },
+  {
+    "term": "Gate",
+    "definition": "An element-wise sigmoid layer followed by element-wise multiplication that optionally lets information through; differentiable (trainable) with values in [0, 1].",
+    "source": "Attention"
+  },
+  {
+    "term": "Cell state C_t",
+    "definition": "The LSTM's long-term memory, a 'conveyor belt' running through the chain to which information is added or removed only via gates.",
+    "source": "Attention"
+  },
+  {
+    "term": "Forget gate",
+    "definition": "f_t = σ(W_f·[h_(t-1), x_t] + b_f); controls which parts of the long-term state should be erased.",
+    "source": "Attention"
+  },
+  {
+    "term": "Input gate",
+    "definition": "i_t = σ(W_i·[h_(t-1), x_t] + b_i); controls which parts of the candidate values should be added to the long-term state.",
+    "source": "Attention"
+  },
+  {
+    "term": "Candidate state C̃_t",
+    "definition": "C̃_t = tanh(W_C·[h_(t-1), x_t] + b_C); the new values proposed for addition to the cell state, scaled by the input gate.",
+    "source": "Attention"
+  },
+  {
+    "term": "Output gate",
+    "definition": "o_t = σ(W_o·[h_(t-1), x_t] + b_o); controls which parts of the long-term state are read and output at this step, giving h_t = o_t * tanh(C_t).",
+    "source": "Attention"
+  },
+  {
+    "term": "Attention",
+    "definition": "A mechanism that computes an output as a weighted average of value vectors, where the weights reflect how relevant each element is to the current query.",
+    "example": "Milo = 0.1 x very + 0.3 x cute + 0.6 x dog (slide p.48).",
+    "source": "Attention"
+  },
+  {
+    "term": "Self-attention",
+    "definition": "Attention in which the queries, keys and values all come from the same input sequence, so every position produces a context-aware output by attending to all positions.",
+    "example": "Inputs a¹..a⁴ produce outputs b¹..b⁴, each depending on all inputs (slide p.70).",
+    "source": "Attention"
+  },
+  {
+    "term": "Query (q)",
+    "definition": "A learned linear projection of an input vector, q = W^q a, representing the context this position is looking for.",
+    "source": "Attention"
+  },
+  {
+    "term": "Key (k)",
+    "definition": "A learned linear projection of an input vector, k = W^k a, representing what that position offers to be matched against queries (its local context).",
+    "source": "Attention"
+  },
+  {
+    "term": "Value (v)",
+    "definition": "A learned linear projection of an input vector, v = W^v a; values are the transformed inputs that are actually averaged to form the output.",
+    "source": "Attention"
+  },
+  {
+    "term": "Attention score",
+    "definition": "The raw relevance between a query and a key, in dot-product attention α_{1←i} = q¹ · kⁱ, before normalisation.",
+    "source": "Attention"
+  },
+  {
+    "term": "Attention weight",
+    "definition": "The softmax-normalised attention score; positive and summing to 1 over all keys for a given query.",
+    "example": "α'_{1←i} = exp(α_{1←i}) / Σ_j exp(α_{1←j}).",
+    "source": "Attention"
+  },
+  {
+    "term": "Scaled dot-product attention",
+    "definition": "Attention(Q, K, V) = softmax(QKᵀ / √d_k) V, where scores are dot products scaled by 1/√d_k before a row-wise softmax.",
+    "source": "Attention"
+  },
+  {
+    "term": "Additive attention",
+    "definition": "An alternative relevance function where projected query and key are added, passed through tanh, and multiplied by a weight W to give the score α.",
+    "source": "Attention"
+  },
+  {
+    "term": "Encoder-decoder",
+    "definition": "An architecture where the encoder converts input into an abstract representation (code) and the decoder generates output from it, either reconstructing the input or producing another domain.",
+    "example": "Translation, captioning, speech-to-text, audio generation.",
+    "source": "Attention"
+  },
+  {
+    "term": "Code / coding (latent representation)",
+    "definition": "The compact intermediate representation produced by an encoder, typically much lower-dimensional than the input.",
+    "example": "30-unit Hidden 2 layer of a 784-100-30-100-784 autoencoder.",
+    "source": "Attention"
+  },
+  {
+    "term": "Context vector (c_t)",
+    "definition": "In encoder-decoder attention, the attention-weighted sum of encoder states used at decoder step t: c_t = Σ_i α_{t,i} h_i.",
+    "example": "c_2 = 0.05 h_I + 0.55 h_live + 0.35 h_in + 0.05 h_Singapore.",
+    "source": "Attention"
+  },
+  {
+    "term": "Autoencoder",
+    "definition": "A neural network trained without supervision to copy its input to its output through an encoder-decoder structure, learning dense codings useful for dimensionality reduction.",
+    "source": "Attention"
+  },
+  {
+    "term": "Denoising autoencoder",
+    "definition": "An autoencoder whose inputs are corrupted (Gaussian noise or dropout) and which is trained to recover the original noise-free inputs, forcing it to learn useful features.",
+    "source": "Attention"
+  },
+  {
+    "term": "Variational autoencoder (VAE)",
+    "definition": "An autoencoder whose encoder outputs a mean μ and standard deviation σ; the coding is sampled from a Gaussian with these parameters and then decoded.",
+    "source": "Attention"
+  },
+  {
+    "term": "Receptive field",
+    "definition": "The region of the input a unit can see; a CNN attends only within a fixed receptive field, whereas self-attention effectively learns its receptive field.",
+    "source": "Attention"
+  },
+  {
+    "term": "Transformer",
+    "definition": "An encoder-decoder architecture built from multi-head self-attention, feed-forward layers, Add & Norm, and positional encoding, with masked self-attention and cross attention in the decoder (Vaswani et al. 2017).",
+    "source": "Attention"
+  },
+  {
+    "term": "Cross attention",
+    "definition": "Attention in the decoder where queries come from the decoder and keys/values come from the encoder outputs.",
+    "source": "Attention"
+  },
+  {
+    "term": "Masked self-attention",
+    "definition": "Self-attention in the Transformer decoder that is masked, listed on slide p.68 as a decoder component operating on outputs shifted right.",
+    "source": "Attention"
+  },
+  {
+    "term": "Positional encoding",
+    "definition": "A signal added to input/output embeddings in the Transformer before the attention blocks (shown as a sinusoid added to the embedding on slide p.68).",
+    "source": "Attention"
+  },
+  {
+    "term": "Attention matrix A / A'",
+    "definition": "A = QKᵀ holds all pairwise scores (row = query, column = key); A' is A scaled by 1/√d_k and softmaxed row-wise.",
+    "source": "Attention"
+  },
+  {
+    "term": "Attention matrix (A')",
+    "definition": "The n x n matrix obtained by scaling the raw scores A = QKᵀ by 1/√d_k and applying a row-wise softmax; row i gives how much token i attends to each token.",
+    "example": "Slide p.83: A' ≈ [[0.67, 0.33],[0.33, 0.67]].",
+    "source": "Attention"
+  },
+  {
+    "term": "Scaling factor 1/√d_k",
+    "definition": "Division of the raw attention scores by √d_k, which the slides describe as the standard deviation of the raw scores, a standard normalisation before the softmax.",
+    "source": "Attention"
+  },
+  {
+    "term": "Learnable projections W^q, W^k, W^v",
+    "definition": "The only learned parameters of a self-attention layer; they map the input I to queries Q = W^q I, keys K = W^k I and values V = W^v I.",
+    "source": "Attention"
+  },
+  {
+    "term": "Multi-head self-attention",
+    "definition": "Running several self-attention heads in parallel, each with its own projections of q, k, v, then concatenating the head outputs and mixing them with an output matrix W^O.",
+    "example": "Two heads: b^i = W^O [b^(i,1); b^(i,2)].",
+    "source": "Attention"
+  },
+  {
+    "term": "Residual connection (Add)",
+    "definition": "A shortcut that adds a sub-layer's input to its output, F(x) + x, helping prevent vanishing gradients.",
+    "source": "Attention"
+  },
+  {
+    "term": "Layer normalisation (Norm)",
+    "definition": "Normalising each element of one vector using the mean and standard deviation computed across all elements of that same vector: x'_i = (x_i − m)/σ; used to stabilise activations and prevent internal covariate shift.",
+    "example": "[1,2,3,4] becomes about [−1.34, −0.45, 0.45, 1.34].",
+    "source": "Attention"
+  },
+  {
+    "term": "Internal Covariate Shift (ICS)",
+    "definition": "The change in the distribution of a layer's inputs during training; the slides list preventing it as a purpose of layer normalisation.",
+    "source": "Attention"
+  },
+  {
+    "term": "BERT",
+    "definition": "Bidirectional Encoder Representations from Transformers: an encoder-only transformer that outputs a contextualised vector per input token, used as a feature extractor with task-specific heads.",
+    "example": "Input embedding = word + segment + positional embedding.",
+    "source": "Attention"
+  },
+  {
+    "term": "Contextualised vector",
+    "definition": "A per-token output vector from an encoder such as BERT that encodes the token together with information from its surrounding context.",
+    "source": "Attention"
+  },
+  {
+    "term": "Shifted right (decoder input)",
+    "definition": "Feeding the decoder the target sequence offset by one position, starting with a start/EOS token, so each position predicts the next token from the previous ones.",
+    "example": "Input <EOS> W X Y Z predicts W X Y Z <EOS>.",
+    "source": "Attention"
+  },
+  {
+    "term": "Autoregressive decoder",
+    "definition": "A decoder that generates one token at a time, feeding each predicted token (the max of the softmax over the vocabulary) back in as the next input.",
+    "example": "START gives 'long', then 'long' gives 'short', and so on.",
+    "source": "Attention"
+  },
+  {
+    "term": "Stop (END) token",
+    "definition": "A special token added to the output vocabulary so the autoregressive decoder can learn when to stop; generation ends when END is the most probable output.",
+    "source": "Attention"
+  },
+  {
+    "term": "Generalised RNN",
+    "definition": "A recurrence H(t) = r(t)(H(t−1)) + f(t)(x(t)) with output y(t) = g(t)(H(t)), where H is a memory cell; the nested r calls prevent parallel training.",
+    "source": "Attention"
+  },
+  {
+    "term": "Linear attention",
+    "definition": "Self-attention without the softmax: y(t) = Σ_{s ≤ t} v(s) k(s)ᵀ q(t), which can be written as a recurrence S_t = S_(t−1) + v_t k_tᵀ with read-out o_t = S_t q_t.",
+    "source": "Attention"
+  },
+  {
+    "term": "Mamba",
+    "definition": "A linear-attention / state-space style recurrent model (arXiv 2312.00752) that the slides show reaching similar or lower perplexity than Transformer++ and much higher inference throughput than a Transformer.",
+    "source": "Attention"
+  },
+  {
+    "term": "Perplexity",
+    "definition": "The exponential of the average negative log-likelihood of the true next token; it measures a probabilistic language model's uncertainty, and lower is better.",
+    "example": "Probabilities 0.5 and 0.25 for two tokens give PP = exp(−(ln0.5 + ln0.25)/2) ≈ 2.83.",
+    "source": "Attention"
+  },
+  {
+    "term": "FLOPs",
+    "definition": "Floating point operations: a measure of computational complexity, i.e. how many arithmetic operations (such as fused multiply-adds) a model performs to produce an output.",
+    "source": "Attention"
+  },
+  {
+    "term": "Vision Transformer (ViT)",
+    "definition": "A transformer encoder applied to images by splitting the image into patches, linearly projecting the flattened patches, adding position embeddings and a learnable [class] token, then classifying with an MLP head.",
+    "source": "Attention"
+  },
+  {
+    "term": "[class] / [CLS] token",
+    "definition": "An extra learnable token prepended to the input whose final encoder output summarises the sequence and is used for classification (in both BERT and ViT).",
+    "source": "Attention"
   }
 ]

@@ -861,6 +861,100 @@ function genEnsemble(tier: Tier): Problem {
   }
 }
 
+function genCnn(tier: Tier): Problem {
+  if (tier === 1) {
+    const n = ri(5, 32)
+    const f = pick([3, 5, 7].filter(k => k < n))
+    const p = pick([0, 0, 1, 2])
+    const answer = n + 2 * p - f + 1
+    return {
+      prompt: `A ${n}×${n} input is convolved with a ${f}×${f} filter, stride 1, padding ${p}. What is the output width?`,
+      answerLabel: 'output width',
+      answer,
+      steps: [
+        `With stride 1: out = n + 2p − f + 1.`,
+        `out = ${n} + 2×${p} − ${f} + 1 = ${answer}.`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const f = pick([2, 3, 5])
+    const s = pick([2, 3])
+    const p = pick([0, 1])
+    const steps = ri(3, 15)
+    const n = steps * s + f - 2 * p
+    const answer = Math.floor((n + 2 * p - f) / s) + 1
+    return {
+      prompt: `A ${n}×${n} feature map passes through a ${f}×${f} ${p === 0 && f === s ? 'max-pool' : 'convolution'} with stride ${s} and padding ${p}. What is the output width?`,
+      answerLabel: 'output width',
+      answer,
+      steps: [
+        `out = ⌊(n + 2p − f)/s⌋ + 1.`,
+        `(${n} + 2×${p} − ${f})/${s} = ${(n + 2 * p - f) / s}, so out = ${(n + 2 * p - f) / s} + 1 = ${answer}.`,
+      ],
+    }
+  }
+  const f = pick([3, 5])
+  const cin = pick([1, 3, 16, 32])
+  const cout = pick([8, 16, 32, 64])
+  const answer = (f * f * cin + 1) * cout
+  return {
+    prompt: `Exam-style: a conv layer applies ${cout} filters of size ${f}×${f} to an input with ${cin} channel${cin > 1 ? 's' : ''}, one bias per filter. How many trainable parameters does it have?`,
+    answerLabel: 'parameters',
+    answer,
+    steps: [
+      `Each filter spans every input channel: ${f}×${f}×${cin} = ${f * f * cin} weights, plus 1 bias = ${f * f * cin + 1}.`,
+      `Weights are shared across all spatial positions, so the input width/height does not matter.`,
+      `Total = ${f * f * cin + 1} × ${cout} filters = ${answer}.`,
+    ],
+  }
+}
+
+function genAttention(tier: Tier): Problem {
+  const dk = pick([4, 16])
+  const root = Math.sqrt(dk)
+  const vec = () => Array.from({ length: 4 }, () => ri(-2, 3))
+  const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0)
+  if (tier === 1) {
+    const q = vec(), k = vec()
+    const answer = dot(q, k) / root
+    return {
+      prompt: `Query q = ${vecStr(q)} and key k = ${vecStr(k)} (the first 4 of d_k = ${dk} dims; the rest are 0). Compute the scaled dot-product score q·k / √d_k.`,
+      answerLabel: 'score',
+      answer,
+      steps: [
+        `q·k = ${q.map((x, i) => `${x}×${k[i]}`).join(' + ')} = ${dot(q, k)}.`,
+        `√d_k = √${dk} = ${root}; score = ${dot(q, k)}/${root} = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const s1 = ri(-2, 4), s2 = ri(-2, 4)
+  const a1 = Math.exp(s1) / (Math.exp(s1) + Math.exp(s2))
+  if (tier === 2) {
+    return {
+      prompt: `A query has scaled scores [${s1}, ${s2}] against two keys. What attention weight does the softmax give the FIRST key?`,
+      answerLabel: 'α₁',
+      answer: a1,
+      steps: [
+        `α₁ = e^${s1} / (e^${s1} + e^${s2}) = ${fmt(Math.exp(s1))} / (${fmt(Math.exp(s1))} + ${fmt(Math.exp(s2))}).`,
+        `α₁ = ${fmt(a1)} (equivalently 1/(1 + e^(${s2}−${s1}))).`,
+      ],
+    }
+  }
+  const v1 = ri(-5, 10), v2 = ri(-5, 10)
+  const answer = a1 * v1 + (1 - a1) * v2
+  return {
+    prompt: `Exam-style: one query, two keys with scaled scores [${s1}, ${s2}] and scalar values v₁ = ${v1}, v₂ = ${v2}. Compute the attention output softmax(scores)·v.`,
+    answerLabel: 'output',
+    answer,
+    steps: [
+      `Softmax: α₁ = ${fmt(a1)}, α₂ = 1 − α₁ = ${fmt(1 - a1)}.`,
+      `Output = α₁v₁ + α₂v₂ = ${fmt(a1)}×${v1} + ${fmt(1 - a1)}×${v2} = ${fmt(answer)}.`,
+      `The output is a convex combination of the values, so it always lies between ${Math.min(v1, v2)} and ${Math.max(v1, v2)}.`,
+    ],
+  }
+}
+
 export const levels: readonly DrillLevel[] = [
   {
     id: 'fit',
@@ -973,5 +1067,21 @@ export const levels: readonly DrillLevel[] = [
     concept: 'Averaging shrinks variance by 1/n; AdaBoost reweights misclassified points each round using a per-classifier vote weight.',
     formula: 'Var(M*) = σ²/n    αₜ = ½ln((1−errₜ)/errₜ)    wᵢ ← wᵢ·exp(∓αₜ), renormalize',
     generate: genEnsemble,
+  },
+  {
+    id: 'cnn',
+    week: 'W6',
+    title: 'CNN shapes & parameters',
+    concept: 'Track feature-map sizes through convolution and pooling, and count conv-layer parameters (weights are shared across positions).',
+    formula: 'out = ⌊(n + 2p − f)/s⌋ + 1    params = (f·f·C_in + 1)·C_out',
+    generate: genCnn,
+  },
+  {
+    id: 'attention',
+    week: 'W7',
+    title: 'Scaled dot-product attention',
+    concept: 'Score a query against keys, softmax the scores into weights, and mix the values.',
+    formula: 'Attention(Q,K,V) = softmax(QKᵀ/√d_k)·V',
+    generate: genAttention,
   },
 ]

@@ -6,6 +6,7 @@ import {
   Sigma,
   FlaskConical,
   CalendarDays,
+  Gamepad2,
 } from 'lucide-react'
 
 const navItems = [
@@ -14,6 +15,7 @@ const navItems = [
   { to: '/quiz', label: 'Quiz', icon: ClipboardCheck },
   { to: '/math', label: 'Math', icon: Sigma },
   { to: '/lab', label: 'Lab', icon: FlaskConical },
+  { to: '/kahoot', label: 'Kahoot', icon: Gamepad2 },
   { to: '/course', label: 'Course', icon: CalendarDays },
 ] as const
 
