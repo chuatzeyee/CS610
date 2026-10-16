@@ -769,6 +769,258 @@ export const formulas: readonly Formula[] = [
     week: 'W4',
   },
   {
+    "name": "Neuron output",
+    "formula": "output = f( Σᵢ wᵢxᵢ + b )",
+    "note": "Dot product of inputs and weights, add bias, apply non-linearity (slide 12).",
+    "week": "W5"
+  },
+  {
+    "name": "Weighted sum with bias input",
+    "formula": "Σⱼ₌₀ᵈ wⱼxⱼ = w₀ + w₁x₁ + w₂x₂ + … + w_d x_d,  with x₀ = 1",
+    "note": "Absorbs the bias into the sum via a constant input x₀ = 1 (slide 13).",
+    "week": "W5"
+  },
+  {
+    "name": "Perceptron",
+    "formula": "ŷ = o(w·x) = 1 if Σⱼ₌₀ᵈ wⱼxⱼ > 0, else −1",
+    "note": "Step activation; neuron fires when linear sum exceeds 0 (slide 13).",
+    "week": "W5"
+  },
+  {
+    "name": "Logistic unit",
+    "formula": "ŷ = σ(w·x) = 1 / (1 + e^(−Σⱼ₌₀ᵈ wⱼxⱼ))",
+    "note": "Default smooth activation of neural networks (slide 14).",
+    "week": "W5"
+  },
+  {
+    "name": "General logistic function",
+    "formula": "f(x) = L / (1 + e^(−k(x − x₀)))",
+    "note": "L = max value, k = steepness, x₀ = midpoint; k=1, x₀=0, L=1 gives the sigmoid (slide 15).",
+    "week": "W5"
+  },
+  {
+    "name": "Sigmoid",
+    "formula": "σ(x) = 1 / (1 + e^(−x))",
+    "note": "Bounded in (0,1); good for classification, prone to vanishing gradients (slide 33).",
+    "week": "W5"
+  },
+  {
+    "name": "Squared error loss (regression)",
+    "formula": "J(w) = Σᵢ₌₁ⁿ (yᵢ − ŷᵢ)²",
+    "note": "Objective for regression (slide 17).",
+    "week": "W5"
+  },
+  {
+    "name": "Binary cross-entropy",
+    "formula": "J(w) = −Σᵢ₌₁ⁿ [ yᵢ ln(ŷᵢ) + (1 − yᵢ) ln(1 − ŷᵢ) ]",
+    "note": "Objective for binary classification (slide 17).",
+    "week": "W5"
+  },
+  {
+    "name": "Multiclass cross-entropy",
+    "formula": "J(w) = −Σᵢ₌₁ⁿ Σₖ₌₁ᴷ δ(yᵢ, k) ln ŷᵢ,ₖ",
+    "note": "δ(yᵢ,k) = 1 if sample i is class k; only the true class's log-probability counts (slide 17).",
+    "week": "W5"
+  },
+  {
+    "name": "Squared-error gradient (identity activation)",
+    "formula": "∂J/∂wⱼ = 2(yᵢ − ŷᵢ)(−xᵢ,ⱼ)",
+    "note": "Chain rule for one sampled i in SGD regression (slides 21-22).",
+    "week": "W5"
+  },
+  {
+    "name": "SGD update with η = 0.5",
+    "formula": "wⱼ ← wⱼ + (yᵢ − ŷᵢ) xᵢ,ⱼ",
+    "note": "Simplified update used in the worked example (slides 22-23).",
+    "week": "W5"
+  },
+  {
+    "name": "ReLU",
+    "formula": "f(x) = max(x, 0)",
+    "note": "Cheap, sparse; may blow up and suffers dying ReLU (slide 34).",
+    "week": "W5"
+  },
+  {
+    "name": "Leaky ReLU",
+    "formula": "f(x) = x if x ≥ 0;  a·x if x < 0",
+    "note": "Small slope a for negatives addresses dying ReLU (slide 35).",
+    "week": "W5"
+  },
+  {
+    "name": "Softmax",
+    "formula": "p(y = k | x) = e^(wₖᵀx) / Σⱼ e^(wⱼᵀx)",
+    "note": "Multiclass extension of the logistic function; outputs sum to 1 (slide 36).",
+    "week": "W5"
+  },
+  {
+    "name": "Hidden layer computation",
+    "formula": "vₘ = Σⱼ₌₀ᵈ w⁽¹⁾ₘ,ⱼ xⱼ ;  zₘ = σ(vₘ)",
+    "note": "Fused multiply-add then activation (sigmoid, ReLU, etc.) (slide 40).",
+    "week": "W5"
+  },
+  {
+    "name": "Output layer computation",
+    "formula": "vₖ = Σⱼ₌₀ᵐ w⁽²⁾ₖ,ⱼ zⱼ ;  ŷₖ = σ(vₖ)",
+    "note": "Output activation needed for classification (slide 40).",
+    "week": "W5"
+  },
+  {
+    "name": "Layer in matrix form",
+    "formula": "z = σ(W⁽¹⁾x), W⁽¹⁾ ∈ ℝ^(m×(d+1));  ŷ = σ(W⁽²⁾z), W⁽²⁾ ∈ ℝ^(k×(m+1))",
+    "note": "One weight matrix between each adjacent pair of layers; +1 column for the bias (slide 42).",
+    "week": "W5"
+  },
+  {
+    "name": "Parameter count (one hidden layer, with biases)",
+    "formula": "#weights = m(d + 1) + k(m + 1)",
+    "note": "Derived from the matrix sizes on slide 42; e.g. d=10, m=5, k=3 gives 73.",
+    "week": "W5"
+  },
+  {
+    "name": "Network as a function",
+    "formula": "f(X; W) = y",
+    "note": "A deep feed-forward net maps inputs X to outputs y via parameters W (slides 7, 43).",
+    "week": "W5"
+  },
+  {
+    "name": "Sigmoid activation",
+    "formula": "σ(v) = 1 / (1 + e^(-v)),  σ(0) = 0.5",
+    "note": "Hidden unit activation in the worked example.",
+    "week": "W5"
+  },
+  {
+    "name": "Two-layer forward pass",
+    "formula": "v = W(1)x,  z = [1; σ(v)],  ŷ = W(2)z  (W(1): m x (d+1), W(2): k x (m+1))",
+    "note": "Forward computation for one hidden layer with bias units.",
+    "week": "W5"
+  },
+  {
+    "name": "Chain rule",
+    "formula": "d f(g(x))/dx = f'(g(x)) g'(x);  ∂y/∂x = (∂y/∂u)(∂u/∂v)(∂v/∂x)",
+    "note": "Basis of backpropagation.",
+    "week": "W5"
+  },
+  {
+    "name": "Vector chain rule",
+    "formula": "∂J/∂v = (∂J/∂z)(∂z/∂v)",
+    "note": "Jacobian form used for layer-to-layer propagation (optional slide).",
+    "week": "W5"
+  },
+  {
+    "name": "Output weight gradient (regression)",
+    "formula": "∂J/∂w_q(2) = 2(ŷ - y) z_q",
+    "note": "J = (y - ŷ)^2 with identity output.",
+    "week": "W5"
+  },
+  {
+    "name": "Hidden weight gradient (regression)",
+    "formula": "∂J/∂w_{q,j}(1) = 2(ŷ - y) w_q(2) z_q(1 - z_q) x_j",
+    "note": "Full chain w to v to z to ŷ to J; e.g. w_{1,2}(1) gives -1 in the slide example.",
+    "week": "W5"
+  },
+  {
+    "name": "Hidden error signal (2-layer)",
+    "formula": "δ_q(1) = ∂J/∂v_q = δ(2) w_q(2) z_q(1 - z_q)",
+    "note": "δ(1) = [-0.5, -0.5] in the slide example.",
+    "week": "W5"
+  },
+  {
+    "name": "Linear layer weight gradient",
+    "formula": "z = Wx, ∂J/∂z = δᵀ  gives  ∂J/∂W = δ xᵀ",
+    "note": "Outer product; same shape as W.",
+    "week": "W5"
+  },
+  {
+    "name": "Logistic layer weight gradient",
+    "formula": "z = σ(Wx)  gives  ∂J/∂W = (δ ∘ z ∘ (1 - z)) xᵀ",
+    "note": "∘ is the elementwise product.",
+    "week": "W5"
+  },
+  {
+    "name": "General layer forward",
+    "formula": "v(l) = W(l) z(l-1),  z(l) = σ(v(l))",
+    "note": "Pre-activation then activation at layer l.",
+    "week": "W5"
+  },
+  {
+    "name": "General layer backward",
+    "formula": "δ_v(l) = δ_z(l) ⊙ z(l) ⊙ (1 - z(l));  ∂J/∂W(l) = δ_v(l)(z(l-1))ᵀ;  δ_z(l-1) = (W(l))ᵀ δ_v(l)",
+    "note": "Repeat from the output layer down to layer 1.",
+    "week": "W5"
+  },
+  {
+    "name": "Error backpropagation (adjacent layers)",
+    "formula": "Logistic: δ(5) = W(6)ᵀ(δ(6) ∘ z(6) ∘ (1 - z(6)));  Identity: δ(5) = W(6)ᵀ δ(6)",
+    "note": "Error passed from layer 6 to layer 5.",
+    "week": "W5"
+  },
+  {
+    "name": "Gradient of weights (adjacent layers)",
+    "formula": "Logistic: ∂J/∂W(6) = (δ(6) ∘ z(6) ∘ (1 - z(6))) z(5)ᵀ;  Identity: ∂J/∂W(6) = δ(6) z(5)ᵀ",
+    "note": "Weight gradient at layer 6.",
+    "week": "W5"
+  },
+  {
+    "name": "Regression output gradient",
+    "formula": "J = (y - ŷ)^2,  ŷ = v(L):  ∂J/∂ŷ = ∂J/∂v(L) = 2(ŷ - y)",
+    "note": "Starting error for regression.",
+    "week": "W5"
+  },
+  {
+    "name": "Binary cross-entropy output gradient",
+    "formula": "J = -[y ln ŷ + (1 - y) ln(1 - ŷ)],  ŷ = σ(v(L)):  ∂J/∂ŷ = (ŷ - y)/(ŷ(1 - ŷ)),  ∂J/∂v(L) = ŷ - y",
+    "note": "Sigmoid derivative cancels the denominator.",
+    "week": "W5"
+  },
+  {
+    "name": "Multiclass cross-entropy output gradient",
+    "formula": "J = -Σ_k y_k ln ŷ_k,  ŷ = softmax(v(L)):  ∂J/∂ŷ_k = -y_k/ŷ_k (vector -y ⊘ ŷ),  ∂J/∂v(L) = ŷ - y",
+    "note": "Starting error for softmax classification.",
+    "week": "W5"
+  },
+  {
+    "name": "Binary BP in matrix form",
+    "formula": "∂J/∂W(2) = (ŷ - y) zᵀ;  δ(1) = (ŷ - y) W(2)ᵀ;  ∂J/∂W(1) = (δ(1) ∘ z ∘ (1 - z)) xᵀ",
+    "note": "Optional slide p.69.",
+    "week": "W5"
+  },
+  {
+    "name": "Multiclass BP in matrix form",
+    "formula": "δ(2) = -1_y ∘ (1 ⊘ ŷ);  ∂J/∂W(2) = (1_y ∘ (ŷ - 1)) zᵀ;  δ(1) = W(2)ᵀ(1_y ∘ (ŷ - 1))",
+    "note": "Optional slide p.70; 1_y is the one-hot vector of y, sigmoid outputs.",
+    "week": "W5"
+  },
+  {
+    "name": "Gradient descent weight update",
+    "formula": "W(l) ← W(l) - η ∂J/∂W(l)",
+    "note": "Applied at every level; mini-batch version accumulates into W_new then copies back.",
+    "week": "W5"
+  },
+  {
+    "name": "Regularized cost",
+    "formula": "C · J(w; X, y) + ||w||",
+    "note": "C controls how strongly large parameters are penalized (relative to fit).",
+    "week": "W5"
+  },
+  {
+    "name": "Dropout keep factor",
+    "formula": "α = 1 - drop-off rate;  test-time pre-activation = α × (W z), or use αW",
+    "note": "Neuron turned off with probability 1 - α in training; discount at test.",
+    "week": "W5"
+  },
+  {
+    "name": "Xavier/He initialization ranges",
+    "formula": "Logistic: r = sqrt(6/(n_in + n_out)), σ = sqrt(2/(n_in + n_out));  tanh: 4 × these;  ReLU: sqrt(2) × these",
+    "note": "Uniform on [-r, r] or normal with std σ (table on slide p.84, from Geron 1st ed.). Caution: the original Glorot/Xavier paper puts the factor 4 on the logistic unit, not tanh; use the slide's version for this course.",
+    "week": "W5"
+  },
+  {
+    "name": "Dropout ensemble size",
+    "formula": "number of sub-networks = 2^(number of non-output units)",
+    "note": "e.g. 4 non-output units gives 16 sub-networks (slide p.82).",
+    "week": "W5"
+  },
+  {
     "name": "3 x 3 spatial filter response",
     "formula": "g(x, y) = Σ_{i=-1..1} Σ_{j=-1..1} w(i, j) · f(x+i, y+j)",
     "note": "Response at pixel (x, y): filter coefficients times pixels under them, summed (slide p.8).",

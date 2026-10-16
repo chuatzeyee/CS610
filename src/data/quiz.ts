@@ -2004,6 +2004,435 @@ export const questions: readonly QuizQuestion[] = [
     "explanation": "Random Forest = bagging + per-split random feature selection (max_features=1 in the notebook forces this to the extreme). Decorrelated trees average out each other's idiosyncratic overfitting, which is why the aggregated boundary is smoother than any individual tree's."
   },
   {
+    "id": "nn1",
+    "topic": "Neural Networks",
+    "question": "In the slide 23 SGD example (identity activation, eta = 0.5 so w_j <- w_j + (y - y_hat) x_j), weights start at (0,0,0). Row 1 is x = (1,1,1), y = 1; row 2 is x = (1,-1,2), y = -1. What are (w_0, w_1, w_2) after both updates?",
+    "options": [
+      "(1, 1, 1)",
+      "(-2, 4, -5)",
+      "(-2, -2, -5)",
+      "(0, 2, -1)"
+    ],
+    "answerIndex": 1,
+    "explanation": "Round 1: y_hat = 0, error 1, so w = (1,1,1). Round 2: y_hat = 1 - 1 + 2 = 2, error = -1 - 2 = -3, so w = (1,1,1) - 3(1,-1,2) = (-2, 4, -5) (slide 23). (1,1,1) is only the state after round 1, and (-2,-2,-5) forgets that x_1 = -1 flips the sign of the w_1 update."
+  },
+  {
+    "id": "nn2",
+    "topic": "Neural Networks",
+    "question": "Why is a deep network without non-linear activation functions considered meaningless?",
+    "options": [
+      "It cannot be trained with gradient descent",
+      "It requires too much memory",
+      "Each extra layer is just another linear transform, so the whole network collapses to one linear model",
+      "Its outputs are always bounded in (0,1)"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide 31 states that without non-linearities each extra layer is just one linear transform, and composing linear maps gives a linear map, so depth adds no capacity. Linear networks can still be trained with gradient descent, so the first option is a misconception."
+  },
+  {
+    "id": "nn3",
+    "topic": "Neural Networks",
+    "question": "What is the value of the sigmoid derivative sigma'(0)?",
+    "options": [
+      "0.5",
+      "1",
+      "0",
+      "0.25"
+    ],
+    "answerIndex": 3,
+    "explanation": "sigma'(x) = sigma(x)(1 - sigma(x)) and sigma(0) = 0.5, so sigma'(0) = 0.5 * 0.5 = 0.25 (slides 14-15). 0.5 is sigma(0) itself, not its derivative; 0.25 is the maximum slope of the sigmoid."
+  },
+  {
+    "id": "nn4",
+    "topic": "Neural Networks",
+    "question": "A network has d = 10 inputs, one hidden layer of m = 5 units and k = 3 outputs, with a bias at each layer. How many weights are there in W^(1) and W^(2) combined?",
+    "options": [
+      "65",
+      "73",
+      "80",
+      "68"
+    ],
+    "answerIndex": 1,
+    "explanation": "W^(1) is m x (d+1) = 5 x 11 = 55 and W^(2) is k x (m+1) = 3 x 6 = 18, total 73 (slide 42). 65 forgets both bias columns (50 + 15), and 68 forgets only the input-layer bias (50 + 18)."
+  },
+  {
+    "id": "nn5",
+    "topic": "Neural Networks",
+    "question": "Which statement about batch vs stochastic vs mini-batch gradient descent matches the lecture?",
+    "options": [
+      "Batch GD is fastest and gives a rough gradient estimate",
+      "SGD gives the perfect gradient but needs large memory",
+      "Mini-batch GD is a compromise, more efficient than SGD, but adds the mini-batch size hyperparameter",
+      "Mini-batch GD updates weights only after all training data are evaluated"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slides 19-20: batch GD is slowest with a perfect, stable gradient and needs large memory; SGD is fastest with a rough gradient; mini-batch is the compromise and needs a batch-size hyperparameter. Updating only after all data is the definition of batch GD, not mini-batch."
+  },
+  {
+    "id": "nn6",
+    "topic": "Neural Networks",
+    "question": "What problem was Leaky ReLU proposed to address?",
+    "options": [
+      "Vanishing gradients of the sigmoid",
+      "The dying ReLU problem, where several neurons stop responding",
+      "ReLU outputs blowing up for large inputs",
+      "Softmax producing probabilities that do not sum to 1"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide 35: Leaky ReLU was proposed to address the dying ReLU problem by giving negative inputs a small slope a instead of zero. It does not cap positive outputs (still x for x >= 0), so it does not fix blow-up."
+  },
+  {
+    "id": "nn7",
+    "topic": "Neural Networks",
+    "question": "During training, what does the error (loss) force to be updated?",
+    "options": [
+      "The weights",
+      "The activation function",
+      "The number of hidden layers",
+      "The input features"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slides 24-25: 'Error forces weights to be updated'; activation functions are fixed choices. With activations fixed, the forward result depends solely on W (slide 43)."
+  },
+  {
+    "id": "nn8",
+    "topic": "Neural Networks",
+    "question": "Using squared error J = (y_i - y_hat_i)^2 with identity activation y_hat_i = sum_j w_j x_{i,j}, what is dJ/dw_1?",
+    "options": [
+      "2(y_i - y_hat_i) x_{i,1}",
+      "(y_i - y_hat_i)^2 x_{i,1}",
+      "-2(y_i - y_hat_i)",
+      "2(y_i - y_hat_i)(-x_{i,1})"
+    ],
+    "answerIndex": 3,
+    "explanation": "By the chain rule, dJ/dw_1 = 2(y_i - y_hat_i) * d/dw_1(y_i - sum_j w_j x_{i,j}) = 2(y_i - y_hat_i)(-x_{i,1}) (slide 21). Dropping the minus sign gives the ascent direction, which is the common mistake."
+  },
+  {
+    "id": "nn9",
+    "topic": "Neural Networks",
+    "question": "Linear unit, eta = 0.5 (update w_j <- w_j + (y - y_hat) x_j), current w = (0.5, 1, -1), sample x = (1, 2, 1) with x_0 = 1, y = 3. What is the new w?",
+    "options": [
+      "(2.0, 4.0, 0.5)",
+      "(1.5, 3.0, 0.5)",
+      "(2.0, 2.5, 0.5)",
+      "(-1.0, -2.0, -2.5)"
+    ],
+    "answerIndex": 0,
+    "explanation": "y_hat = 0.5 + 2 - 1 = 1.5, error = 3 - 1.5 = 1.5, so w = (0.5,1,-1) + 1.5(1,2,1) = (2.0, 4.0, 0.5). (-1,-2,-2.5) applies the update with the wrong sign, moving away from the target."
+  },
+  {
+    "id": "nn10",
+    "topic": "Neural Networks",
+    "question": "For the sigmoid, which identity holds for all x?",
+    "options": [
+      "sigma(x) - sigma(-x) = 0",
+      "sigma(x) * sigma(-x) = 1",
+      "sigma(x) + sigma(-x) = 1",
+      "sigma(-x) = -sigma(x)"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide 15 lists sigma(x) + sigma(-x) = 1 (e.g. sigma(2) = 0.881 and sigma(-2) = 0.119). The sigmoid is not odd (it is bounded in (0,1)), so sigma(-x) = -sigma(x) is false."
+  },
+  {
+    "id": "nn11",
+    "topic": "Neural Networks",
+    "question": "How does a one-hidden-layer network approximate an arbitrary 1D function according to the lecture?",
+    "options": [
+      "By stacking many linear layers",
+      "By subtracting pairs of offset sigmoid units to form bumps, then translating and scaling the bumps",
+      "By using a single ReLU with a very large weight",
+      "By applying softmax to the input"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide 32: pairs of offset sigmoid hidden units (unit 2 minus unit 1) form localised bumps, and translating and scaling them approximates arbitrary 1D functions. Stacking linear layers stays linear and cannot do this."
+  },
+  {
+    "id": "nn12",
+    "topic": "Neural Networks",
+    "question": "Which is listed as a drawback of ReLU f(x) = max(x, 0)?",
+    "options": [
+      "It is computationally expensive for deep structures",
+      "It is bounded in (0,1) and saturates",
+      "It may blow up and suffers from dying neurons",
+      "It is not non-linear"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide 34: ReLU is non-linear 'but may blow up' and has the dying ReLU problem; its advantages are sparsity, efficiency and low cost for deep structures. Bounded (0,1) saturation describes the sigmoid, not ReLU."
+  },
+  {
+    "id": "nn13",
+    "topic": "Neural Networks",
+    "question": "With logits (3, 1, 0) for three classes, what probability does softmax assign to the first class (to 2 d.p.)?",
+    "options": [
+      "0.84",
+      "0.75",
+      "0.11",
+      "0.33"
+    ],
+    "answerIndex": 0,
+    "explanation": "e^3 / (e^3 + e^1 + e^0) = 20.09 / 23.80 = 0.844, about 0.84 (formula from slide 36). 0.75 comes from normalising the raw scores 3/(3+1+0) without exponentiating, 0.11 is the second class's probability, and 0.33 ignores the logits entirely."
+  },
+  {
+    "id": "nn14",
+    "topic": "Neural Networks",
+    "question": "For a binary classifier with true label y = 1 and prediction y_hat = 0.8, what is the cross-entropy loss contribution (natural log)?",
+    "options": [
+      "0.04",
+      "0.80",
+      "0.22",
+      "1.61"
+    ],
+    "answerIndex": 2,
+    "explanation": "J = -[y ln y_hat + (1 - y) ln(1 - y_hat)] = -ln 0.8 = 0.223 (slide 17). 0.04 is the squared error (1 - 0.8)^2, and 1.61 is -ln 0.2, using the wrong class probability."
+  },
+  {
+    "id": "nn15",
+    "topic": "Neural Networks",
+    "question": "In the ALVINN network (Pomerleau 1989), how many hidden units sit between the 30x32 input retina and the 30 output units?",
+    "options": [
+      "30",
+      "4",
+      "960",
+      "32"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide 3 shows a 30x32 sensor input retina, 4 hidden units and 30 output units from Sharp Left to Sharp Right. 960 is the number of input pixels (30 x 32), not hidden units."
+  },
+  {
+    "id": "nn16",
+    "topic": "Neural Networks",
+    "question": "Which is NOT given in the lecture as a reason for the renewed wave of interest in ANNs?",
+    "options": [
+      "Huge quantities of training data",
+      "Large increase in computing power since the 1990s",
+      "Small tweaks to training algorithms with large positive impact",
+      "A proof that ANN training always finds the global optimum"
+    ],
+    "answerIndex": 3,
+    "explanation": "Slide 5 cites data, compute, improved algorithms, and that getting stuck in local optima turns out to be rare in practice. That is an empirical observation, not a proof of global optimality."
+  },
+  {
+    "id": "nn17",
+    "topic": "Neural Networks",
+    "question": "Using the slide network (x = [1,1,2] with x0 = 1, W(1) = [[-1,1,0],[-1,0,0.5]], sigmoid hidden units with bias z0 = 1, identity output), what is ŷ if W(2) is changed to [0.5, 1, 1]?",
+    "options": [
+      "1.0",
+      "1.5",
+      "2.0",
+      "0.5"
+    ],
+    "answerIndex": 1,
+    "explanation": "v = W(1)x = [0, 0], so z = [1, 0.5, 0.5]. ŷ = 0.5(1) + 1(0.5) + 1(0.5) = 1.5. Answering 1.0 forgets that the bias weight now multiplies z0 = 1 (slide p.44)."
+  },
+  {
+    "id": "nn18",
+    "topic": "Neural Networks",
+    "question": "In the slide example ŷ = 1, y = 2, J = (y - ŷ)^2 and z = [1, 0.5, 0.5]. What is ∂J/∂W(2)?",
+    "options": [
+      "[2, 1, 1]",
+      "[-1, -0.5, -0.5]",
+      "[-2, -1, -1]",
+      "[-2, -2, -2]"
+    ],
+    "answerIndex": 2,
+    "explanation": "δ(2) = 2(ŷ - y) = -2, and ∂J/∂W(2) = δ(2) zᵀ = -2[1, 0.5, 0.5] = [-2, -1, -1] (slide p.51). [2, 1, 1] uses (y - ŷ) with the wrong sign, and [-1, -0.5, -0.5] drops the factor 2 from the squared error derivative."
+  },
+  {
+    "id": "nn19",
+    "topic": "Neural Networks",
+    "question": "Continuing the slide example (δ(2) = -2, W(2) = [0, 1, 1], z1 = z2 = 0.5), what is the hidden error signal δ(1) = ∂J/∂v?",
+    "options": [
+      "[-2, -2]",
+      "[-1, -1]",
+      "[0, -0.5]",
+      "[-0.5, -0.5]"
+    ],
+    "answerIndex": 3,
+    "explanation": "δ_q(1) = δ(2) w_q(2) z_q(1 - z_q) = -2 × 1 × 0.5 × 0.5 = -0.5 for both units (slide p.51). [-1, -1] forgets that the sigmoid derivative is z(1 - z) = 0.25, not z = 0.5; the bias weight w_0(2) is not used since z0 is a constant."
+  },
+  {
+    "id": "nn20",
+    "topic": "Neural Networks",
+    "question": "With δ(1) = [-0.5, -0.5] and x = [1, 1, 2], what is the gradient ∂J/∂w_{2,2}(1) (hidden unit 2, input x2)?",
+    "options": [
+      "-1",
+      "-0.5",
+      "-2",
+      "0.5"
+    ],
+    "answerIndex": 0,
+    "explanation": "∂J/∂W(1) = δ(1) xᵀ, so entry (2, x2) = -0.5 × 2 = -1 (slide p.51). -0.5 is the gradient for the x0 or x1 columns, where the input value is 1."
+  },
+  {
+    "id": "nn21",
+    "topic": "Neural Networks",
+    "question": "With η = 0.1, W(1) = [[-1,1,0],[-1,0,0.5]] and ∂J/∂W(1) = [[-0.5,-0.5,-1],[-0.5,-0.5,-1]], what is the updated W(1)?",
+    "options": [
+      "[[-1.05, 0.95, -0.1], [-1.05, -0.05, 0.4]]",
+      "[[-0.95, 1.05, 0.1], [-0.95, 0.05, 0.6]]",
+      "[[-0.5, 1.5, 1], [-0.5, 0.5, 1.5]]",
+      "[[-0.95, 1.05, 0.05], [-0.95, 0.05, 0.55]]"
+    ],
+    "answerIndex": 1,
+    "explanation": "W_new = W - η∇ = W + 0.1 × [[0.5,0.5,1],[0.5,0.5,1]], giving [[-0.95, 1.05, 0.10], [-0.95, 0.05, 0.60]] (slide p.64). The first option adds the gradient (gradient ascent); the third omits η."
+  },
+  {
+    "id": "nn22",
+    "topic": "Neural Networks",
+    "question": "After the one-step update in the slide example (W(1)_new as on p.64, W(2)_new = [0.2, 1.1, 1.1]), approximately what are the new prediction and loss for x = [1,1,2], y = 2?",
+    "options": [
+      "ŷ ≈ 1.46, J ≈ 0.29",
+      "ŷ ≈ 1.10, J ≈ 0.81",
+      "ŷ ≈ 2.00, J ≈ 0.00",
+      "ŷ ≈ 0.80, J ≈ 1.44"
+    ],
+    "answerIndex": 0,
+    "explanation": "New v = [0.3, 0.3], so z1 = z2 = σ(0.3) ≈ 0.574 and ŷ = 0.2 + 1.1(0.574)(2) ≈ 1.464; J = (2 - 1.464)^2 ≈ 0.288, down from 1. One gradient step reduces but does not eliminate the error, so 2.00 is wrong."
+  },
+  {
+    "id": "nn23",
+    "topic": "Neural Networks",
+    "question": "A binary classifier uses ŷ = σ(v(L)) and cross-entropy loss. For a sample with y = 1 and ŷ = 0.8, what is ∂J/∂v(L)?",
+    "options": [
+      "-0.4",
+      "0.2",
+      "-1.25",
+      "-0.2"
+    ],
+    "answerIndex": 3,
+    "explanation": "With sigmoid plus binary cross-entropy, ∂J/∂v(L) = (ŷ - y)/(ŷ(1-ŷ)) × ŷ(1-ŷ) = ŷ - y = 0.8 - 1 = -0.2 (slide p.61). -1.25 is ∂J/∂ŷ = -y/ŷ before multiplying by the sigmoid derivative; -0.4 wrongly applies the regression factor 2."
+  },
+  {
+    "id": "nn24",
+    "topic": "Neural Networks",
+    "question": "A 3-class softmax network with cross-entropy outputs ŷ = [0.7, 0.2, 0.1] and the true class is class 2 (y = [0, 1, 0]). What is ∂J/∂v(L)?",
+    "options": [
+      "[0, -5, 0]",
+      "[-0.7, 0.8, -0.1]",
+      "[0.7, -0.8, 0.1]",
+      "[0.7, 0.2, 0.1]"
+    ],
+    "answerIndex": 2,
+    "explanation": "For softmax with cross-entropy, ∂J/∂v(L) = ŷ - y = [0.7, -0.8, 0.1] (slide p.61). [0, -5, 0] is ∂J/∂ŷ = -y ⊘ ŷ, the derivative before passing back through the softmax; [-0.7, 0.8, -0.1] has the sign flipped."
+  },
+  {
+    "id": "nn25",
+    "topic": "Neural Networks",
+    "question": "For a sigmoid layer, δ_z(l) = ∂J/∂z(l) is known. Which correctly gives the gradient for W(l) and the error passed to layer l-1?",
+    "options": [
+      "∂J/∂W(l) = δ_z(l)(z(l-1))ᵀ; δ_z(l-1) = W(l) δ_z(l)",
+      "∂J/∂W(l) = δ_v(l)(z(l-1))ᵀ; δ_z(l-1) = (W(l))ᵀ δ_v(l), with δ_v(l) = δ_z(l) ⊙ z(l) ⊙ (1 - z(l))",
+      "∂J/∂W(l) = (z(l-1))ᵀ δ_v(l); δ_z(l-1) = δ_v(l) ⊙ z(l-1)",
+      "∂J/∂W(l) = δ_v(l) z(l)ᵀ; δ_z(l-1) = (W(l))ᵀ δ_z(l)"
+    ],
+    "answerIndex": 1,
+    "explanation": "First convert to the pre-activation error with the sigmoid derivative, δ_v(l) = δ_z(l) ⊙ z(l) ⊙ (1 - z(l)), then ∂J/∂W(l) = δ_v(l)(z(l-1))ᵀ and δ_z(l-1) = (W(l))ᵀ δ_v(l) (slide p.56). The first option skips the sigmoid derivative (valid only for an identity layer) and also drops the transpose on W(l); the last option uses z(l) instead of z(l-1) in the weight gradient."
+  },
+  {
+    "id": "nn26",
+    "topic": "Neural Networks",
+    "question": "In backprop through a 9-layer network, why is δ(0) (the error at the input layer) not computed?",
+    "options": [
+      "Because the input layer has no weights below it, so there is nothing left to update",
+      "Because the sigmoid derivative is zero at the input",
+      "Because δ(0) always equals δ(1)",
+      "Because the input layer uses an identity activation, so δ(0) = 0"
+    ],
+    "answerIndex": 0,
+    "explanation": "Error signals are only needed to compute weight gradients; ∂J/∂W(1) uses δ(1) and the inputs x, and there are no parameters below the input (slide p.57). An identity activation does not make the derivative zero, so the last option is a misconception."
+  },
+  {
+    "id": "nn27",
+    "topic": "Neural Networks",
+    "question": "What is the maximum value of the sigmoid derivative z(1 - z) that multiplies the error at each logistic layer, and what does it imply for deep sigmoid networks?",
+    "options": [
+      "1, so gradients pass through unchanged",
+      "0.5, so gradients halve at each layer at most",
+      "0.25, so gradients can shrink quickly across many layers (vanishing gradients)",
+      "Unbounded, so gradients explode"
+    ],
+    "answerIndex": 2,
+    "explanation": "z(1 - z) peaks at z = 0.5 with value 0.25, as in the slide example where z1(1 - z1) = 0.25. Multiplying many such factors (and small weights) shrinks the gradient, which slide p.85 lists as the vanishing gradient problem. 0.5 confuses σ(0) with its derivative."
+  },
+  {
+    "id": "nn28",
+    "topic": "Neural Networks",
+    "question": "A network was trained with drop-off rate 0.2. At test time all neurons are used and a unit's raw pre-activation is 5.0. Using Method 1 from the slides, what value should be used?",
+    "options": [
+      "1.0",
+      "6.25",
+      "5.0",
+      "4.0"
+    ],
+    "answerIndex": 3,
+    "explanation": "α = 1 - drop-off rate = 0.8, and pre-activations are discounted by α: 0.8 × 5.0 = 4.0 (slide p.81). Without discounting (5.0) values are over-estimated because only 80% of units were active in training; 6.25 divides instead of multiplies."
+  },
+  {
+    "id": "nn29",
+    "topic": "Neural Networks",
+    "question": "Which statement about dropout is correct according to the slides?",
+    "options": [
+      "Dropped units are permanently removed from the network after training",
+      "Dropped nodes get zero gradient for that step and return with unchanged weights at the next step",
+      "A dropout rate of 1.0 gives the strongest useful regularization",
+      "Dropout is applied at test time with the same random masks as training"
+    ],
+    "answerIndex": 1,
+    "explanation": "Units are dropped for a single gradient step, backprop runs only over the remaining network, and dropped units come back unchanged (slides p.77, p.80). A rate of 1.0 drops everything and learns nothing; at test time all neurons are used."
+  },
+  {
+    "id": "nn30",
+    "topic": "Neural Networks",
+    "question": "Dropout approximates an ensemble of sub-networks formed by removing non-output units. For a base network with inputs x1, x2 and hidden units h1, h2 (as on slide p.82), how many sub-networks are there?",
+    "options": [
+      "4",
+      "8",
+      "16",
+      "24"
+    ],
+    "answerIndex": 2,
+    "explanation": "Each of the 4 non-output units is either kept or dropped, giving 2^4 = 16 sub-networks, matching the 4 x 4 grid in the figure. 4 counts only hidden-unit combinations, 2^2, and ignores the inputs."
+  },
+  {
+    "id": "nn31",
+    "topic": "Neural Networks",
+    "question": "During training, training error keeps falling while validation error reaches a minimum and then starts rising. What does early stopping do?",
+    "options": [
+      "Stops updating weights when validation error starts increasing",
+      "Stops when training error reaches zero",
+      "Stops after a fixed number of epochs regardless of validation error",
+      "Restarts training with a smaller learning rate when training error plateaus"
+    ],
+    "answerIndex": 0,
+    "explanation": "Early stopping watches the validation curve and stops at its minimum, before the overfitting region (slide p.75). Waiting for training error to reach zero is exactly what leads to overfitting."
+  },
+  {
+    "id": "nn32",
+    "topic": "Neural Networks",
+    "question": "Using the slide's initialization table, what is the uniform range r for a logistic layer with 200 inputs and 100 outputs?",
+    "options": [
+      "≈ 0.200",
+      "≈ 0.141",
+      "≈ 0.082",
+      "≈ 0.566"
+    ],
+    "answerIndex": 1,
+    "explanation": "Per the slide's table, r = sqrt(6/(n_in + n_out)) = sqrt(6/300) ≈ 0.141 (slide p.84). 0.200 is the ReLU value (× sqrt(2)); 0.082 is the normal σ = sqrt(2/300). Caution: 0.566 = 4 × 0.141 is the slide's tanh value, and the original Glorot and Bengio paper actually assigns the factor 4 to the logistic unit, so the slide table has logistic and tanh swapped; answer from the slide in this course."
+  },
+  {
+    "id": "nn33",
+    "topic": "Neural Networks",
+    "question": "Why does the slide argue for penalizing large parameters (C · J(w; X, y) + ||w||)?",
+    "options": [
+      "Large weights slow down the forward pass",
+      "Large weights amplify small input changes and push the sigmoid toward a step function, giving over-confident predictions",
+      "Large weights always cause vanishing gradients only at the output layer",
+      "Regularization increases training accuracy"
+    ],
+    "answerIndex": 1,
+    "explanation": "Inputs are linearly combined with weights, so large weights amplify input changes and make the sigmoid near-step, inflating confidence (slide p.76). Regularization trades some training fit for generalization, so it does not increase training accuracy."
+  },
+  {
     "id": "cnn1",
     "topic": "CNN",
     "question": "A 7 x 7 single-channel image is convolved with a 3 x 3 kernel, stride 2, no padding. What is the output feature map size?",

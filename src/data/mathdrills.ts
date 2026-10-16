@@ -861,6 +861,51 @@ function genEnsemble(tier: Tier): Problem {
   }
 }
 
+function genNeuron(tier: Tier): Problem {
+  if (tier === 1) {
+    const w = ri(-4, 4) / 2, x = ri(-3, 3) || 1, eta = pick([0.1, 0.5, 0.5, 1])
+    const y = pick([-1, 1]), yhat = -y
+    const answer = w + eta * (y - yhat) * x
+    return {
+      prompt: `Perceptron update (labels y, ŷ ∈ {−1, +1}): weight w = ${w}, input x = ${x}, learning rate η = ${eta}. The target is y = ${y} but the perceptron predicted ŷ = ${yhat}. What is the new weight?`,
+      answerLabel: 'new w',
+      answer,
+      steps: [
+        `Perceptron rule: w ← w + η(y − ŷ)x. A misclassified point has y − ŷ = ±2.`,
+        ...(eta === 0.5 ? ['With η = 0.5 this is the slides\' form w ← w + ½(y − ŷ)x, i.e. w ← w + yx for a mistake.'] : []),
+        `w ← ${w} + ${eta}×(${y} − (${yhat}))×${x} = ${w} + ${fmt(eta * (y - yhat) * x)} = ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const w1 = ri(-3, 3) / 2, w2 = ri(-3, 3) / 2, b = ri(-2, 2) / 2
+  const x1 = ri(-2, 3), x2 = ri(-2, 3)
+  const z = w1 * x1 + w2 * x2 + b
+  const yhat = sigmoid(z)
+  if (tier === 2) {
+    return {
+      prompt: `A sigmoid neuron has w = (${w1}, ${w2}), b = ${b}. Compute its output for x = (${x1}, ${x2}).`,
+      answerLabel: 'output σ(z)',
+      answer: yhat,
+      steps: [
+        `z = w·x + b = ${w1}×${x1} + ${w2}×${x2} + ${b} = ${fmt(z)}.`,
+        `σ(z) = 1/(1 + e^(−${fmt(z)})) = ${fmt(yhat)}.`,
+      ],
+    }
+  }
+  const y = ri(0, 1), eta = pick([0.1, 0.5])
+  const answer = w1 - eta * (yhat - y) * x1
+  return {
+    prompt: `Exam-style: a sigmoid neuron with binary cross-entropy loss has w = (${w1}, ${w2}), b = ${b}. For x = (${x1}, ${x2}) with target y = ${y}, take one gradient-descent step with η = ${eta}. What is the new w₁?`,
+    answerLabel: 'new w₁',
+    answer,
+    steps: [
+      `Forward: z = ${fmt(z)}, ŷ = σ(z) = ${fmt(yhat)}.`,
+      `For sigmoid + cross-entropy the output gradient simplifies to ∂L/∂z = ŷ − y = ${fmt(yhat - y)}, so ∂L/∂w₁ = (ŷ − y)·x₁ = ${fmt((yhat - y) * x1)}.`,
+      `w₁ ← w₁ − η·∂L/∂w₁ = ${w1} − ${eta}×${fmt((yhat - y) * x1)} = ${fmt(answer)}.`,
+    ],
+  }
+}
+
 function genCnn(tier: Tier): Problem {
   if (tier === 1) {
     const n = ri(5, 32)
@@ -1067,6 +1112,14 @@ export const levels: readonly DrillLevel[] = [
     concept: 'Averaging shrinks variance by 1/n; AdaBoost reweights misclassified points each round using a per-classifier vote weight.',
     formula: 'Var(M*) = σ²/n    αₜ = ½ln((1−errₜ)/errₜ)    wᵢ ← wᵢ·exp(∓αₜ), renormalize',
     generate: genEnsemble,
+  },
+  {
+    id: 'neuron',
+    week: 'W5',
+    title: 'Neurons, perceptrons & gradient steps',
+    concept: 'Update a perceptron, run a sigmoid neuron forward, and take one cross-entropy gradient step by hand.',
+    formula: 'perceptron (y, ŷ ∈ {−1, 1}): w ← w + η(y − ŷ)x    ŷ = σ(w·x + b)    CE: ∂L/∂w = (ŷ − y)x',
+    generate: genNeuron,
   },
   {
     id: 'cnn',

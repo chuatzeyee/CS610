@@ -13,7 +13,7 @@ const cards = [
     to: '/topics',
     icon: BookOpen,
     title: 'Topics & Glossary',
-    description: 'Every lecture segment (Weeks 1–4, 6–7) distilled into revision notes, plus a searchable glossary of key terms',
+    description: 'Every lecture segment (Weeks 1–7) distilled into revision notes, plus a searchable glossary of key terms',
     count: sessions.reduce((sum, s) => sum + s.topics.length, 0) + definitions.length,
     unit: 'entries',
   },
@@ -45,7 +45,7 @@ const cards = [
     to: '/kahoot',
     icon: Gamepad2,
     title: 'Kahoot Practice',
-    description: 'Timed, Kahoot-style quick-fire rounds for Week 6: the instructor\'s in-class Kahoot (ensembles & NN) plus CNN lecture and lab questions, scored for speed',
+    description: 'Timed, Kahoot-style quick-fire rounds: the instructor\'s in-class Kahoots (decision trees; ensembles & NN) plus CNN lecture and lab questions, scored for speed',
     count: kahootQuestions.length,
     unit: 'questions',
   },
@@ -75,10 +75,10 @@ export default function Home() {
           {course.courseTitle}
         </p>
         <p className="text-ink-secondary max-w-2xl mx-auto leading-relaxed">
-          Study companion for SMU CS610 — Weeks 1–4 and 6–7: the ML landscape, Bayesian
+          Study companion for SMU CS610 — Weeks 1–7: the ML landscape, Bayesian
           learning and naive Bayes, probability, linear algebra and information
           theory foundations, linear regression and regularization, logistic
-          regression, decision trees and ensemble methods, convolutional neural
+          regression, decision trees and ensemble methods, neural networks, convolutional neural
           networks, and sequence models, attention and Transformers — plus the
           weekly lab notebooks and Kahoot-style practice.
         </p>

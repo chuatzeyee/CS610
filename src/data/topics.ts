@@ -1849,6 +1849,479 @@ export const sessions: readonly Session[] = [
     ]
   },
   {
+    "id": "w5_nn",
+    "title": "Neural Networks & Deep Learning",
+    "subtitle": "05_neural_network.pdf",
+    "topics": [
+      {
+        "id": "nn-history-motivation",
+        "title": "Neural Networks: History, Motivation and Representation Learning",
+        "sections": [
+          {
+            "heading": "ALVINN and early history",
+            "points": [
+              "ALVINN (Autonomous Land Vehicle In a Neural Network, D.A. Pomerleau, 1989) learned to steer from road images about 30 years ago and drove at 112 km/h on a public highway (slide 3).",
+              "ALVINN architecture: a 30x32 sensor input retina feeds 4 hidden units, which feed 30 output units spanning steering directions from 'Sharp Left' through 'Straight Ahead' to 'Sharp Right' (slide 3).",
+              "Artificial neural networks (ANNs) were inspired by biological learning systems and were first proposed in 1943 by neurophysiologist Warren McCulloch and mathematician Walter Pitts (slide 4).",
+              "Early successes up to the 1960s created a belief that truly intelligent machines were near; when that promise went unfulfilled, funding moved elsewhere and ANNs entered a long dark era (slide 4).",
+              "By the 1990s, alternative ML techniques such as Support Vector Machines were favoured by most researchers over ANNs (slide 4)."
+            ]
+          },
+          {
+            "heading": "Why the current wave of interest in ANNs",
+            "points": [
+              "Data: there is now a huge quantity of data available to train neural networks (slide 5).",
+              "Compute: the tremendous increase in computing power since the 1990s makes it possible to train large networks in reasonable time (slide 5).",
+              "Algorithms: training algorithms are only slightly different from those of the 1990s, but these small tweaks have had a huge positive impact (slide 5).",
+              "Theory turned out benign in practice: people feared training would get stuck in local optima, but this turns out to be rather rare in practice (slide 5)."
+            ]
+          },
+          {
+            "heading": "Brain comparison and what NNs do",
+            "points": [
+              "Human brain: neuron switching time about 0.001 s, about 10^10 neurons, 10^4 to 10^5 connections per neuron, scene recognition in about 0.1 s, using parallel computation (slide 6).",
+              "Neural network: many neuron-like switching units, many weighted interconnections among units, and a highly parallel, distributed process (depending on architecture) (slide 6).",
+              "Application areas: computer vision, natural language processing, recommender systems, reinforcement learning (slide 7).",
+              "A deep feed-forward (DFF) network is a function f(X; W) = y where W are the model parameters; X can be images, sentences, purchase histories or time series, and y can be labels, sentiments, next item or prices (slide 7)."
+            ]
+          },
+          {
+            "heading": "Neural networks as representation learning",
+            "points": [
+              "Key message: 'Neural network is a way of learning representations' (slide 9).",
+              "The representation-learning figure shows a hierarchy: visible layer (input pixels), 1st hidden layer (edges), 2nd hidden layer (corners and contours), 3rd hidden layer (object parts), output (object identity such as CAR, PERSON, ANIMAL) (slide 10).",
+              "Why it matters: deeper layers build increasingly abstract features from simpler features in earlier layers, so features do not need to be hand-engineered (slide 10).",
+              "Lecture outline: Perceptron, Objective functions, Multilayers, Backpropagation, Practical issues (slide 11)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "neurons-perceptron-logistic",
+        "title": "Artificial Neurons: Perceptron and Logistic Unit",
+        "sections": [
+          {
+            "heading": "The artificial neuron",
+            "points": [
+              "A neural network is a collection of connected units called artificial neurons, which loosely model the neurons in a biological brain (slide 12).",
+              "A neuron is essentially a logistic unit: it performs a dot product of the input with its weights, adds the bias, and applies a non-linearity, giving output f(sum_i w_i x_i + b) (slide 12).",
+              "Biological analogy (slide 12): input x arrives along the axon from another neuron, the synapse weights it (w_0 x_0), dendrites carry it to the cell body which sums the weighted inputs plus bias, and the activation function produces the signal on the output axon.",
+              "Bias trick: a constant input x_0 = 1 with weight w_0 is added so that the bias is absorbed into the weighted sum sum_{j=0}^{d} w_j x_j = w_0 + w_1 x_1 + ... + w_d x_d (slide 13)."
+            ]
+          },
+          {
+            "heading": "Perceptron (step activation)",
+            "points": [
+              "The perceptron is the simplest activation function: the neuron fires when the linear sum is greater than 0 (slide 13).",
+              "Perceptron output: y_hat = o(w . x) = 1 if sum_{j=0}^{d} w_j x_j > 0, and -1 otherwise (slide 13).",
+              "The step function is not smooth, which motivates using a differentiable activation such as the logistic unit for gradient-based training (slides 13-14)."
+            ]
+          },
+          {
+            "heading": "Logistic unit and the logistic function",
+            "points": [
+              "The logistic unit is the default activation of neural networks: y_hat = sigma(w . x) = 1 / (1 + e^(-sum_{j=0}^{d} w_j x_j)) (slide 14).",
+              "It is smooth (differentiable) with derivative d/dx sigma(x) = sigma(x)(1 - sigma(x)) (slide 14).",
+              "General logistic function: f(x) = L / (1 + e^(-k(x - x_0))), where L is the curve's maximum value, k is the steepness, x_0 is the midpoint's x-value, and e is the natural log base (slide 15).",
+              "Setting k = 1, x_0 = 0, L = 1 gives the sigmoid sigma(x) = 1 / (1 + e^(-x)) (slide 15).",
+              "Properties: d/dx sigma(x) = sigma(x)(1 - sigma(x)) = d/dx sigma(-x), and sigma(x) + sigma(-x) = 1 (slide 15). Example: sigma(0) = 0.5 and its derivative there is 0.25, the maximum slope.",
+              "Linear models need two elements: weights w and an activation function (perceptron or logistic unit); predictions y_hat_i are compared with labels y_i to judge whether the model is good (slide 16)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "loss-functions-gradient-descent",
+        "title": "Objective Functions and Gradient Descent",
+        "sections": [
+          {
+            "heading": "Objective (loss / cost) functions",
+            "points": [
+              "Objective functions (also called loss or cost functions) measure a model by its error; training looks for the model that minimises the error (slide 17).",
+              "Regression uses squared error: J(w) = sum_{i=1}^{n} (y_i - y_hat_i)^2 (slide 17).",
+              "Binary classification uses cross-entropy: J(w) = -sum_{i=1}^{n} [y_i ln(y_hat_i) + (1 - y_i) ln(1 - y_hat_i)] (slide 17).",
+              "Multiclass classification: J(w) = -sum_{i=1}^{n} sum_{k=1}^{K} delta(y_i, k) ln y_hat_{i,k}, where delta(y_i, k) = 1 if sample i belongs to class k, else 0; only the log-probability of the true class counts (slide 17)."
+            ]
+          },
+          {
+            "heading": "Gradient descent algorithm",
+            "points": [
+              "General gradient descent: initialise all w_j, then repeat until convergence w_j <- w_j - eta * dJ(w)/dw_j, updating all j = 0, 1, ... simultaneously (slide 18).",
+              "eta is the learning rate controlling step size along the negative gradient (slide 18).",
+              "It becomes stochastic gradient descent (SGD) when only a sampled subset of the x's is used to estimate the gradient (slide 18).",
+              "For logistic regression the prediction inside J is y_hat_i = 1 / (1 + e^(-sum_{j=0}^{d} w_j x_{i,j})) (slide 18)."
+            ]
+          },
+          {
+            "heading": "Batch vs stochastic vs mini-batch GD",
+            "points": [
+              "Batch GD updates parameters only after all training data have been evaluated: stable error gradient, but needs large memory and may lead to a less optimal solution (slide 19).",
+              "Mini-batch GD splits data into small batches, averages the gradient over each batch and updates the weights; it is more efficient than SGD but adds a hyperparameter, the mini-batch size (slide 19).",
+              "Trajectory figure (slide 20): Batch GD is slowest but has the perfect gradient (smooth path); Stochastic GD is fastest but uses a rough gradient estimate (zig-zag path); Mini-batch GD is a compromise.",
+              "Training repeats: error forces the weights (not the activation function) to be updated; one full pass over all n samples is one epoch, and a mini-batch is a subset of samples used per update (slide 24)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sgd-worked-example",
+        "title": "Worked Example: SGD on a Linear Unit",
+        "sections": [
+          {
+            "heading": "Deriving the gradient",
+            "points": [
+              "Take regression and sample one particular i for SGD, with identity activation (y_hat_i = sum_j w_j x_{i,j}) (slide 21).",
+              "By the chain rule: dJ/dw_1 = d/dw_1 (y_i - y_hat_i)^2 = 2(y_i - y_hat_i) * d/dw_1 (y_i - sum_j w_j x_{i,j}) = 2(y_i - y_hat_i)(-x_{i,1}) (slide 21).",
+              "In general dJ/dw_j = 2(y_i - y_hat_i)(-x_{i,j}); with eta = 0.5 the update simplifies to w_j <- w_j + (y_i - y_hat_i) x_{i,j} (slide 22)."
+            ]
+          },
+          {
+            "heading": "Two-iteration computation",
+            "points": [
+              "Setup: initial w_0 = w_1 = w_2 = 0; an x_0 = 1 column caters for the bias; dataset row 1 is (x_1, x_2) = (1, 1) with y = 1, row 2 is (-1, 2) with y = -1 (using -1 for the negative class) (slides 22-23).",
+              "Round 1 (sample row 1): sum = 0, y_hat = 0, error y - y_hat = 1, so w = (0,0,0) + 1*(1,1,1) = (1, 1, 1) (slide 23).",
+              "Round 2 (sample row 2): sum = 1*1 + 1*(-1) + 1*2 = 2, y_hat = 2, error = -1 - 2 = -3, so w = (1,1,1) + (-3)*(1,-1,2) = (-2, 4, -5) (slide 23).",
+              "The slide labels this 'train a perceptron' but computes y_hat = w^T x (identity activation), so y_hat equals the raw sum rather than a thresholded +/-1 (slides 21-23)."
+            ]
+          },
+          {
+            "heading": "Checkpoint concepts",
+            "points": [
+              "By now you should know: weights, activation functions, perceptron, logistic units, objective (loss / cost) functions, batch vs stochastic GD, epoch and mini-batch (slide 25).",
+              "Error updates the weights, not the activation function; activation functions are fixed choices (slide 25).",
+              "The models so far (single unit with perceptron or logistic activation) are linear models in the sense that their decision boundary is linear in x, motivating multilayer non-linear networks (slides 25-27)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nonlinearity-activation-functions",
+        "title": "Non-linearity and Activation Functions",
+        "sections": [
+          {
+            "heading": "Why non-linear activations",
+            "points": [
+              "Starting from a linear model (inputs directly to one output), adding one or two hidden layers of purely linear units still yields a linear model (slides 27-29).",
+              "To make the network non-linear, a non-linear transformation layer (activation function) is inserted after each hidden layer; diagrams usually do not draw it explicitly (slide 30).",
+              "Without non-linearities, deep networks are meaningless: each extra layer is just one linear transform, and a composition of linear transforms is still linear (slide 31).",
+              "Non-linear activations increase the capacity of the model; choose activation functions for low loss and fast convergence (slide 31)."
+            ]
+          },
+          {
+            "heading": "Universal approximation",
+            "points": [
+              "A neural network with one hidden layer is a 'universal approximator' (slide 32).",
+              "In 1D, a pair of offset sigmoid hidden units can be subtracted (unit 2 minus unit 1) to form a localised 'bump' (slide 32).",
+              "By translating and scaling these bumps, arbitrary 1D functions can be approximated (slide 32)."
+            ]
+          },
+          {
+            "heading": "Sigmoid, ReLU, Leaky ReLU, Softmax",
+            "points": [
+              "Sigmoid sigma(x) = 1/(1+e^(-x)): keeps activation in (0,1), good for classification (clear distinctions), smooth non-linear, but suffers vanishing gradients on the near-horizontal parts of the curve (slide 33).",
+              "ReLU f(x) = max(x, 0): non-linear but may blow up (unbounded), gives sparsity and efficiency, is less computationally expensive which suits deep structures, but has the dying ReLU problem where several neurons stop responding (slide 34).",
+              "Leaky ReLU f(x) = x if x >= 0, ax if x < 0 (small slope a): proposed to address the dying ReLU problem because negative inputs still produce a non-zero gradient (slide 35).",
+              "Softmax extends the logistic function to K classes: p(y = k | x) = e^(w_k^T x) / sum_j e^(w_j^T x); the figure shows raw scores turned into a distribution summing to 1 in which the largest score dominates (slide 36)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "feed-forward-networks",
+        "title": "Feed-Forward Networks and Forward Computation",
+        "sections": [
+          {
+            "heading": "Building hidden layers",
+            "points": [
+              "A hidden layer is built from several neurons that each take the same inputs x with their own weights (w_j for unit z_1, w'_j for unit z_2), compute a weighted sum and apply a sigmoid (slide 38).",
+              "The hidden outputs z_1, z_2 plus a bias z_0 = 1 feed an output neuron computing sum_{j=0}^{m} omega_j z_j followed by a sigmoid to give y_hat (slide 38).",
+              "General 3-layer picture: input layer (x_0 = 1, x_1..x_d), hidden layer (z_0 = 1, z_1..z_m), output layer (y_hat_1..y_hat_k); multiple output neurons are allowed for generality (slide 39).",
+              "Notation: w^(1)_{m,j} is the layer-1 weight from input j to hidden unit m; w^(2)_{k,j} is the layer-2 weight from hidden unit j to output k (slides 39-40)."
+            ]
+          },
+          {
+            "heading": "Sum and activation equations",
+            "points": [
+              "Hidden layer: v_m = sum_{j=0}^{d} w^(1)_{m,j} x_j (a fused multiply-add) and z_m = sigma(v_m), where the activation can be sigmoid, ReLU, etc. (slide 40).",
+              "Output layer: v_k = sum_{j=0}^{m} w^(2)_{k,j} z_j and y_hat_k = sigma(v_k); activation on the output layer is needed for classification (slide 40).",
+              "Matrix form: z = sigma(W^(1) x) with W^(1) of size m x (d+1), and y_hat = sigma(W^(2) z) with W^(2) of size k x (m+1); there is one weight matrix between each adjacent pair of layers (slide 42).",
+              "Parameter count for a d-m-k network with biases: m(d+1) + k(m+1). Example: d = 10, m = 5, k = 3 gives 5*11 + 3*6 = 73 weights."
+            ]
+          },
+          {
+            "heading": "Forward computation and evaluation",
+            "points": [
+              "For each sample: (1) compute the first hidden layer from the input vector, (2) compute the second hidden layer from the first, ..., (4) compute the last hidden layer, (5) compute the output values (slide 41).",
+              "Each sample x_i = (x_{i,1}, ..., x_{i,d}) flows up through W^(1), hidden layer z_i, W^(2), to output y_hat_i which is compared with label y_i (slide 41).",
+              "With activation functions fixed, the result of forward computation depends solely on the weights W (slide 43).",
+              "Network performance depends on how close y_hat_i is to y_i aggregated over all 1 <= i <= n, i.e. the loss over the dataset (slide 43)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-forward-pass-numerical-example",
+        "title": "One Forward Pass: A Numerical Example",
+        "sections": [
+          {
+            "heading": "Setup of the 2-2-1 network (slide p.44)",
+            "points": [
+              "The network has an input layer (bias x0 = 1, plus x1, x2), one hidden layer of two sigmoid units z1, z2 (plus bias z0 = 1), and a single identity output unit ŷ.",
+              "Weights: W(1) = [[-1, 1, 0], [-1, 0, 0.5]] (2 x 3, one row per hidden unit, columns for x0, x1, x2) and W(2) = [0, 1, 1] (1 x 3, columns for z0, z1, z2).",
+              "The training sample is x = [1, 1, 2] (x0 = 1 is the bias) with target y = 2.",
+              "The slide closes with the motivating question for backpropagation: which weight should change, and by how much?"
+            ]
+          },
+          {
+            "heading": "Computing the forward pass (slide p.44)",
+            "points": [
+              "Pre-activations: v = W(1)x. v1 = -1(1) + 1(1) + 0(2) = 0 and v2 = -1(1) + 0(1) + 0.5(2) = 0, so v = [0, 0].",
+              "Hidden activations use the sigmoid σ(v) = 1 / (1 + e^(-v)); since σ(0) = 0.5, z = [z0, z1, z2] = [1, 0.5, 0.5] after prepending the bias z0 = 1.",
+              "Output (identity activation): ŷ = W(2)z = 0(1) + 1(0.5) + 1(0.5) = 1.",
+              "With y = 2 and squared error J = (y - ŷ)^2, the initial loss is (2 - 1)^2 = 1, so the prediction is too low and the weights must be pushed to increase ŷ."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-backpropagation-idea-and-chain-rule",
+        "title": "Backpropagation: Idea and the Chain Rule",
+        "sections": [
+          {
+            "heading": "Why backpropagation is needed (slides p.47-48)",
+            "points": [
+              "The error is measured only at the output (labels y vs predictions ŷ), so it must be 'transferred' back to train the first set of weights between the input layer and the first hidden layer; this is Back Propagation.",
+              "Update order shown on the slide: (1) compute the error at the output, (2) update W(2) first, then (3) propagate the error to the hidden layer and update W(1) last.",
+              "From this point the slides use bold uppercase W (a weight matrix) instead of lowercase w.",
+              "Forward computation in matrix form: z = σ(W(1)x) where W(1) is m x (d+1) (m hidden units, d inputs plus bias), then ŷ = σ(W(2)z) where W(2) is k x (m+1) (k outputs, m hidden units plus bias).",
+              "Forward computation flows input to output; backpropagation flows output to input. The slide asks how many forward computations and backpropagations are performed in training: each training sample processed requires one forward pass followed by one backward pass."
+            ]
+          },
+          {
+            "heading": "Calculus toolbox (slides p.49, p.52)",
+            "points": [
+              "Chain rule: d f(g(x)) / dx = [d f(g(x)) / d g(x)] [d g(x) / dx] = f'(g(x)) g'(x); for longer chains dy/dx = (dy/du)(du/dv)(dv/dx).",
+              "With several variables the partial derivative sign is used: ∂y/∂x = (∂y/∂u)(∂u/∂v)(∂v/∂x).",
+              "dy/dv where v is a vector is itself a vector: the derivative of a scalar with respect to each component.",
+              "Optional matrix calculus (Jacobians): the derivative of a scalar with respect to a column vector is a row vector of partials; the derivative of a vector (3 entries) with respect to a vector (4 entries) is a 3 x 4 Jacobian matrix; the derivative of a scalar with respect to a matrix has the same shape as the matrix.",
+              "The vector chain rule is ∂J/∂v = (∂J/∂z)(∂z/∂v)."
+            ]
+          },
+          {
+            "heading": "Chain rule on the two-layer network (slide p.50)",
+            "points": [
+              "Model: one regression sample, sigmoid hidden units, identity output; ŷ = Σ_{q=0..2} w_q(2) z_q and J = (y - ŷ)^2.",
+              "Local derivatives: ∂ŷ/∂w_q(2) = z_q and ∂J/∂ŷ = 2(ŷ - y).",
+              "Output weights (path w_q(2) to ŷ to J): ∂J/∂w_q(2) = (∂J/∂ŷ)(∂ŷ/∂w_q(2)) = 2(ŷ - y) z_q, for q = 0, 1, 2.",
+              "Hidden weight w_{1,2}(1) follows the path w_{1,2}(1) to v1 to z1 to ŷ to J, so ∂J/∂w_{1,2}(1) = (∂J/∂ŷ)(∂ŷ/∂z1)(∂z1/∂v1)(∂v1/∂w_{1,2}(1)).",
+              "The local factors are ∂ŷ/∂z1 = w_1(2), ∂z1/∂v1 = z1(1 - z1) (sigmoid derivative) and ∂v1/∂w_{1,2}(1) = x2, giving ∂J/∂w_{1,2}(1) = 2(ŷ - y) w_1(2) z1(1 - z1) x2.",
+              "Applied to the numerical example: 2(1 - 2)(1)(0.5)(0.5)(2) = -1."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-backward-pass-numerical-example",
+        "title": "One Complete Backward Pass and Weight Update",
+        "sections": [
+          {
+            "heading": "Output-layer gradients (slides p.51, p.64)",
+            "points": [
+              "Gradient flow: J to ŷ to (z1, z2) to W(1). The output error signal is δ(2) = ∂J/∂ŷ = 2(ŷ - y) = 2(1 - 2) = -2.",
+              "∂J/∂W(2) = δ(2) zᵀ = -2 [1, 0.5, 0.5] = [-2, -1, -1]; in particular the bias gradient ∂J/∂w_0(2) = -2.",
+              "Negative gradients mean increasing these weights reduces the loss, which matches the prediction ŷ = 1 being below the target y = 2."
+            ]
+          },
+          {
+            "heading": "Hidden-layer gradients (slides p.51, p.64)",
+            "points": [
+              "Hidden error signal: δ_q(1) = ∂J/∂v_q = δ(2) w_q(2) z_q(1 - z_q). With w_1(2) = w_2(2) = 1 and z_q = 0.5, δ_q(1) = -2(1)(0.25) = -0.5, so δ(1) = [-0.5, -0.5].",
+              "The bias weight w_0(2) is not used to propagate error because z0 = 1 is a constant, not a function of W(1).",
+              "∂J/∂W(1) = δ(1) xᵀ = [-0.5, -0.5]ᵀ [1, 1, 2] = [[-0.5, -0.5, -1], [-0.5, -0.5, -1]] (an outer product with the same 2 x 3 shape as W(1))."
+            ]
+          },
+          {
+            "heading": "Gradient descent update with η = 0.1 (slide p.64)",
+            "points": [
+              "W(1)_new = W(1) - 0.1 ∂J/∂W(1) = [[-0.95, 1.05, 0.10], [-0.95, 0.05, 0.60]].",
+              "w(2)_new = w(2) - 0.1 ∂J/∂W(2) = [0, 1, 1] - 0.1[-2, -1, -1] = [0.2, 1.1, 1.1].",
+              "Re-running the forward pass with the new weights (check computation, not on slide): v = [0.3, 0.3], z1 = z2 ≈ 0.574, ŷ ≈ 1.464, so the loss drops from 1 to about 0.288, confirming that the update moves in the right direction."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-backprop-general-layer",
+        "title": "Backpropagation in Matrix Form for Deep Networks",
+        "sections": [
+          {
+            "heading": "Calculus for one layer (slides p.53-54, p.56)",
+            "points": [
+              "If z = Wx (no activation) and the error signal ∂J/∂z = δᵀ is known, the weight gradient is ∂J/∂W = δ xᵀ.",
+              "For a logistic unit z = σ(Wx), the gradient becomes ∂J/∂W = (δ ∘ z ∘ (1 - z)) xᵀ, where ∘ is the elementwise (Hadamard) product: [a, b] ∘ [c, d] = [ac, bd].",
+              "General layer l forward: v(l) = W(l) z(l-1) (pre-activations) and z(l) = σ(v(l)) (activations); z(l-1) are the previous layer's outputs and W(l) connects layer l-1 to layer l.",
+              "Error signals: δ_z(l) = ∂J/∂z(l) and δ_v(l) = ∂J/∂v(l), related by δ_v(l) = δ_z(l) ⊙ z(l) ⊙ (1 - z(l)) for sigmoid.",
+              "Weight gradient: ∂J/∂W(l) = δ_v(l) (z(l-1))ᵀ; propagate to the previous layer with δ_z(l-1) = (W(l))ᵀ δ_v(l)."
+            ]
+          },
+          {
+            "heading": "Many layers (slides p.57-58)",
+            "points": [
+              "Consider the computational graph for one sample with output layer 9; δ(9) is computed from ŷ and y.",
+              "At each layer, e.g. layer 6, δ(6) is used twice: to compute the weight gradient ∂J/∂W(6) and to backpropagate the error to δ(5). The loop continues until δ(1).",
+              "Error backpropagation between adjacent sigmoid layers: δ(5) = W(6)ᵀ (δ(6) ∘ z(6) ∘ (1 - z(6))), with δ(6) = (∂J/∂z(6))ᵀ.",
+              "Gradient of weights: ∂J/∂W(6) = (δ(6) ∘ z(6) ∘ (1 - z(6))) z(5)ᵀ.",
+              "There is no need to compute δ(0) because the input layer has no weights below it to update; δ(1) is the last error signal needed to get ∂J/∂W(1)."
+            ]
+          },
+          {
+            "heading": "Two activation functions compared (slide p.59)",
+            "points": [
+              "Identity (no activation): δ(5) = W(6)ᵀ δ(6) and ∂J/∂W(6) = δ(6) z(5)ᵀ.",
+              "Logistic unit: δ(5) = W(6)ᵀ (δ(6) ∘ z(6) ∘ (1 - z(6))) and ∂J/∂W(6) = (δ(6) ∘ z(6) ∘ (1 - z(6))) z(5)ᵀ.",
+              "The only difference is the multiplication by the activation's derivative; for sigmoid this is z(1 - z), whose maximum is 0.25 at z = 0.5. Other activations just swap in their own derivative."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-output-layer-gradients",
+        "title": "The Most Important Derivative: Output-Layer Gradients by Task",
+        "sections": [
+          {
+            "heading": "Where backprop starts (slide p.60)",
+            "points": [
+              "The forward computation is shared: v_i = W(1)x_i, z_i = σ(v_i). Only the output differs: regression ŷ_i = W(2)z_i, binary classification ŷ_i = σ(W(2)z_i), multiclass ŷ_i = σ(W(2)z_i) as a vector.",
+              "The first derivative backprop must compute is ∂J/∂ŷ_i, and it differs per task because the objective functions are different.",
+              "Its size is 1 x 1 for regression and binary classification, and k x 1 for multiclass classification with k classes."
+            ]
+          },
+          {
+            "heading": "Gradients per task (slide p.61)",
+            "points": [
+              "Regression: ŷ = v(L), J = (y - ŷ)^2, so ∂J/∂ŷ = 2(ŷ - y) and ∂J/∂v(L) = 2(ŷ - y).",
+              "Binary classification: ŷ = σ(v(L)), J = -[y ln ŷ + (1 - y) ln(1 - ŷ)]; ∂J/∂ŷ = -y/ŷ + (1 - y)/(1 - ŷ) = (ŷ - y)/(ŷ(1 - ŷ)).",
+              "Multiplying by the sigmoid derivative ŷ(1 - ŷ) cancels the denominator, so ∂J/∂v(L) = ŷ - y for binary cross-entropy with sigmoid.",
+              "Multiclass: ŷ = softmax(v(L)), J = -Σ_k y_k ln ŷ_k; ∂J/∂ŷ_k = -y_k/ŷ_k (vector form -y ⊘ ŷ, elementwise division) and ∂J/∂v(L) = ŷ - y.",
+              "Key takeaway: with the matching loss/output pairing (squared error with identity, cross-entropy with sigmoid or softmax), the error at the pre-activation is simply prediction minus target (times 2 for squared error)."
+            ]
+          },
+          {
+            "heading": "Optional element-wise and matrix BP examples (slides p.65-70)",
+            "points": [
+              "Regression, element-wise: ∂J/∂w_q(2) = 2(ŷ - y)z_q, ∂J/∂z_q = 2(ŷ - y)w_q(2), ∂J/∂w_{q,j}(1) = 2(ŷ - y)w_q(2) z_q(1 - z_q)x_j, where z_q = σ(Σ_j w_{q,j}(1) x_j).",
+              "Binary classification, element-wise: same as regression but without the factor 2: ∂J/∂w_q(2) = (ŷ - y)z_q and ∂J/∂w_{q,j}(1) = (ŷ - y)w_q(2) z_q(1 - z_q)x_j.",
+              "Multiclass (as written on slide p.67, with sigmoid outputs and J = -Σ_k δ(y,k) ln ŷ_k): ∂J/∂ŷ_k = -δ(y,k)/ŷ_k and ∂J/∂w_{k,q}(2) = δ(y,k)(ŷ_k - 1)z_q.",
+              "Matrix form, regression: δ(2) = 2(ŷ - y), ∂J/∂W(2) = δ(2) zᵀ, δ(1) = δ(2) W(2)ᵀ, ∂J/∂W(1) = (δ(1) ∘ z ∘ (1 - z)) xᵀ.",
+              "Matrix form, binary: δ(2) = (ŷ - y)/(ŷ(1 - ŷ)), ∂J/∂W(2) = (ŷ - y)zᵀ, δ(1) = (ŷ - y)W(2)ᵀ. Multiclass: δ(2) = -1_y ∘ (1 ⊘ ŷ) where 1_y is the one-hot vector of y, giving ∂J/∂W(2) = (1_y ∘ (ŷ - 1))zᵀ."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-training-procedure",
+        "title": "Training Procedure and When to Update",
+        "sections": [
+          {
+            "heading": "The training loop (slide p.62)",
+            "points": [
+              "Step 1: randomly initialize the model parameters.",
+              "Step 2: feed-forward computation to get predictions.",
+              "Step 3: backpropagation to compute gradients.",
+              "Step 4: update the model parameters.",
+              "Step 5: repeat steps 2-4 until convergence."
+            ]
+          },
+          {
+            "heading": "Mini-batch update schedule (slide p.63)",
+            "points": [
+              "Every level uses the gradient descent rule W(l) ← W(l) - η ∂J/∂W(l), with learning rate η.",
+              "Nested loops: for all epochs, for all mini-batches: copy W_new(l) ← W(l) for every level; for every sample in the mini-batch and every level, accumulate W_new(l) ← W_new(l) - η ∂J/∂W(l); finally set W(l) ← W_new(l) for all levels.",
+              "Gradients within a mini-batch are all computed with the old weights W(l), and the weights are only replaced at the end of the mini-batch.",
+              "The slide notes that in practice this is easy as long as you know how to use library functions to train neural networks."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-practical-issues-overfitting",
+        "title": "Practical Issues: Normalization, Overfitting and Regularization",
+        "sections": [
+          {
+            "heading": "Normalizing feature values (slide p.72)",
+            "points": [
+              "Features should have reasonable scales: roughly zero-centred, a [-1, 1] range often works well.",
+              "Normalization helps gradient descent converge and avoids the NaN trap; avoiding outlier values also helps.",
+              "Standard methods: linear scaling, hard cap (clipping) to max/min, and log scaling."
+            ]
+          },
+          {
+            "heading": "Overfitting and remedies (slides p.73-75)",
+            "points": [
+              "Overfitting: the model fits the training data too well, which hurts its ability to generalize; deep neural networks overfit easily.",
+              "The figure shows a smooth 'just right' curve vs a wiggly overfitted curve, and a plot where training error keeps falling with model complexity while test error falls then rises.",
+              "Remedies for NN overfitting: train with more data or remove features, early stopping, parameter regularization, and dropout.",
+              "Early stopping: watch the validation curve and stop updating the weights once validation error starts increasing; the left region of the epochs plot is underfitting, the right region is overfitting, and the stop point is the validation-error minimum."
+            ]
+          },
+          {
+            "heading": "Parameter regularization (slide p.76)",
+            "points": [
+              "Inputs are linearly combined with parameters, so large parameters amplify small input changes.",
+              "Large parameters can arbitrarily increase prediction confidence: the figure shows a sigmoid with large parameters becoming a near step function, while small parameters give a gentle slope.",
+              "A regularization term is added to the cost to penalize parameters: C · J(w; X, y) + ||w||, where C controls the degree to which large parameters are penalized.",
+              "Core idea: prevent parameters from becoming excessively large during training."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nn-dropout-augmentation-initialization",
+        "title": "Dropout, Data Augmentation, Initialization and Training Challenges",
+        "sections": [
+          {
+            "heading": "Dropout during training (slides p.77-80)",
+            "points": [
+              "Dropout is another form of regularization useful for NNs; for very large networks it is more computationally efficient than L2 regularization.",
+              "It randomly 'drops out' units for a single gradient step; dropped units come back with unchanged weights at the next step.",
+              "The more you drop out, the stronger the regularization: 0.0 means no dropout regularization, 1.0 drops everything and learns nothing, and intermediate values are more useful.",
+              "During training, for each input at each iteration, each neuron is turned off with probability 1 - α, so the set of dropped nodes changes for each input.",
+              "Backprop is effectively performed only over the remaining network; dropped nodes have zero gradients for that round."
+            ]
+          },
+          {
+            "heading": "Dropout at test time and as an ensemble (slides p.81-82)",
+            "points": [
+              "All neurons are used at test time, so values before activation are over-estimated compared with training (when only a fraction α of units were active).",
+              "Method 1: discount the pre-activation values by a factor α, where α = 1 - drop-off rate (e.g. drop rate 0.2 gives α = 0.8).",
+              "Method 2: push α into each entry of the weight matrix W instead.",
+              "Dropout is an inexpensive approximation to training and evaluating a bagged ensemble of exponentially many networks: all sub-networks formed by removing non-output units from the base network.",
+              "Training uses mini-batch learning, sampling a different binary mask over the input and hidden units each time; prediction averages outputs from many masks. The figure shows a base network with x1, x2, h1, h2 producing an ensemble of 2^4 = 16 sub-networks."
+            ]
+          },
+          {
+            "heading": "Dataset augmentation and initialization (slides p.83-84)",
+            "points": [
+              "Data augmentation creates fake data and adds it to the training set; it is easiest for classification such as object recognition (the figure shows one puppy photo turned into 9 rotated, shifted and flipped variants).",
+              "Initial weights should be small, but the distribution and how small matter because they affect gradient size and information propagation: too big leads to exploding, too small to vanishing gradients.",
+              "Heuristics: Xavier initialization, He initialization, LSUV (reference: 'Understanding the Difficulty of Training Deep Feedforward Neural Networks').",
+              "Table (from Geron): logistic uses uniform r = sqrt(6/(n_inputs + n_outputs)) or normal σ = sqrt(2/(n_inputs + n_outputs)); hyperbolic tangent multiplies these by 4; ReLU and variants multiply by sqrt(2)."
+            ]
+          },
+          {
+            "heading": "Optimization challenges (slide p.85)",
+            "points": [
+              "Local minima: there are infinitely many, but they are not a big issue in practice.",
+              "Saddle point: a critical point where the slopes in orthogonal directions are all zero but which is not a local extremum.",
+              "Exploding or vanishing gradients are caused by multiplying many large or small weights together during backprop.",
+              "Exploding gradients can be avoided with the gradient clipping heuristic; proper initialization and normalization help the vanishing problem (the slide shows the sigmoid curve, which flattens and gives near-zero gradients for large |v|)."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "w6_cnn",
     "title": "Convolutional Neural Networks",
     "subtitle": "06_cnn.pdf",

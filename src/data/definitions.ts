@@ -1308,6 +1308,237 @@ export const definitions: readonly Definition[] = [
     "source": "Ensemble"
   },
   {
+    "term": "Artificial Neural Network (ANN)",
+    "definition": "A model built from connected units called artificial neurons that loosely model biological neurons; first proposed in 1943 by McCulloch and Pitts.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "ALVINN",
+    "definition": "Autonomous Land Vehicle In a Neural Network (Pomerleau, 1989): a network mapping a 30x32 road image via 4 hidden units to 30 steering outputs, which drove at 112 km/h on a public highway.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Representation learning",
+    "definition": "Learning useful features automatically from data; a neural network learns a hierarchy of representations from pixels to edges, contours, object parts and object identity.",
+    "example": "1st hidden layer detects edges, 2nd corners and contours, 3rd object parts.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Artificial neuron",
+    "definition": "A unit that computes a dot product of its inputs with its weights, adds a bias, and applies a non-linear activation: f(sum_i w_i x_i + b).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Bias (x_0 = 1 trick)",
+    "definition": "A constant input x_0 = 1 with weight w_0 added to every neuron so the bias is part of the weighted sum sum_{j=0}^{d} w_j x_j.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Perceptron",
+    "definition": "The simplest activation function: a step that outputs 1 if the weighted sum sum_{j=0}^{d} w_j x_j > 0 and -1 otherwise.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Logistic unit",
+    "definition": "A neuron whose activation is the sigmoid of the weighted sum, y_hat = 1/(1+e^(-w.x)); the default, smooth (differentiable) activation of neural networks.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Activation function",
+    "definition": "The non-linear transformation applied to a neuron's weighted sum; it gives the network capacity beyond a linear model.",
+    "example": "Sigmoid, ReLU, Leaky ReLU, Softmax.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Objective function (loss / cost function)",
+    "definition": "A function measuring a model's error on data that training seeks to minimise.",
+    "example": "Squared error for regression, cross-entropy for classification.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Learning rate (eta)",
+    "definition": "The step-size hyperparameter multiplying the gradient in each gradient-descent update.",
+    "example": "eta = 0.5 in the worked example turns 2(y - y_hat) into (y - y_hat).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Batch gradient descent",
+    "definition": "Gradient descent that updates parameters only after all training data have been evaluated; stable (perfect) gradient but slowest, memory hungry and may reach a less optimal solution.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Epoch",
+    "definition": "One complete pass of training over all n samples in the dataset.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Hidden layer",
+    "definition": "A layer of neurons between the input and output layers whose outputs z feed the next layer; with non-linear activations it lets the network model non-linear functions.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Universal approximator",
+    "definition": "Property that a neural network with one hidden layer can approximate arbitrary functions, e.g. by combining pairs of offset sigmoids into bumps and translating and scaling them.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Sigmoid function",
+    "definition": "sigma(x) = 1/(1+e^(-x)); a smooth non-linearity bounded in (0,1), good for classification but prone to vanishing gradients where the curve is nearly flat.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Vanishing gradient",
+    "definition": "Gradients becoming near zero on the near-horizontal (saturated) parts of an activation such as the sigmoid, which slows learning.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "ReLU",
+    "definition": "Rectified Linear Unit f(x) = max(x, 0); cheap, sparse and good for deep structures, but unbounded (may blow up) and prone to dying neurons.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Dying ReLU problem",
+    "definition": "Several ReLU neurons stop responding because their input is negative, giving zero output and zero gradient.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Leaky ReLU",
+    "definition": "f(x) = x for x >= 0 and ax for x < 0 with a small slope a; proposed to address the dying ReLU problem.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Softmax",
+    "definition": "An extension of the logistic function to K classes that models p(y = k | x) = e^(w_k^T x) / sum_j e^(w_j^T x), producing probabilities that sum to 1.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Feed-forward network (DFF)",
+    "definition": "A network where information flows only forward from the input layer through hidden layers to the output layer, computing f(X; W) = y.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Forward computation",
+    "definition": "Computing each layer's neuron values in turn from the previous layer's values (sum then activation) until the output layer is reached, for each sample.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Forward pass",
+    "definition": "Computing the network output layer by layer from the input: pre-activations v = Wx followed by activations z = σ(v), up to ŷ.",
+    "example": "x = [1,1,2], W(1) = [[-1,1,0],[-1,0,0.5]], W(2) = [0,1,1] gives v = [0,0], z = [1,0.5,0.5], ŷ = 1 (slide p.44).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Backpropagation",
+    "definition": "Algorithm that transfers the output error back through the layers using the chain rule, giving the gradient of the loss with respect to every weight matrix, output layer first.",
+    "example": "Update W(2) using δ(2), then propagate to δ(1) and update W(1) last (slide p.47).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Chain rule",
+    "definition": "The derivative of a composite function is the product of the local derivatives along the path: d f(g(x))/dx = f'(g(x)) g'(x).",
+    "example": "∂J/∂w_{1,2}(1) = (∂J/∂ŷ)(∂ŷ/∂z1)(∂z1/∂v1)(∂v1/∂w_{1,2}(1)) (slide p.50).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Pre-activation",
+    "definition": "The weighted sum v(l) = W(l) z(l-1) computed at layer l before the activation function is applied.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Activation",
+    "definition": "The output z(l) = σ(v(l)) of layer l after applying the activation function to the pre-activations.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Error signal (δ)",
+    "definition": "The partial derivative of the loss with respect to a layer's activations (δ_z = ∂J/∂z) or pre-activations (δ_v = ∂J/∂v); it is reused both to compute weight gradients and to propagate error to the previous layer.",
+    "example": "δ(2) = 2(ŷ - y) = -2 in the slide example (p.51).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Jacobian",
+    "definition": "The matrix of all partial derivatives of a vector-valued function with respect to a vector input; entry (i, j) is ∂f_i/∂x_j.",
+    "example": "A 3-vector differentiated by a 4-vector gives a 3 x 4 Jacobian (slide p.52, optional).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Elementwise (Hadamard) product",
+    "definition": "Multiplication of two same-shaped vectors or matrices entry by entry, written ∘ or ⊙.",
+    "example": "[a, b] ∘ [c, d] = [ac, bd]; used in δ ∘ z ∘ (1 - z) (slide p.54).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Learning rate (η)",
+    "definition": "Step size of gradient descent in W(l) ← W(l) - η ∂J/∂W(l).",
+    "example": "η = 0.1 turns W(2) = [0,1,1] into [0.2,1.1,1.1] in the slide example (p.64).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Mini-batch",
+    "definition": "A subset of training samples whose per-sample gradients are accumulated using the current weights before the weights are replaced once.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Feature normalization",
+    "definition": "Rescaling inputs to reasonable, roughly zero-centred scales (often [-1, 1]) via linear scaling, clipping or log scaling, to help gradient descent converge and avoid NaNs.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Early stopping",
+    "definition": "Monitoring the validation error during training and stopping weight updates once it starts increasing.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Parameter regularization",
+    "definition": "Adding a penalty on parameter size to the cost, C · J(w; X, y) + ||w||, so weights do not become excessively large and over-confident.",
+    "example": "Large weights turn the sigmoid into a near step function (slide p.76).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Dropout",
+    "definition": "Regularization that randomly turns off each (non-output) neuron with probability 1 - α for a single gradient step; dropped units return with unchanged weights next step and have zero gradient for that round.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Drop-off rate and α",
+    "definition": "The drop-off rate is the probability of turning off a unit; α = 1 - drop-off rate is the keep probability, used at test time to discount pre-activations or scale W.",
+    "example": "Drop rate 0.2 gives α = 0.8.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Dropout as ensemble",
+    "definition": "Dropout cheaply approximates training and averaging a bagged ensemble of exponentially many sub-networks obtained by removing non-output units from the base network.",
+    "example": "A base network with 4 non-output units (x1, x2, h1, h2) yields 2^4 = 16 sub-networks (slide p.82).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Data augmentation",
+    "definition": "Creating additional synthetic (fake) training examples by transforming existing ones; easiest for classification such as object recognition.",
+    "example": "Rotating, shifting and flipping one puppy photo into 9 training images (slide p.83).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Xavier / He initialization",
+    "definition": "Heuristics that set the scale of random initial weights from the number of inputs and outputs of a layer so gradients neither explode nor vanish.",
+    "example": "Logistic uniform range r = sqrt(6/(n_in + n_out)); ReLU multiplies by sqrt(2) (slide p.84).",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Saddle point",
+    "definition": "A critical point where derivatives in all orthogonal directions are zero but which is not a local minimum or maximum.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Exploding / vanishing gradients",
+    "definition": "Gradients that grow or shrink exponentially through deep networks because many large or small weights (and activation derivatives) are multiplied together during backprop.",
+    "source": "NeuralNet"
+  },
+  {
+    "term": "Gradient clipping",
+    "definition": "Heuristic that caps the size of gradients to prevent exploding gradients.",
+    "source": "NeuralNet"
+  },
+  {
     "term": "Feedforward neural network (FNN) for images",
     "definition": "A fully connected network fed with the flattened pixel vector of an image; it works somewhat (about 50+% accuracy on the slide example) but has too many parameters and treats each pixel position independently.",
     "source": "CNN"

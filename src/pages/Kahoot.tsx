@@ -36,7 +36,7 @@ const bestKey = (setId: string) => `cs610-kahoot-best-${setId}`
 const readBest = (setId: string): number => Number(localStorage.getItem(bestKey(setId)) ?? 0)
 
 const setsWithAll = [
-  { id: 'all', title: 'Everything (Week 6 mix)', blurb: 'Every question from all sets, shuffled.' },
+  { id: 'all', title: 'Everything (all sets)', blurb: 'Every question from all sets, shuffled.' },
   ...kahootSets,
 ].map(s => ({
   ...s,
@@ -129,7 +129,7 @@ export default function Kahoot() {
             <Gamepad2 className="text-glow" /> Kahoot Practice
           </h1>
           <p className="text-ink-secondary">
-            Week 6 Kahoot-style warm-up: timed questions, faster correct answers score more (up to 1000
+            Kahoot-style warm-up: timed questions, faster correct answers score more (up to 1000
             points each). Use the mouse or keys 1–4 to answer, Enter for the next question.
           </p>
         </div>

@@ -12,10 +12,10 @@ assert(await page.getByRole('link', { name: /Kahoot Practice/ }).isVisible(), 'h
 
 await page.getByRole('navigation').getByRole('link', { name: 'Kahoot' }).click()
 await page.waitForSelector('text=Kahoot Practice')
-for (const set of ['Everything (Week 6 mix)', 'Instructor Kahoot: Ensembles & NN', 'CNN Lecture', 'CNN & Filter Labs'])
+for (const set of ['Everything (all sets)', 'Instructor Kahoot: Decision Trees', 'Instructor Kahoot: Ensembles & NN', 'CNN Lecture', 'CNN & Filter Labs'])
   assert(await page.getByRole('button', { name: new RegExp(set.replace(/[()&]/g, '.')) }).isVisible(), `set missing: ${set}`)
 
-await page.getByRole('button', { name: /Instructor Kahoot/ }).click()
+await page.getByRole('button', { name: /Instructor Kahoot: Ensembles/ }).click()
 await page.getByRole('button', { name: 'Start' }).click()
 
 // Q1: let the timer expire -> "Time's up!" with 0 points

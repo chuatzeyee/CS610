@@ -16,6 +16,11 @@ export interface KahootSet {
 
 export const kahootSets: readonly KahootSet[] = [
   {
+    id: 'instructor-dt',
+    title: 'Instructor Kahoot: Decision Trees',
+    blurb: 'The 5 decision-tree questions played in class, with the answers and worked entropy from the instructor note (Week 5 folder).',
+  },
+  {
     id: 'instructor',
     title: 'Instructor Kahoot: Ensembles & NN',
     blurb: 'The 9 questions played in class, with the answers and explanations from the instructor note (Week 6 folder).',
@@ -29,6 +34,54 @@ export const kahootSets: readonly KahootSet[] = [
     id: 'cnn-lab',
     title: 'CNN & Filter Labs',
     blurb: 'Quick-fire questions on the Week 6 notebooks: Keras MNIST models and the numpy image-filter lab.',
+  },
+]
+
+const instructorDt: KahootQuestion[] = [
+  {
+    id: 'kdt1',
+    set: 'instructor-dt',
+    question: 'Temperature is in the input table but absent from the decision tree. Is that an error?',
+    options: ['Yes', 'No'],
+    answerIndex: 1,
+    explanation: 'A tree need not use every feature: each node picks the split with the largest impurity reduction. Temperature may be redundant with another feature, beaten by better splits, cut off by max_depth / min_samples_leaf / pruning, or (in a random forest) never considered at some nodes.',
+    ref: 'DT Kahoot note Q1',
+  },
+  {
+    id: 'kdt2',
+    set: 'instructor-dt',
+    question: 'A feature was used near the root. Can it be used again farther down the tree?',
+    options: ['Yes', 'No'],
+    answerIndex: 0,
+    explanation: 'Features can be reused, especially continuous ones with different thresholds. E.g. Age ≤ 30 → low risk; otherwise Age ≤ 60 → medium risk, else high risk.',
+    ref: 'DT Kahoot note Q2',
+  },
+  {
+    id: 'kdt3',
+    set: 'instructor-dt',
+    question: 'A split creates child nodes with the same class proportions as the parent. Does it reduce entropy?',
+    options: ['Yes', 'No'],
+    answerIndex: 1,
+    explanation: 'IG = H(parent) − Σ (n_k/n)·H(child_k). Parent 60+/40− has H(0.6) ≈ 0.971; children 30+/20− each also have H ≈ 0.971, weighted 0.5·0.971 + 0.5·0.971 = 0.971, so IG = 0.',
+    ref: 'DT Kahoot note Q3',
+  },
+  {
+    id: 'kdt4',
+    set: 'instructor-dt',
+    question: 'Can more splitting always make every training row correct?',
+    options: ['Yes', 'No'],
+    answerIndex: 1,
+    explanation: 'Not with conflicting rows: two rows with identical features but different labels always land in the same leaf, which can predict only one label.',
+    ref: 'DT Kahoot note Q4',
+  },
+  {
+    id: 'kdt5',
+    set: 'instructor-dt',
+    question: 'Does a node with 90+/10− have higher entropy than a node with 8+/2−?',
+    options: ['Yes', 'No'],
+    answerIndex: 1,
+    explanation: 'H(0.9) = −0.9log₂0.9 − 0.1log₂0.1 ≈ 0.469 and H(0.8) ≈ 0.722. The 8+/2− node is less pure, so it has the higher entropy; node size does not matter, only proportions.',
+    ref: 'DT Kahoot note Q5',
   },
 ]
 
@@ -752,4 +805,4 @@ const week6: KahootQuestion[] = [
   }
 ]
 
-export const kahootQuestions: readonly KahootQuestion[] = [...instructor, ...week6]
+export const kahootQuestions: readonly KahootQuestion[] = [...instructorDt, ...instructor, ...week6]
