@@ -47,9 +47,9 @@ export default function Quiz() {
       <div className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold text-ink mb-2">Practice Quiz</h1>
         <p className="text-ink-secondary">
-          MCQ bank with explanations covering Weeks 1–7 — from the ML landscape and
+          MCQ bank with explanations covering Weeks 1–8 — from the ML landscape and
           Bayesian learning through regression, logistic regression, decision
-          trees/ensembles, neural networks, CNNs, and attention/Transformers. Calculation questions show full worked solutions, so keep
+          trees/ensembles, neural networks, CNNs, attention/Transformers, and generative AI. Calculation questions show full worked solutions, so keep
           a calculator handy.
         </p>
       </div>

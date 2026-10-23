@@ -1427,5 +1427,173 @@ export const formulas: readonly Formula[] = [
     "formula": "allowed weights = n(n+1)/2 out of n²",
     "note": "Derived: token i attends to positions 1..i; n = 4 gives 10 of 16.",
     "week": "W7"
+  },
+  {
+    "name": "GAN discriminator objective",
+    "formula": "max_D  E_{x~p_x}[log D(x)] + E_{z~p_z}[log(1 − D(G(z)))]",
+    "note": "With G fixed, D pushes D(x) toward 1 on real data and D(G(z)) toward 0 on fakes (slide p.10).",
+    "week": "W8"
+  },
+  {
+    "name": "GAN generator objective (theory)",
+    "formula": "min_G  E_{z~p_z}[log(1 − D(G(z)))]",
+    "note": "With D fixed, G tries to make D(G(z)) near 1; the theoretical generator step (slides p.10-11).",
+    "week": "W8"
+  },
+  {
+    "name": "GAN generator objective (in practice)",
+    "formula": "max_G  E_{z~p_z}[log D(G(z))]",
+    "note": "Practical replacement for the generator step used in training (slide p.11); same goal of D(G(z)) toward 1.",
+    "week": "W8"
+  },
+  {
+    "name": "GAN min-max problem",
+    "formula": "min_G max_D { E_{x~p_x}[log D(x)] + E_{z~p_z}[log(1 − D(G(z)))] }",
+    "note": "Overall GAN game, solved by alternating step 1 (fix G, update D) and step 2 (fix D, update G) (slide p.11).",
+    "week": "W8"
+  },
+  {
+    "name": "Next-word training pairs from a sentence (derived)",
+    "formula": "pairs = N − 1  for a sequence of N words (prefix w1..wk predicts w(k+1), k = 1..N−1)",
+    "note": "How self-supervised pre-training data is built from raw text (slide p.20 example: 5 words give 4 pairs).",
+    "week": "W8"
+  },
+  {
+    "name": "Active-parameter fraction (derived)",
+    "formula": "active fraction = active parameters / total parameters",
+    "note": "Compare sparse models in the LLM table, e.g. DeepSeek R1 37/671 ≈ 5.5%, Mixtral 39/141 ≈ 27.7% (slide p.22).",
+    "week": "W8"
+  },
+  {
+    "name": "Reward model pairwise ranking loss",
+    "formula": "loss(θ) = -(1 / C(K,2)) × E_(x, y_w, y_l)~D [ log σ( r_θ(x, y_w) - r_θ(x, y_l) ) ]",
+    "note": "Trains the reward model to score the human-preferred completion y_w above y_l; K outputs ranked per prompt give C(K,2) pairs.",
+    "week": "W8"
+  },
+  {
+    "name": "Number of comparison pairs from a ranking",
+    "formula": "C(K,2) = K(K - 1) / 2",
+    "note": "Pairs obtained when a labeler ranks K outputs; K = 4 gives 6.",
+    "week": "W8"
+  },
+  {
+    "name": "RLHF reward with KL prediction shift penalty",
+    "formula": "R(x, y) = r_θ(y|x) - λ_KL × D_KL( π_PPO(y|x) || π_base(y|x) )",
+    "note": "Reward model score minus a penalty for the tuned LM drifting from the initial LM; used in ChatGPT step 3.",
+    "week": "W8"
+  },
+  {
+    "name": "Trajectory probability",
+    "formula": "p_θ(τ) = p(s1) π_θ(a1|s1) p(s2|s1,a1) π_θ(a2|s2) p(s3|s2,a2) π_θ(a3|s3) ...",
+    "note": "Probability of a state-action sequence under policy π_θ and environment transitions.",
+    "week": "W8"
+  },
+  {
+    "name": "Discounted total reward",
+    "formula": "R(τ) = r1 + γ r2 + γ² r3 + ...",
+    "note": "Return of a trajectory; γ discounts later rewards.",
+    "week": "W8"
+  },
+  {
+    "name": "Policy gradient",
+    "formula": "∇_θ J(θ) = E_τ[ R(τ) × Σ_{t=1..T} ∇ log π_θ(a_t|s_t) ]",
+    "note": "Raise log-probability of actions in trajectories with high total reward.",
+    "week": "W8"
+  },
+  {
+    "name": "Gradient ascent update",
+    "formula": "θ <- θ + η ∇_θ J(θ)",
+    "note": "Policy parameter update after each round of data collection (η = learning rate).",
+    "week": "W8"
+  },
+  {
+    "name": "PPO objective",
+    "formula": "J^θ'_PPO(θ) = J^θ'(θ) - β × KL(θ, θ')",
+    "note": "Policy improvement objective penalised for moving the new policy θ too far from the data-collecting policy θ'.",
+    "week": "W8"
+  },
+  {
+    "name": "PPO importance-weighted surrogate",
+    "formula": "J^θ'(θ) = E_(s_t, a_t)~π_θ' [ ( π_θ(a_t|s_t) / π_θ'(a_t|s_t) ) × A^θ'(s_t, a_t) ]",
+    "note": "Reuses samples from the old policy θ' by re-weighting with the probability ratio times the advantage.",
+    "week": "W8"
+  },
+  {
+    "name": "Pixel count for autoregressive image generation",
+    "formula": "steps = H × W  (256 × 256 = 65,536)",
+    "note": "Number of sequential steps when generating one pixel at a time.",
+    "week": "W8"
+  },
+  {
+    "name": "VAE latent sampling",
+    "formula": "z = μ + σ × ε,  ε ~ Gaussian noise",
+    "note": "Codings μ and σ combined with Gaussian noise to form the latent code (VAE figure, slide p.59).",
+    "week": "W8"
+  },
+  {
+    "name": "Denoise step",
+    "formula": "x_(t-1) = x_t - NoisePredictor(x_t, t)",
+    "note": "Schematic from slide p.64: the predicted noise for step t is subtracted from the noisy image to get a less noisy image.",
+    "week": "W8"
+  },
+  {
+    "name": "DDPM noisy sample (forward, closed form)",
+    "formula": "x_t = √ᾱ_t x₀ + √(1 − ᾱ_t) ε,  ε ~ N(0, I)",
+    "note": "Jump directly to timestep t during training; ᾱ_t decreases with t so later steps are noisier (slide p.68).",
+    "week": "W8"
+  },
+  {
+    "name": "DDPM training loss",
+    "formula": "L = ‖ε − ε_θ(√ᾱ_t x₀ + √(1 − ᾱ_t) ε, t)‖²,  t ~ Uniform({1, ..., T})",
+    "note": "MSE between true and predicted noise; one gradient step per sampled (x₀, t, ε) (Algorithm 1, slide p.67).",
+    "week": "W8"
+  },
+  {
+    "name": "DDPM sampling step",
+    "formula": "x_{t−1} = (1/√α_t) (x_t − ((1 − α_t)/√(1 − ᾱ_t)) ε_θ(x_t, t)) + σ_t z,  z ~ N(0, I) if t > 1 else z = 0",
+    "note": "Subtract scaled predicted noise, rescale, then add fresh noise; repeat from t = T to 1 starting at x_T ~ N(0, I) (Algorithm 2, slide p.67).",
+    "week": "W8"
+  },
+  {
+    "name": "Fréchet distance between Gaussians",
+    "formula": "d_F(N(μ, Σ), N(μ′, Σ′))² = ‖μ − μ′‖²₂ + tr(Σ + Σ′ − 2(Σ^½ Σ′ Σ^½)^½)",
+    "note": "FID when applied to CNN features of real vs generated images; smaller is better (slide p.81).",
+    "week": "W8"
+  },
+  {
+    "name": "FID in 1-D / diagonal case (derived)",
+    "formula": "d_F² = Σᵢ (μᵢ − μ′ᵢ)² + Σᵢ (σᵢ − σ′ᵢ)²",
+    "note": "Special case when covariances are diagonal (or scalar); σᵢ, σ′ᵢ are standard deviations (square roots of the diagonal variances), not variances. Handy for hand calculation.",
+    "week": "W8"
+  },
+  {
+    "name": "FID procedure",
+    "formula": "1) compute f(x), f(x′) ∈ Rᵏ; 2) fit N(μ, Σ) to f(x) and N(μ′, Σ′) to f(x′); 3) compute d_F²",
+    "note": "f is a pretrained CNN; requires many samples to estimate means and covariances (slides p.81-82).",
+    "week": "W8"
+  },
+  {
+    "name": "Scaled dot-product (cross-)attention",
+    "formula": "Attention(Q, K, V) = softmax(QKᵀ / √d) V",
+    "note": "Used inside the LDM denoising U-Net to inject the condition (slide p.93).",
+    "week": "W8"
+  },
+  {
+    "name": "LDM cross-attention projections",
+    "formula": "Q = W_Q⁽ⁱ⁾ φᵢ(z_t),  K = W_K⁽ⁱ⁾ τ_θ(y),  V = W_V⁽ⁱ⁾ τ_θ(y)",
+    "note": "Queries from the intermediate U-Net features of the latent; keys and values from the encoded condition y (slide p.93).",
+    "week": "W8"
+  },
+  {
+    "name": "Latent Diffusion Model loss",
+    "formula": "L_LDM = E_{ℰ(x), y, ε~N(0,1), t} [ ‖ε − ε_θ(z_t, t, τ_θ(y))‖²₂ ]",
+    "note": "DDPM noise-prediction loss applied in latent space z = ℰ(x) and conditioned on τ_θ(y) (Rombach et al. 2022, slide p.93).",
+    "week": "W8"
+  },
+  {
+    "name": "Auto-encoder shapes",
+    "formula": "Encoder: H × W × 3 to h × w × c;  Decoder: h × w × c to H × W × 3;  compression = (H × W × 3)/(h × w × c)",
+    "note": "Decoder of a reconstruction-trained auto-encoder is Step 3 of Stable Diffusion (slide p.91).",
+    "week": "W8"
   }
 ]

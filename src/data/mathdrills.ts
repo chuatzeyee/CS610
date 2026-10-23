@@ -1000,6 +1000,51 @@ function genAttention(tier: Tier): Problem {
   }
 }
 
+function genGenAI(tier: Tier): Problem {
+  if (tier === 1) {
+    const rw = ri(-2, 4) / 2, rl = ri(-4, 2) / 2
+    const k = ri(3, 6)
+    const answer = -Math.log(sigmoid(rw - rl))
+    return {
+      prompt: `RLHF reward model: a labeller ranked ${k} answers, giving C(${k},2) = ${(k * (k - 1)) / 2} comparison pairs. For one pair the reward model scores the preferred answer r_w = ${rw} and the other r_l = ${rl}. Compute this pair's loss −log σ(r_w − r_l).`,
+      answerLabel: 'pair loss',
+      answer,
+      steps: [
+        `Difference: r_w − r_l = ${rw} − (${rl}) = ${fmt(rw - rl)}.`,
+        `σ(${fmt(rw - rl)}) = 1/(1 + e^(−${fmt(rw - rl)})) = ${fmt(sigmoid(rw - rl))}.`,
+        `Loss = −ln(${fmt(sigmoid(rw - rl))}) = ${fmt(answer)}. A larger margin in favour of the preferred answer gives a smaller loss.`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const abar = pick([0.36, 0.64, 0.81, 0.49, 0.25])
+    const x0 = ri(-10, 10) / 10, eps = ri(-15, 15) / 10
+    const answer = Math.sqrt(abar) * x0 + Math.sqrt(1 - abar) * eps
+    return {
+      prompt: `DDPM forward process: a pixel has clean value x₀ = ${x0}, the sampled noise is ε = ${eps}, and ᾱ_t = ${abar}. Compute the noisy value x_t = √ᾱ_t·x₀ + √(1 − ᾱ_t)·ε.`,
+      answerLabel: 'x_t',
+      answer,
+      steps: [
+        `√ᾱ_t = √${abar} = ${fmt(Math.sqrt(abar))}; √(1 − ᾱ_t) = √${fmt(1 - abar)} = ${fmt(Math.sqrt(1 - abar))}.`,
+        `x_t = ${fmt(Math.sqrt(abar))}×${x0} + ${fmt(Math.sqrt(1 - abar))}×${eps} = ${fmt(answer)}.`,
+        `As t grows, ᾱ_t shrinks towards 0, so x_t becomes almost pure noise.`,
+      ],
+    }
+  }
+  const mu = ri(0, 20) / 10, mu2 = ri(0, 20) / 10, s = ri(5, 20) / 10, s2 = ri(5, 20) / 10
+  const answer = (mu - mu2) ** 2 + (s - s2) ** 2
+  return {
+    prompt: `Exam-style FID (1-D feature): real images' feature ~ N(μ = ${mu}, σ = ${s}); generated images' feature ~ N(μ' = ${mu2}, σ' = ${s2}). Compute the Fréchet distance d² = (μ − μ')² + (σ − σ')².`,
+    answerLabel: 'FID (d²)',
+    answer,
+    steps: [
+      `Mean term: (${mu} − ${mu2})² = ${fmt((mu - mu2) ** 2)}.`,
+      `Spread term: in 1-D, tr(Σ + Σ' − 2(ΣΣ')^½) = σ² + σ'² − 2σσ' = (σ − σ')² = (${s} − ${s2})² = ${fmt((s - s2) ** 2)}.`,
+      `FID = ${fmt(answer)}. Lower is better: 0 means the two feature distributions match.`,
+    ],
+  }
+}
+
 export const levels: readonly DrillLevel[] = [
   {
     id: 'fit',
@@ -1136,5 +1181,13 @@ export const levels: readonly DrillLevel[] = [
     concept: 'Score a query against keys, softmax the scores into weights, and mix the values.',
     formula: 'Attention(Q,K,V) = softmax(QKᵀ/√d_k)·V',
     generate: genAttention,
+  },
+  {
+    id: 'genai',
+    week: 'W8',
+    title: 'Generative AI: RLHF, diffusion & FID',
+    concept: 'Score a reward-model comparison, add noise to a pixel with the DDPM forward process, and measure generated-image quality with FID.',
+    formula: 'loss = −log σ(r_w − r_l)    x_t = √ᾱ_t x₀ + √(1−ᾱ_t) ε    FID₁D = (μ−μ\')² + (σ−σ\')²',
+    generate: genGenAI,
   },
 ]

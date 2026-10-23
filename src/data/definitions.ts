@@ -2115,5 +2115,325 @@ export const definitions: readonly Definition[] = [
     "term": "[class] / [CLS] token",
     "definition": "An extra learnable token prepended to the input whose final encoder output summarises the sequence and is used for classification (in both BERT and ViT).",
     "source": "Attention"
+  },
+  {
+    "term": "Generative Adversarial Network (GAN)",
+    "definition": "A generative framework that sets up a game between a generator, which creates fake samples, and a discriminator, which tries to tell real samples from fake ones; the generator is trained to fool the discriminator.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Generator (G)",
+    "definition": "The GAN network that maps a latent random vector z to a sample G(z) intended to come from the same distribution as the training data.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Discriminator (D)",
+    "definition": "The GAN network that outputs D(x), the probability that its input is real; it is trained with ordinary supervised learning as a two-class (real vs fake) classifier.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Latent variable z",
+    "definition": "Random input noise sampled from a prior p_z that the generator transforms into a fake sample.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Min-max (minimax) game",
+    "definition": "The GAN training problem min_G max_D V(D,G), where D maximizes the value function and G minimizes it, solved by alternating gradient steps.",
+    "source": "GenAI"
+  },
+  {
+    "term": "CycleGAN",
+    "definition": "A cycle-consistent adversarial network for unpaired image-to-image translation between two domains (Zhu et al., 2017).",
+    "example": "Zebra to horse, summer to winter, photo to Monet or Van Gogh style.",
+    "source": "GenAI"
+  },
+  {
+    "term": "StackGAN",
+    "definition": "A stacked GAN for text-to-image synthesis that first produces a rough Stage-I image from text and then refines it into a photo-realistic Stage-II image (Zhang et al., 2016).",
+    "example": "'This bird is blue with white and has a very short beak'.",
+    "source": "GenAI"
+  },
+  {
+    "term": "GPT (Generative Pre-trained Transformer)",
+    "definition": "A transformer language model that is first pre-trained on massive text with next-word prediction and then adapted (fine-tuned, aligned) for use.",
+    "example": "GPT-1 117M, GPT-2 1542M, GPT-3 175B parameters.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Pre-training (base model)",
+    "definition": "Stage 1 of LLM training: learning general language patterns and world knowledge by next-word prediction on massive text data.",
+    "example": "Input 'a transformer is a', output 'deep'.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Self-supervised learning",
+    "definition": "Learning where the labels are generated automatically from the data itself (e.g. the next word in a sentence), so huge training sets need minimal manual effort.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Next-word prediction",
+    "definition": "The central language-modelling task: given the preceding words, predict the next word; each prefix of a text gives one training pair.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Language knowledge",
+    "definition": "Knowledge of what is grammatically and semantically plausible in a sentence, learned relatively early in pre-training.",
+    "example": "'The cat jumped out from the window' (not 'something').",
+    "source": "GenAI"
+  },
+  {
+    "term": "World knowledge",
+    "definition": "Factual knowledge about the world needed to complete sentences correctly; needs much more pre-training data than syntax.",
+    "example": "'The boiling temperature for water is 100°C'.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Zero-shot / one-shot / few-shot",
+    "definition": "Evaluating a model with no, one, or a few task examples given in the prompt; for GPT-3 accuracy is ordered few-shot > one-shot > zero-shot at every model size.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Instruction fine-tuning",
+    "definition": "Stage 2 of LLM training: supervised training on human-written instruction-response pairs, starting from pre-trained parameters, to teach the model to listen and respond properly to human instructions.",
+    "example": "Input 'USER: What is the capital of France? AI:', output 'Paris'.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Supervised learning (in LLMs)",
+    "definition": "Training on manually labelled input-output pairs, used in instruction fine-tuning; data is expensive so datasets are small.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Flan-PaLM",
+    "definition": "The instruction-fine-tuned version of PaLM 540B, which answers instructions directly where base PaLM merely continues the text.",
+    "example": "Answers 64 to the square-root/cube-root question with x = 4.",
+    "source": "GenAI"
+  },
+  {
+    "term": "RLHF (Reinforcement Learning from Human Feedback)",
+    "definition": "Stage 3 of LLM training that uses human preference feedback (e.g. thumbs up/down, response A preferred over B) with reinforcement learning to align model behaviour with human preferences.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Active parameters",
+    "definition": "In models listed with 'total; active per token' sizes, the subset of parameters actually used to process each token, which is much smaller than the total.",
+    "example": "DeepSeek R1: 671B total, 37B active.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Parameter-efficient vs full-parameter fine-tuning",
+    "definition": "Two fine-tuning modes in the LLaMA family-tree figure: updating only a small part of the model versus updating all parameters.",
+    "example": "Alpaca-LoRA and LLaMA Adapter are LLaMA derivatives.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Reward model",
+    "definition": "A model trained on human preference comparisons that maps a (question, answer) text to a scalar score, so that preferred answers receive higher scores; it stands in for human judges during RLHF.",
+    "example": "Answers scored 10, 3, 5; only the highest-scoring answer is returned (slide p.38).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Pairwise ranking loss (reward model loss)",
+    "definition": "loss(θ) = -(1/C(K,2)) E[log σ(r_θ(x,y_w) - r_θ(x,y_l))], which trains the reward model to score the human-preferred completion y_w above the rejected completion y_l.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Supervised Fine Tuning (SFT)",
+    "definition": "Step 1 of ChatGPT training, where humans are paid to write demonstration responses to prompts and the pre-trained model (GPT-3.5) is fine-tuned on them with supervised learning; it is a high-quality initialisation for RLHF.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Policy (in RL)",
+    "definition": "A network π with parameters θ that takes the observation from the environment as input and outputs actions; in RLHF the policy is the language model itself.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Trajectory",
+    "definition": "The sequence of states and actions τ = {s1, a1, s2, a2, ..., s_T, a_T} produced as the actor interacts with the environment.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Discounted total reward",
+    "definition": "R(τ) = r1 + γ r2 + γ² r3 + ..., the sum of rewards along a trajectory with later rewards discounted by factor γ.",
+    "example": "Rewards 1, 2, 3 with γ = 0.5 give 2.75.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Policy gradient",
+    "definition": "An RL update rule that raises the log-probability of actions in proportion to the trajectory's reward: ∇_θ J(θ) = E_τ[R(τ) Σ ∇ log π_θ(a_t|s_t)], then θ <- θ + η ∇_θ J(θ).",
+    "source": "GenAI"
+  },
+  {
+    "term": "On-policy vs off-policy learning",
+    "definition": "On-policy learning trains a policy on data it generated itself (learning a game by playing it); off-policy learning trains on data generated by a different policy (learning by watching others play).",
+    "source": "GenAI"
+  },
+  {
+    "term": "PPO (Proximal Policy Optimization)",
+    "definition": "A policy-gradient method whose objective J(θ) - β × KL(θ, θ') uses an importance ratio π_θ/π_θ' times the advantage, with a KL penalty that keeps the new policy close to the old one; used in ChatGPT step 3.",
+    "source": "GenAI"
+  },
+  {
+    "term": "KL prediction shift penalty",
+    "definition": "The term -λ_KL × D_KL(π_PPO(y|x) || π_base(y|x)) added to the reward in RLHF, penalising the tuned LM for drifting away from the initial LM's output distribution.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Knowledge (model) distillation",
+    "definition": "Training a small student model to mimic a large teacher model's predictions by minimising the cross-entropy between their predictions, so that it performs similarly with less memory and compute and faster inference.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Mixture of Experts (MoE)",
+    "definition": "An architecture with multiple smaller expert sub-networks where a gating network (router) selects a small relevant subset of experts and only those are activated for each input.",
+    "example": "DeepSeekMoE: N_s shared experts plus the Top-K_r of N_r routed experts (slide p.51).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Multi-head Latent Attention (MLA)",
+    "definition": "An attention mechanism that compresses the key and value cache into a low-dimensional latent vector, so inference stores only the compact latent instead of full keys and values for all previous tokens, cutting memory and speeding up generation.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Multi-Token Prediction (MTP)",
+    "definition": "A DeepSeek-V3 training scheme where extra sequential modules (sharing the embedding layer and output head) predict tokens further ahead (next², next³ token), each with its own cross-entropy loss.",
+    "source": "GenAI"
+  },
+  {
+    "term": "PTX",
+    "definition": "A lower-level GPU programming layer that DeepSeek uses instead of going through CUDA.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Autoregressive generation",
+    "definition": "Generating output one element at a time, each conditioned on those generated before; standard for text and possible for images pixel by pixel, but slow for images (65,536 steps for 256 × 256).",
+    "example": "Image GPT (Chen et al. 2020) completes the bottom half of images.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Diffusion model",
+    "definition": "An image generator that starts from pure noise and applies a denoise model repeatedly (e.g. step 1000 down to step 1) until a clean image emerges.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Forward (diffusion) process",
+    "definition": "The process of adding sampled noise to a clean image step by step (step 1 to step 1000) until it becomes pure noise; it is used to create training data for the noise predictor.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Reverse process",
+    "definition": "The generation process of a diffusion model, which denoises from pure noise at step 1000 back to a clean image at step 1.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Noise predictor",
+    "definition": "The network inside the denoise model that takes a noisy image and the step number and predicts the noise in it; the prediction is subtracted from the input to get a less noisy image.",
+    "example": "Trained with the noisy image and step number as input and the actually added noise as ground truth (slide p.65, p.66).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Denoising Diffusion Probabilistic Model (DDPM)",
+    "definition": "A generative model (Ho, Jain and Abbeel, 2020) trained to predict the noise added to images, which generates new images by starting from Gaussian noise and iteratively denoising over T steps.",
+    "example": "Algorithm 1 trains ε_θ; Algorithm 2 samples from x_T to x₀ (slide p.67).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Noise predictor ε_θ",
+    "definition": "The neural network in a diffusion model that takes a noisy image (or latent), the timestep and optionally a text condition, and outputs an estimate of the noise contained in the input.",
+    "example": "Input: noisy corgi image, step 850 and the prompt; output: predicted noise (slide p.77).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Noise schedule ᾱ_t",
+    "definition": "The sequence ᾱ₁, ᾱ₂, ..., ᾱ_T that controls how much of the clean image remains at step t; it decreases as t increases, so later steps are noisier.",
+    "example": "ᾱ_t = 0.64 gives x_t = 0.8 x₀ + 0.6 ε.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Reverse process (sampling)",
+    "definition": "Inference in a diffusion model: start at x_T ~ N(0, I) and repeatedly subtract predicted noise and add fresh noise σ_t z for t = T down to 1, returning x₀.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Beam search",
+    "definition": "A maximization-based decoding method that keeps the b most probable partial sequences at each step; it tends to produce bland, repetitive text.",
+    "example": "With b = 32 it loops on 'Universidad Nacional Autónoma de México' (slide p.73).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Neural text degeneration",
+    "definition": "The phenomenon (Holtzman et al. 2019) where maximization-based decoding produces text that is bland, incoherent or stuck in repetitive loops, even though the model is well trained.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Text-to-image generator",
+    "definition": "A model that takes a natural-language prompt and produces a matching image, trained on large collections of text-image pairs.",
+    "example": "'corgi wearing a party hat, ... sitting on the surfboard' to a corgi image.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Text encoder",
+    "definition": "Step 1 of the text-to-image framework; converts the prompt into a sequence of embedding vectors that condition the generation model.",
+    "example": "T5-Small to T5-XXL in Saharia et al. 2022 (slide p.84).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Generation model",
+    "definition": "Step 2 of the text-to-image framework; a diffusion model that, conditioned on text embeddings, turns noise into an intermediate latent representation or small image.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Decoder",
+    "definition": "Step 3 of the text-to-image framework; converts the intermediate latent representation or low-resolution image into the final high-resolution image.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Auto-encoder",
+    "definition": "An encoder-decoder pair trained to reconstruct its input: the encoder compresses an H × W × 3 image into an h × w × c latent and the decoder maps it back to H × W × 3.",
+    "example": "Its decoder serves as Step 3 of Stable Diffusion (slide p.91).",
+    "source": "GenAI"
+  },
+  {
+    "term": "Latent representation",
+    "definition": "The compact h × w × c encoding of an image produced by an encoder, on which latent diffusion performs noising and denoising instead of on pixels.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Stable Diffusion / Latent Diffusion Model (LDM)",
+    "definition": "A text-to-image model (Rombach et al. 2022) that runs diffusion in an auto-encoder's latent space with a U-Net denoiser conditioned on text (or other inputs) via cross-attention.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Cross-attention (in LDM)",
+    "definition": "Attention where queries come from the image latent φᵢ(z_t) and keys and values come from the encoded condition τ_θ(y), letting the U-Net attend to the text.",
+    "example": "Attention(Q, K, V) = softmax(QKᵀ/√d) V.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Fréchet Inception Distance (FID)",
+    "definition": "A quality metric that fits Gaussians to CNN features of real and generated images and computes the Fréchet distance between them; smaller is better.",
+    "source": "GenAI"
+  },
+  {
+    "term": "CLIP (Contrastive Language-Image Pre-Training)",
+    "definition": "A model with a text encoder and an image encoder mapping into a shared space, trained on 400 million image-text pairs, so matching text and images have close embeddings.",
+    "source": "GenAI"
+  },
+  {
+    "term": "CLIP score",
+    "definition": "A measure of text-image alignment based on how close CLIP's text and image embeddings are; higher means the image better matches the prompt.",
+    "source": "GenAI"
+  },
+  {
+    "term": "StyleDrop",
+    "definition": "A Google Research method for text-to-image generation in any style, generating new content in the style of a given reference image.",
+    "example": "'A robot in [V] style' using a watercolour flower reference.",
+    "source": "GenAI"
+  },
+  {
+    "term": "Prompt engineering",
+    "definition": "The process of designing and refining prompts or instructions given to a language model, such as ChatGPT, to elicit desired responses or guide its behaviour.",
+    "example": "Prompts sold on PromptBase.",
+    "source": "GenAI"
   }
 ]

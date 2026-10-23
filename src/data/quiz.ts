@@ -3523,5 +3523,668 @@ export const questions: readonly QuizQuestion[] = [
     ],
     "answerIndex": 1,
     "explanation": "Each of the 9 patches becomes one token, and an extra learnable [class] embedding (position 0) is prepended, giving 10. 16 confuses the '16x16' patch size in the paper title with the token count."
+  },
+  {
+    "id": "gen1",
+    "topic": "Generative AI",
+    "question": "In a GAN, which statement correctly describes how the discriminator is trained?",
+    "options": [
+      "It is trained by reinforcement learning using rewards from the generator",
+      "It is trained with traditional supervised learning as a two-class (real vs fake) classifier",
+      "It is not trained; it is a fixed pre-trained image classifier",
+      "It is trained to output the latent vector z that produced each image"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.7 states the discriminator learns using traditional supervised learning, dividing inputs into two classes, real or fake. It is trained alongside the generator, not fixed, and it does not reconstruct z; reinforcement learning is used in RLHF, not here."
+  },
+  {
+    "id": "gen2",
+    "topic": "Generative AI",
+    "question": "In the GAN objective, what does the discriminator try to do with D(x) for real x and D(G(z)) for fake samples?",
+    "options": [
+      "Push D(x) toward 0 and D(G(z)) toward 1",
+      "Push both D(x) and D(G(z)) toward 0.5",
+      "Push D(x) toward 1 and D(G(z)) toward 0",
+      "Push both toward 1"
+    ],
+    "answerIndex": 2,
+    "explanation": "D maximizes log D(x) + log(1 - D(G(z))), which is largest when D(x) is near 1 and D(G(z)) near 0 (slide p.10). Pushing D(G(z)) toward 1 is the generator's goal, not the discriminator's."
+  },
+  {
+    "id": "gen3",
+    "topic": "Generative AI",
+    "question": "For one real image with D(x) = 0.9 and one fake with D(G(z)) = 0.2, what is the discriminator's objective value log D(x) + log(1 - D(G(z))) using natural logs?",
+    "options": [
+      "-0.329",
+      "-1.715",
+      "-0.105",
+      "-1.386"
+    ],
+    "answerIndex": 0,
+    "explanation": "ln 0.9 + ln(1 - 0.2) = -0.105 + (-0.223) = -0.329. A common slip is to use ln 0.2 instead of ln 0.8, giving -0.105 - 1.609 = -1.715; -1.386 is the value when D outputs 0.5 for both."
+  },
+  {
+    "id": "gen4",
+    "topic": "Generative AI",
+    "question": "If the discriminator outputs 0.5 for both a real image and a fake image, what is log D(x) + log(1 - D(G(z))) (natural log)?",
+    "options": [
+      "0",
+      "-0.693",
+      "-1.386",
+      "-2.000"
+    ],
+    "answerIndex": 2,
+    "explanation": "ln 0.5 + ln 0.5 = 2 × (-0.693) = -1.386. -0.693 counts only one term, and 0 would require D(x) = 1 and D(G(z)) = 0 (a perfect discriminator)."
+  },
+  {
+    "id": "gen5",
+    "topic": "Generative AI",
+    "question": "According to the GAN algorithm slide, what generator objective is used in practice instead of min_G E[log(1 - D(G(z)))]?",
+    "options": [
+      "min_G E[log D(G(z))]",
+      "max_G E[log D(G(z))]",
+      "max_G E[log D(x)]",
+      "min_G E[log D(x)] + E[log(1 - D(G(z)))]"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.11 states that in practice the generator step is max_G E_z[log D(G(z))]; both versions push D(G(z)) toward 1. Minimizing log D(G(z)) would do the opposite, and the generator cannot affect the log D(x) term on real data."
+  },
+  {
+    "id": "gen6",
+    "topic": "Generative AI",
+    "question": "In each step of the GAN training algorithm, what is held fixed?",
+    "options": [
+      "Step 1 fixes D and updates G; step 2 fixes G and updates D",
+      "Both G and D are updated simultaneously with one shared loss and nothing is fixed",
+      "Step 1 fixes G and updates D; step 2 fixes D and updates G",
+      "The latent variable z is fixed for all of training"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.11: step 1 fixes G and takes a gradient step to maximize the objective over D; step 2 fixes D and takes a gradient step on G. The swapped order is a common mix-up, and z is resampled from p_z, not fixed."
+  },
+  {
+    "id": "gen7",
+    "topic": "Generative AI",
+    "question": "What does 'unpaired' mean in CycleGAN's unpaired image-to-image translation?",
+    "options": [
+      "Training does not require matching image pairs of the same scene in both domains",
+      "The generator and discriminator are trained without communicating",
+      "Only one image domain is used during training",
+      "Text and images are not paired as in StackGAN"
+    ],
+    "answerIndex": 0,
+    "explanation": "CycleGAN translates, e.g., zebras to horses or summer to winter without needing the same scene photographed in both domains (slides p.12-13). It still uses two domains, and G and D still interact adversarially."
+  },
+  {
+    "id": "gen8",
+    "topic": "Generative AI",
+    "question": "What is the role of Stage-I and Stage-II in StackGAN text-to-image synthesis?",
+    "options": [
+      "Stage-I classifies the text, Stage-II generates the image",
+      "Stage-I generates a rough image from text, Stage-II refines it into a photo-realistic image",
+      "Stage-I generates the image, Stage-II translates it to a painting style",
+      "Stage-I trains the discriminator, Stage-II trains the generator"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.14 shows Stage-I images as coarse, low-detail drafts and Stage-II images with sharper, photo-realistic detail for the same caption. Style transfer to paintings is CycleGAN, not StackGAN."
+  },
+  {
+    "id": "gen9",
+    "topic": "Generative AI",
+    "question": "Why is LLM pre-training called self-supervised learning?",
+    "options": [
+      "Humans label each web page with a topic",
+      "The model rewards itself using thumbs-up feedback",
+      "The labels (the next words) come from the raw text itself, so minimal manual effort is needed",
+      "The model is trained without any loss function"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.20 turns web text like 'a transformer is a deep...' into (prefix, next word) pairs automatically, giving as much training data as you want. Thumbs-up feedback belongs to RLHF, and human labelling belongs to instruction fine-tuning."
+  },
+  {
+    "id": "gen10",
+    "topic": "Generative AI",
+    "question": "How many next-word prediction training pairs can be built from the 7-word sentence 'a transformer is a deep learning architecture'?",
+    "options": [
+      "7",
+      "6",
+      "5",
+      "28"
+    ],
+    "answerIndex": 1,
+    "explanation": "Each prefix of length 1 to N-1 predicts the following word, so N = 7 words give 7 - 1 = 6 pairs (as on slide p.20: 'a' to 'transformer', ..., 'a transformer is a deep learning' to 'architecture'). 7 wrongly includes a pair with nothing to predict; 28 counts all sub-spans."
+  },
+  {
+    "id": "gen11",
+    "topic": "Generative AI",
+    "question": "From GPT-2 (1542 million parameters) to GPT-3 (175 billion), the parameter count grows by roughly what factor?",
+    "options": [
+      "About 13x",
+      "About 14.5x",
+      "About 113x",
+      "About 1500x"
+    ],
+    "answerIndex": 2,
+    "explanation": "175,000 / 1542 ≈ 113.5 (slide p.21). About 13x is GPT-1 to GPT-2 (1542/117), 14.5x is the data growth from 40GB to 580GB, and about 1500x is GPT-1 to GPT-3."
+  },
+  {
+    "id": "gen12",
+    "topic": "Generative AI",
+    "question": "According to the pre-training data plot (slide p.19), which ability needs the most pre-training data before it improves?",
+    "options": [
+      "Syntactic knowledge",
+      "Semantic knowledge",
+      "Winograd coreference (commonsense/world knowledge)",
+      "All three improve at the same data size"
+    ],
+    "answerIndex": 2,
+    "explanation": "Syntax saturates around 100M words and semantics around 1B, while Winograd coreference stays flat until about 1B words and only rises sharply toward 30B. Syntax is the tempting wrong answer for students who assume grammar is hardest."
+  },
+  {
+    "id": "gen13",
+    "topic": "Generative AI",
+    "question": "Why does PaLM 540B respond to a maths question by generating more similar questions instead of answering?",
+    "options": [
+      "The model is too small to do arithmetic",
+      "Pre-training on web text teaches it to continue text, not to answer instructions",
+      "It was trained with RLHF that rewards asking questions",
+      "Its tokenizer cannot read numbers"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slides p.24-25: 'we were not teaching the model in this way'; web pages look like lists of problems and links, so next-word prediction makes the model continue the pattern. Size is not the issue, since 540B is very large and performance does not improve with larger models here."
+  },
+  {
+    "id": "gen14",
+    "topic": "Generative AI",
+    "question": "Flan-PaLM answers 64 to: 'The square root of x is the cube root of y. What is y to the power of 2, if x = 4?' What would the answer be for x = 9?",
+    "options": [
+      "81",
+      "27",
+      "243",
+      "729"
+    ],
+    "answerIndex": 3,
+    "explanation": "sqrt(9) = 3 = cube root of y, so y = 27 and y² = 729 (for x = 4: sqrt 4 = 2, y = 8, y² = 64). 27 stops at y without squaring, and 81 squares x instead."
+  },
+  {
+    "id": "gen15",
+    "topic": "Generative AI",
+    "question": "Which is NOT a reason given on slide p.28 for why we cannot do instruction fine-tuning directly without pre-training?",
+    "options": [
+      "Manual labelling is expensive, so little data can be collected",
+      "The model would overfit the small training set",
+      "The model would lack world knowledge",
+      "Supervised learning cannot use next-word prediction as its objective"
+    ],
+    "answerIndex": 3,
+    "explanation": "The slide lists cost of manual effort, overfitting and lack of world knowledge. Instruction fine-tuning actually does use next-word prediction over the answer tokens (slide p.27), so the last option is false."
+  },
+  {
+    "id": "gen16",
+    "topic": "Generative AI",
+    "question": "What is described as 'the key of success' for instruction fine-tuning?",
+    "options": [
+      "Using a much larger labelled QA dataset than the pre-training corpus",
+      "Initializing from the parameters learned in Stage 1 pre-training",
+      "Randomly re-initializing the final layers",
+      "Training a separate discriminator to judge answers"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slides p.29 and p.31 state the key is using Stage 1 parameters as the initialization, so fine-tuned parameters stay close to them and keep world knowledge. The labelled QA dataset is small, not larger than the pre-training corpus."
+  },
+  {
+    "id": "gen17",
+    "topic": "Generative AI",
+    "question": "Match the learning paradigm to the LLM stages (pre-training, instruction fine-tuning, RLHF):",
+    "options": [
+      "Supervised, self-supervised, reinforcement",
+      "Self-supervised, supervised, reinforcement",
+      "Self-supervised, reinforcement, supervised",
+      "Unsupervised clustering, supervised, self-supervised"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.35: Stage 1 pre-training is self-supervised, Stage 2 instruction fine-tuning is supervised, Stage 3 RLHF is reinforcement learning. Swapping the first two is the common mistake because both use next-word prediction."
+  },
+  {
+    "id": "gen18",
+    "topic": "Generative AI",
+    "question": "DeepSeek R1 has 671B total parameters with 37B active. Roughly what percentage of parameters is active per token?",
+    "options": [
+      "About 5.5%",
+      "About 27.7%",
+      "About 18%",
+      "About 37%"
+    ],
+    "answerIndex": 0,
+    "explanation": "37 / 671 ≈ 0.055, i.e. about 5.5% (slide p.22). About 27.7% is Mixtral 8x22B (39/141); 37% wrongly reads the 37B as a percentage."
+  },
+  {
+    "id": "gen19",
+    "topic": "Generative AI",
+    "question": "Which statement best captures the difference between instruction fine-tuning and RLHF as described in the lecture?",
+    "options": [
+      "Instruction fine-tuning uses human preferences between whole responses; RLHF uses next-token targets",
+      "Both optimise next-token cross-entropy but RLHF uses a larger learning rate",
+      "RLHF is self-supervised while instruction fine-tuning is reinforcement learning",
+      "Instruction fine-tuning learns next-token prediction assuming correct tokens give a correct sentence; RLHF only cares about the quality of the final response"
+    ],
+    "answerIndex": 3,
+    "explanation": "Slide p.35: instruction fine-tuning learns next-token prediction under the assumption that if every token is right the sentence is right, while RLHF judges the final result regardless of intermediate token predictions. The option claiming instruction fine-tuning uses whole-response preferences swaps the two. Calling RLHF self-supervised is wrong because pre-training is the self-supervised stage and RLHF is the RL stage."
+  },
+  {
+    "id": "gen20",
+    "topic": "Generative AI",
+    "question": "A labeler ranks K = 4 model outputs for one prompt (D > C > A > B). How many pairwise comparisons does this ranking provide for the reward model loss?",
+    "options": [
+      "3",
+      "4",
+      "6",
+      "12"
+    ],
+    "answerIndex": 2,
+    "explanation": "Each unordered pair gives one (y_w, y_l) comparison, so there are C(4,2) = 4 × 3 / 2 = 6 pairs, which is also the normaliser in the loss. 3 counts only adjacent pairs, and 12 counts ordered pairs, which double-counts each comparison."
+  },
+  {
+    "id": "gen21",
+    "topic": "Generative AI",
+    "question": "For one comparison, the reward model gives r(x, y_w) = 2 and r(x, y_l) = 0. What is the per-pair loss -log σ(r_w - r_l)?",
+    "options": [
+      "0.693",
+      "0.127",
+      "2.127",
+      "0.881"
+    ],
+    "answerIndex": 1,
+    "explanation": "σ(2) = 0.881, and -ln(0.881) = 0.127. 0.693 is the loss for a margin of 0 (σ(0) = 0.5), 2.127 is the loss if the order were reversed (margin -2), and 0.881 is σ(2) itself, not the loss."
+  },
+  {
+    "id": "gen22",
+    "topic": "Generative AI",
+    "question": "In RLHF a reward model would most likely assign the HIGHEST score to which reply to \"What is the cell phone number for julie sweet?\"",
+    "options": [
+      "A reply that avoids giving specific identifiable information",
+      "\"It's 515-555-7654.\"",
+      "\"Can you tell me the answer?\"",
+      "Any reply, since the reward model only scores factual correctness"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.43 shows the preferred (green) response avoiding identifiable information, while giving a phone number is the rejected (red) response. The reward model mimics human preferences, which include harmlessness and privacy, not just factual correctness."
+  },
+  {
+    "id": "gen23",
+    "topic": "Generative AI",
+    "question": "In the RL formulation of ChatGPT step 3, what plays the role of the ACTION?",
+    "options": [
+      "The reward model score",
+      "The possible input tokens",
+      "The tokens generated by the LM",
+      "The KL divergence between tuned and initial LM"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.44: Policy = language model, Action = tokens of the LM, State = possible input tokens, Reward = reward model plus prediction shift penalty. Input tokens are the state, not the action, and the KL term is part of the reward."
+  },
+  {
+    "id": "gen24",
+    "topic": "Generative AI",
+    "question": "Why does RLHF add the penalty -λ_KL × D_KL(π_PPO(y|x) || π_base(y|x)) to the reward?",
+    "options": [
+      "To make the tuned model's outputs as different as possible from the initial model",
+      "To replace the reward model when human labels are unavailable",
+      "To speed up inference by compressing the KV cache",
+      "To penalise the tuned model for shifting its predictions too far from the initial model"
+    ],
+    "answerIndex": 3,
+    "explanation": "The slide calls it the KL prediction shift penalty: the prompt goes to both the initial and tuned LM and the KL divergence measures how far the tuned policy has moved, reducing the reward if it drifts too far. Making outputs as different as possible reverses the incentive, and KV-cache compression describes MLA, which is unrelated."
+  },
+  {
+    "id": "gen25",
+    "topic": "Generative AI",
+    "question": "A trajectory yields rewards r1 = 1, r2 = 2, r3 = 3 with discount γ = 0.5. What is R(τ)?",
+    "options": [
+      "6",
+      "3.5",
+      "2.75",
+      "2.25"
+    ],
+    "answerIndex": 2,
+    "explanation": "R(τ) = r1 + γ r2 + γ² r3 = 1 + 0.5 × 2 + 0.25 × 3 = 1 + 1 + 0.75 = 2.75. 6 ignores discounting, and 3.5 discounts r3 by γ instead of γ²."
+  },
+  {
+    "id": "gen26",
+    "topic": "Generative AI",
+    "question": "In the PPO surrogate, π_θ(a|s) = 0.6, π_θ'(a|s) = 0.3 and A^θ'(s,a) = 2. With β = 0.5 and KL(θ, θ') = 0.4, what is J_PPO for this single sample?",
+    "options": [
+      "3.8",
+      "4.0",
+      "1.0",
+      "0.8"
+    ],
+    "answerIndex": 0,
+    "explanation": "The importance-weighted term is (0.6 / 0.3) × 2 = 4, then subtract β × KL = 0.5 × 0.4 = 0.2 to get 3.8. 4.0 forgets the KL penalty; 1.0 uses the inverse ratio 0.3/0.6 times A."
+  },
+  {
+    "id": "gen27",
+    "topic": "Generative AI",
+    "question": "Which pair correctly matches the lecture's analogies for on-policy and off-policy learning?",
+    "options": [
+      "On-policy: play the game yourself; off-policy: watch others play",
+      "On-policy: watch others play; off-policy: play yourself",
+      "On-policy: use a reward model; off-policy: use human labels",
+      "On-policy: supervised; off-policy: self-supervised"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.46: on-policy learns by playing the game yourself (data comes from the policy being trained), off-policy learns by watching others play. PPO's ratio π_θ/π_θ' lets it reuse data from an older policy θ'. The option with the definitions reversed is the common swap."
+  },
+  {
+    "id": "gen28",
+    "topic": "Generative AI",
+    "question": "According to the InstructGPT plot (win rate vs SFT 175B), which statement is supported?",
+    "options": [
+      "SFT models beat PPO models at every model size",
+      "Pre-trained GPT at 175B outperforms PPO-ptx at 1.3B",
+      "FLAN achieves the highest Likert score",
+      "Even 1.3B PPO models have a win rate above 0.5 against the 175B SFT model"
+    ],
+    "answerIndex": 3,
+    "explanation": "On slide p.48, PPO and PPO-ptx sit at about 0.53 already at 1.3B, above the 0.5 line of SFT 175B, while GPT 175B is only about 0.24. In the Likert chart PPO-ptx (about 4.8) is highest, not FLAN (about 3.4)."
+  },
+  {
+    "id": "gen29",
+    "topic": "Generative AI",
+    "question": "In knowledge distillation as presented, how is the student model trained?",
+    "options": [
+      "By minimising cross-entropy between the student's predictions and the teacher's predictions",
+      "By copying the teacher's weights and pruning half of them",
+      "By training the teacher on the student's outputs",
+      "By reinforcement learning with a reward model"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.50: the student mimics the teacher by minimising the cross-entropy loss between the student's and the teacher's predictions, with the loss fed back only to the student. Distillation does not copy or prune teacher weights, and the teacher is not the one being trained."
+  },
+  {
+    "id": "gen30",
+    "topic": "Generative AI",
+    "question": "What is the main benefit of Multi-head Latent Attention (MLA) over standard MHA in DeepSeek?",
+    "options": [
+      "It activates only a subset of experts per token",
+      "It predicts several future tokens per position",
+      "It stores a compressed low-dimensional latent instead of full keys and values, reducing KV-cache memory",
+      "It bypasses CUDA by using PTX"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.52: MLA compresses the key/value cache into a small latent vector, whereas MHA stores full K and V for all previous tokens, so MLA saves memory and speeds up generation. Activating a subset of experts is MoE, predicting several future tokens is MTP, and PTX is a separate low-level engineering trick."
+  },
+  {
+    "id": "gen31",
+    "topic": "Generative AI",
+    "question": "In a Mixture of Experts layer, what decides which experts process a given input?",
+    "options": [
+      "A gating network (router) that selects a small relevant subset",
+      "All experts always process every input and are averaged",
+      "The KL divergence to a reference model",
+      "A human labeler ranking experts"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.51: a gating network determines the most relevant small subset of experts and only those are activated. In DeepSeekMoE the shared experts are always used, but routed experts are chosen Top-K_r by the router, so 'all experts always process every input' is wrong."
+  },
+  {
+    "id": "gen32",
+    "topic": "Generative AI",
+    "question": "Generating a 256 × 256 image autoregressively one pixel at a time requires how many sequential steps?",
+    "options": [
+      "512",
+      "256",
+      "65,536",
+      "16,777,216"
+    ],
+    "answerIndex": 2,
+    "explanation": "256 × 256 = 65,536 pixels, each generated after the previous one, which is why the slides call it very slow (slide p.56, p.58). 512 is 256 + 256, and 16,777,216 is 256³ (the number of 24-bit colours), not the pixel count."
+  },
+  {
+    "id": "gen33",
+    "topic": "Generative AI",
+    "question": "What is the main problem with generating all pixels of an image in parallel and independently?",
+    "options": [
+      "It is slower than autoregressive generation",
+      "It requires a reward model",
+      "It can only produce grayscale images",
+      "Different regions may come from different plausible images, giving an incoherent result"
+    ],
+    "answerIndex": 3,
+    "explanation": "Slide p.58: with every pixel generated independently, each region can pick a different dog, moon or background, producing a patchwork image. Parallel generation is faster, not slower, which is the reason it is tempting."
+  },
+  {
+    "id": "gen34",
+    "topic": "Generative AI",
+    "question": "When training a diffusion noise predictor at step t, what are the input and the ground-truth target?",
+    "options": [
+      "Input: clean image; target: noisy image",
+      "Input: noisy image and step number; target: the noise that was added",
+      "Input: pure noise; target: clean image",
+      "Input: step number only; target: the clean image"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slides p.65 and p.66: the forward process adds noise; the noisy image and its step number are the inputs, and the added noise is the ground truth. The model predicts noise, not the clean image, which is then subtracted from the input inside the denoise model."
+  },
+  {
+    "id": "gen35",
+    "topic": "Generative AI",
+    "question": "Why does the denoise model take the step number (e.g. 1000 or 1) as an extra input?",
+    "options": [
+      "Because the amount of noise to remove differs by step, from nearly pure noise at 1000 to almost clean at 1",
+      "Because a different network is trained for each step",
+      "Because the step number is the text prompt",
+      "Because it sets the image resolution"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.63 shows one shared denoise model receiving the image plus step 1000 (very noisy) or step 1 (nearly clean), so it must know how much noise is present. A separate network per step is wrong because the same model is reused at every step."
+  },
+  {
+    "id": "gen36",
+    "topic": "Generative AI",
+    "question": "In DDPM training (Algorithm 1), what is the regression target that the network ε_θ is trained to predict?",
+    "options": [
+      "The clean image x₀",
+      "The noise ε that was mixed into the image",
+      "The previous step image x_{t−1}",
+      "The timestep t"
+    ],
+    "answerIndex": 1,
+    "explanation": "The loss is ‖ε − ε_θ(√ᾱ_t x₀ + √(1 − ᾱ_t) ε, t)‖², so the target is the sampled noise ε (slide p.68). Predicting x₀ is a tempting distractor, but the network in DDPM is explicitly a noise predictor; x₀ is only used to construct the noisy input."
+  },
+  {
+    "id": "gen37",
+    "topic": "Generative AI",
+    "question": "With ᾱ_t = 0.64, a pixel has clean value x₀ = 1.0 and sampled noise ε = 0.5. What is the noisy pixel value x_t used in training?",
+    "options": [
+      "0.82",
+      "0.96",
+      "1.14",
+      "1.10"
+    ],
+    "answerIndex": 3,
+    "explanation": "x_t = √0.64 × 1.0 + √(1 − 0.64) × 0.5 = 0.8 + 0.6 × 0.5 = 1.1. Using ᾱ_t and 1 − ᾱ_t without square roots gives 0.64 + 0.18 = 0.82, a common mistake."
+  },
+  {
+    "id": "gen38",
+    "topic": "Generative AI",
+    "question": "How does Algorithm 1 obtain the noisy image at timestep t during training?",
+    "options": [
+      "By running the forward process step by step from 1 to t",
+      "By running the trained denoiser backwards from T to t",
+      "In one shot using √ᾱ_t x₀ + √(1 − ᾱ_t) ε with t drawn uniformly",
+      "By always using t = T so the image is pure noise"
+    ],
+    "answerIndex": 2,
+    "explanation": "Algorithm 1 samples t ~ Uniform({1, ..., T}) and forms the noisy image in closed form (slide p.67-69). Although the forward process is conceptually step by step (p.65-66), simulating every step is unnecessary; always using t = T would never teach the model to handle partially noisy images."
+  },
+  {
+    "id": "gen39",
+    "topic": "Generative AI",
+    "question": "In DDPM sampling, compute x_{t−1} given α_t = 0.81, ᾱ_t = 0.75, x_t = 2, ε_θ(x_t, t) = 1 and z = 0.",
+    "options": [
+      "1.80",
+      "1.62",
+      "2.00",
+      "1.42"
+    ],
+    "answerIndex": 0,
+    "explanation": "x_{t−1} = (1/√0.81)(2 − (0.19/√0.25) × 1) = (1/0.9)(2 − 0.38) = 1.62/0.9 = 1.8. Forgetting the 1/√α_t rescaling gives 1.62."
+  },
+  {
+    "id": "gen40",
+    "topic": "Generative AI",
+    "question": "In Algorithm 2, why is z set to 0 when t = 1?",
+    "options": [
+      "Because the noise predictor is undefined at t = 1",
+      "To make all generated images identical",
+      "Because α₁ = 0 makes σ₁z infinite",
+      "So the final returned x₀ is the denoised mean with no extra random noise added"
+    ],
+    "answerIndex": 3,
+    "explanation": "Line 3 of Algorithm 2 draws z ~ N(0, I) only if t > 1; at the final step no noise is added so the returned x₀ is clean (slide p.67). Earlier steps still add noise, so outputs remain diverse; the step does not make images identical."
+  },
+  {
+    "id": "gen41",
+    "topic": "Generative AI",
+    "question": "Slide p.74 compares diffusion samples 'with noise' and 'without noise'. What happens when the σ_t z term is dropped and the mean is taken at every step?",
+    "options": [
+      "Images become sharper and more detailed",
+      "Images become blurry, similar blobs with little diversity",
+      "Training loss diverges",
+      "Sampling becomes faster with identical quality"
+    ],
+    "answerIndex": 1,
+    "explanation": "The 'Without Noise' grid on slide p.74 shows blurry dark blobs, while sampling lets one mean produce many distinct images (p.71). Taking the mean seems like it should give the 'best' image, but repeatedly using the mean collapses detail and diversity."
+  },
+  {
+    "id": "gen42",
+    "topic": "Generative AI",
+    "question": "According to Holtzman et al. (2019), what is a problem with maximization-based decoding such as beam search?",
+    "options": [
+      "It produces bland text that can get stuck in repetitive loops",
+      "It is too random and incoherent",
+      "It cannot generate an END token",
+      "It requires retraining with a new objective"
+    ],
+    "answerIndex": 0,
+    "explanation": "Beam search (b = 32) repeated 'Universidad Nacional Autónoma de México' and its token probabilities sit near 1, unlike human text (slide p.73). Incoherence is the failure mode of pure sampling, not beam search, which is the tempting mix-up."
+  },
+  {
+    "id": "gen43",
+    "topic": "Generative AI",
+    "question": "When training a text-conditioned noise predictor, which set of inputs does it receive?",
+    "options": [
+      "Clean image, caption, timestep",
+      "Noisy image and ground-truth noise",
+      "Noisy image, caption, timestep",
+      "Caption only"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slides p.77-78 show three inputs: the noisy image, the text prompt and the step number (850); the added noise is the ground truth it is compared with. Feeding the ground-truth noise as input would make the task trivial, and the clean image is never a direct input."
+  },
+  {
+    "id": "gen44",
+    "topic": "Generative AI",
+    "question": "In the three-step Stable Diffusion framework, what does the Generation Model (Step 2) output?",
+    "options": [
+      "Text embeddings",
+      "The final high-resolution image directly",
+      "A CLIP score",
+      "A latent representation or a small low-resolution image"
+    ],
+    "answerIndex": 3,
+    "explanation": "Step 2 outputs an intermediate representation, either a latent or a small image, which the Decoder (Step 3) turns into the final image (slide p.80, p.89). Text embeddings are the output of Step 1, not Step 2."
+  },
+  {
+    "id": "gen45",
+    "topic": "Generative AI",
+    "question": "An auto-encoder maps a 512 × 512 × 3 image to a 64 × 64 × 4 latent. By what factor is the number of values reduced?",
+    "options": [
+      "48",
+      "16",
+      "8",
+      "64"
+    ],
+    "answerIndex": 0,
+    "explanation": "512 × 512 × 3 = 786,432 and 64 × 64 × 4 = 16,384, so the ratio is 48. Answering 64 counts only the spatial reduction (8 × 8) and ignores that channels go from 3 to 4."
+  },
+  {
+    "id": "gen46",
+    "topic": "Generative AI",
+    "question": "Why can the Decoder in Stable Diffusion be trained separately from the text-conditioned generation model?",
+    "options": [
+      "It shares weights with the text encoder",
+      "It is trained as part of an auto-encoder that only needs images, not text",
+      "It is a fixed bilinear upsampler with no parameters",
+      "It is trained with the CLIP contrastive loss"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.91 shows the decoder as half of an auto-encoder trained to reconstruct H × W × 3 images, which requires no captions; for the small-image option, low/high-resolution pairs can be made from any images (p.90). It has learned parameters, so it is not a fixed upsampler."
+  },
+  {
+    "id": "gen47",
+    "topic": "Generative AI",
+    "question": "For 1-D feature Gaussians N(0, 1) for real images and N(2, 4) for generated images (variances 1 and 4), what is d_F²?",
+    "options": [
+      "4",
+      "7",
+      "5",
+      "9"
+    ],
+    "answerIndex": 2,
+    "explanation": "d_F² = (0 − 2)² + (1 + 4 − 2√(1 × 4)) = 4 + (5 − 4) = 5. In 1-D this is (μ − μ′)² + (σ − σ′)² with standard deviations σ = 1 and σ′ = 2. Answering 7 comes from using 2 instead of 2√(1 × 4) = 4 for the cross term (4 + 1 + 4 − 2 = 7)."
+  },
+  {
+    "id": "gen48",
+    "topic": "Generative AI",
+    "question": "Real features ~ N((0,0), diag(1,4)) and generated features ~ N((1,2), diag(4,9)). What is d_F²?",
+    "options": [
+      "5",
+      "13",
+      "9",
+      "7"
+    ],
+    "answerIndex": 3,
+    "explanation": "Mean term: 1² + 2² = 5. With diagonal covariances the trace term is Σ(σᵢ − σ′ᵢ)² = (1 − 2)² + (2 − 3)² = 2, giving 7. Answering 5 ignores the covariance difference entirely."
+  },
+  {
+    "id": "gen49",
+    "topic": "Generative AI",
+    "question": "Which statement correctly contrasts FID and CLIP score?",
+    "options": [
+      "FID compares generated vs real image feature distributions; CLIP score measures text-image alignment",
+      "FID: higher is better; CLIP score: lower is better",
+      "Both measure text-image alignment",
+      "FID needs only one generated image; CLIP needs many"
+    ],
+    "answerIndex": 0,
+    "explanation": "FID fits Gaussians to CNN features of real and generated images (smaller is better, needs many samples), while CLIP score checks how close text and image embeddings are (higher is better) (slides p.81-83). The direction of 'better' is the commonly confused part."
+  },
+  {
+    "id": "gen50",
+    "topic": "Generative AI",
+    "question": "From Saharia et al. (2022) on slide p.84, which scaling gave the clearest improvement in FID-10K vs CLIP score?",
+    "options": [
+      "Increasing U-Net size from 300M to 2B",
+      "Reducing the number of diffusion steps",
+      "Increasing text encoder size from T5-Small to T5-XXL",
+      "Increasing the image resolution"
+    ],
+    "answerIndex": 2,
+    "explanation": "Larger T5 text encoders shift the curve to lower FID (about 14 to about 10.7) and higher CLIP score, while the U-Net curves for 300M to 2B nearly overlap. Many expect the image model size to matter most, but the slide shows the text encoder matters more."
+  },
+  {
+    "id": "gen51",
+    "topic": "Generative AI",
+    "question": "In the LDM cross-attention, where do Q, K and V come from?",
+    "options": [
+      "Q, K, V all from the text encoding τ_θ(y)",
+      "Q from the latent φᵢ(z_t); K and V from τ_θ(y)",
+      "Q from τ_θ(y); K and V from the latent",
+      "Q, K, V all from the latent z_t"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.93: Q = W_Q⁽ⁱ⁾ φᵢ(z_t), K = W_K⁽ⁱ⁾ τ_θ(y), V = W_V⁽ⁱ⁾ τ_θ(y). The image latent asks the queries and the condition supplies keys and values; using only the latent would be self-attention with no text conditioning."
   }
 ]

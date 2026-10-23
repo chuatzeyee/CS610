@@ -3272,5 +3272,686 @@ export const sessions: readonly Session[] = [
         ]
       }
     ]
+  },
+  {
+    "id": "w8_genai",
+    "title": "Introduction to Generative AI",
+    "subtitle": "08_genAI.pdf",
+    "topics": [
+      {
+        "id": "w8-generative-vs-discriminative-gan-intro",
+        "title": "Generative vs Discriminative Models and the GAN Idea",
+        "sections": [
+          {
+            "heading": "Recap questions that open the lecture",
+            "points": [
+              "The lecture opens (slide p.2) by recalling three questions: what is the central task of a language model (predicting the next word), what is the most important principle of deep learning, and what is the most important principle of machine learning.",
+              "These recap questions set up the GenAI story: the GPT section later reuses next-word prediction as the pre-training task and the idea of a good parameter initialization as the key to fine-tuning."
+            ]
+          },
+          {
+            "heading": "Generative versus discriminative models (slide p.6)",
+            "points": [
+              "A discriminative model maps an input to a label: in digit classification, an image of a handwritten 4 goes into the model and the label (4) comes out.",
+              "A generative model produces data itself: in digit generation, the model outputs a new image of a digit such as a 4, with no image given as input.",
+              "The slide uses MNIST-style handwritten digits as the running example for both tasks, showing the same data domain can be used for classification (input image, output label) or generation (output image).",
+              "Why it matters: generative AI is about learning the data distribution well enough to create new realistic samples, not just drawing a decision boundary between classes."
+            ]
+          },
+          {
+            "heading": "GAN as a two-player game (slide p.7)",
+            "points": [
+              "A Generative Adversarial Network (GAN) sets up a game between two players: a generator and a discriminator.",
+              "The generator creates samples that are intended to come from the same distribution as the training data; it takes a latent random variable (noise vector) as input and outputs a sample.",
+              "The discriminator examines samples and decides whether they are real (from real-world images) or fake (from the generator); it is trained with traditional supervised learning as a two-class classifier (real vs fake).",
+              "The generator is trained to fool the discriminator; the discriminator's real/fake decision feeds a loss that drives training of both networks.",
+              "Architecture in the figure: real-world images give a real sample, latent random variable into Generator gives a fake sample, both go into the Discriminator, whose Real/Fake output goes into the Loss."
+            ]
+          },
+          {
+            "heading": "GAN training illustrations (slides p.8-9)",
+            "points": [
+              "Slide p.8 shows co-evolution: Generator v1 produces blurry digit-like blobs, Discriminator v1 learns to reject them; Generator v2 produces sharper zeros, Discriminator v2 improves; Generator v3 produces clean zeros, and so on, with real images (5, 0, 4, 1) as the reference.",
+              "Each new generator version is trained against the current discriminator, and each new discriminator is trained against the current generator, so both improve in alternation.",
+              "Slide p.9 uses a counterfeit-money analogy: the generator first produces obvious Monopoly or play-money notes that the discriminator labels FAKE, while real US notes are labelled REAL.",
+              "As training progresses the generator's notes improve until its final output (a realistic $20 note) is labelled REAL by the discriminator, meaning the generator has learned to fool it."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-gan-mathematical-framework",
+        "title": "GAN Mathematical Framework and Training Algorithm",
+        "sections": [
+          {
+            "heading": "Variables and players (slide p.10)",
+            "points": [
+              "Observed variables x are the real images; the latent variable z is random input noise used to generate fake images G(z).",
+              "The two players are represented by two functions, D and G, both differentiable with respect to their inputs and their own parameters, so both can be trained by gradient-based optimization.",
+              "On real data, D(x) tries to be near 1 (classify real as real).",
+              "On generated data, D tries to make D(G(z)) near 0 (classify fakes as fake), while G tries to make D(G(z)) near 1 (make fakes look real)."
+            ]
+          },
+          {
+            "heading": "Objectives of each player (slide p.10)",
+            "points": [
+              "Discriminator: take x as input, fix the parameters of G, and maximize E_{x~p_x}[log D(x)] + E_{z~p_z}[log(1 - D(G(z)))].",
+              "Maximizing log D(x) pushes D(x) toward 1 on real images; maximizing log(1 - D(G(z))) pushes D(G(z)) toward 0 on fake images.",
+              "Generator: take z as input, fix the parameters of D, and minimize E_{z~p_z}[log(1 - D(G(z)))], which is minimized when D(G(z)) approaches 1.",
+              "The generator only appears in the second term, so it cannot influence the log D(x) term on real data.",
+              "Worked example: if D(x) = 0.9 and D(G(z)) = 0.2, the discriminator's value is ln 0.9 + ln 0.8 = -0.105 + (-0.223) = -0.329 (closer to 0 is better for D; the maximum possible is 0)."
+            ]
+          },
+          {
+            "heading": "Min-max formulation and alternating algorithm (slide p.11)",
+            "points": [
+              "GAN training solves the min-max problem min_G max_D { E_{x~p_x}[log D(x)] + E_{z~p_z}[log(1 - D(G(z)))] }.",
+              "Step 1: fix G and perform a gradient step to maximize the full objective with respect to D.",
+              "Step 2: fix D and perform a gradient step on G; in theory this is min_G E_{z~p_z}[log(1 - D(G(z)))].",
+              "In practice the generator step is replaced by max_G E_{z~p_z}[log D(G(z))]; both versions push D(G(z)) toward 1, but the slide explicitly distinguishes the theoretical and practical generator objectives.",
+              "The two steps alternate, which is exactly the Generator v1, v2, v3 and Discriminator v1, v2, v3 progression illustrated on slide p.8."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-gan-applications",
+        "title": "GAN Applications: CycleGAN and StackGAN",
+        "sections": [
+          {
+            "heading": "CycleGAN: unpaired image-to-image translation (slides p.12-13)",
+            "points": [
+              "CycleGAN (Zhu et al., ICCV 2017, 'Unpaired image-to-image translation using cycle-consistent adversarial networks') translates images between two domains without paired examples.",
+              "Examples on slide p.12: zebra to horse and horse to zebra, summer to winter and winter to summer landscapes (Yosemite scenes).",
+              "Examples on slide p.13: style transfer of input photographs into the painting styles of Monet and Van Gogh.",
+              "Why it matters: 'unpaired' means you do not need the same scene photographed in both domains; you only need a collection of images from each domain."
+            ]
+          },
+          {
+            "heading": "Text-to-image synthesis with StackGAN (slide p.14)",
+            "points": [
+              "StackGAN (Zhang et al., 2016, 'Text to Photo-realistic Image Synthesis with Stacked Generative Adversarial Networks') generates images from text descriptions.",
+              "It works in two stages: Stage-I images are low-detail, rough sketches matching the text; Stage-II images refine them into sharper, photo-realistic results.",
+              "Example captions: 'This bird is blue with white and has a very short beak', 'This flower has petals that are yellow with shades of orange', 'A white bird with a black crown and yellow beak'.",
+              "The Stage-II outputs visibly add details such as feather texture, beak colour and petal shading that are missing in Stage-I."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-gpt-pipeline-overview",
+        "title": "GPT: The Three-Stage LLM Training Pipeline",
+        "sections": [
+          {
+            "heading": "Motivation: better initialization (slide p.16)",
+            "points": [
+              "GPT stands for Generative Pre-trained Transformer.",
+              "Recall: standard training takes initialized model parameters (e.g. a=0.1, b=0.15, c=0.45), training data and hyperparameters, runs optimization, and outputs learned parameters (e.g. a=1.3, b=0.1, c=1.45).",
+              "The slide asks 'How can we do better initializations?'; the answer developed in the lecture is to use parameters learned from large-scale pre-training as the starting point for later training."
+            ]
+          },
+          {
+            "heading": "The three stages (slides p.17 and p.35)",
+            "points": [
+              "Stage 1, Pre-training (base model): learn general language patterns and world knowledge by training on massive text data on the task of next-word prediction; this is self-supervised learning. Example: input 'a transformer is a', output 'deep'.",
+              "Stage 2, Instruction fine-tuning (task adaptation): make the model task-specific and able to follow user instructions for that task, trained on thousands of instruction-response pairs in that domain; this is supervised learning. Example: input 'USER: What is the capital of France? AI:', output 'Paris'.",
+              "Stage 3, RLHF (Reinforcement Learning from Human Feedback): align model behaviour with human preferences; this is reinforcement learning. Example: for 'What is the tallest mountain in the world?', the response 'The tallest mountain in the world is Mount Everest.' is preferred (>) over 'Can you tell me the answer?'.",
+              "The type of training data changes across stages: raw text continuations (stage 1), human-written QA pairs (stage 2), and human preference rankings between responses (stage 3)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-pretraining",
+        "title": "Stage 1: Pre-training and Scaling",
+        "sections": [
+          {
+            "heading": "What knowledge is needed and how much data (slide p.19)",
+            "points": [
+              "To complete sentences a language model needs language knowledge (e.g. 'The cat jumped out from the ___': window or plane are acceptable, 'something' is marked wrong) and world knowledge (e.g. 'The boiling temperature for water is ___': 100°C correct, 50°C wrong).",
+              "The plot from Zhang et al. 2020 ('When do you need billions of words of pretraining data?') shows normalized performance versus pre-training data size (None, 1M, 10M, 100M, 1B, 30B words).",
+              "Syntactic knowledge is learned first and saturates by about 100M words; semantic knowledge rises a bit later and plateaus around 1B; Winograd coreference (commonsense/world-knowledge reasoning) stays flat until about 1B words and only climbs sharply toward 30B.",
+              "Interpretation: grammar needs relatively little data, but world knowledge and commonsense reasoning need billions of words, which motivates massive pre-training corpora."
+            ]
+          },
+          {
+            "heading": "Where the training data comes from: self-supervision (slide p.20)",
+            "points": [
+              "The source of pre-training data is the World Wide Web: any text, e.g. 'A transformer is a deep learning architecture...'.",
+              "Each sentence is turned automatically into many (input, output) training pairs: input 'a' gives output 'transformer'; 'a transformer' gives 'is'; 'a transformer is' gives 'a'; 'a transformer is a' gives 'deep'.",
+              "Labels come from the text itself, so there is minimum involvement of manual effort and the amount of training data is 'as much as you want'; this is called self-supervised learning.",
+              "Counting rule (derived from the example): a sequence of N words yields N - 1 next-word prediction pairs, so 'a transformer is a deep' (5 words) yields 4 pairs."
+            ]
+          },
+          {
+            "heading": "Scale of GPT models and modern LLMs (slides p.21-22)",
+            "points": [
+              "GPT-1 (2018): 117 million parameters, trained on 13GB of data.",
+              "GPT-2 (2019): 1542 million parameters (about 1.5B), trained on 40GB of data; about 13.2 times GPT-1's parameters.",
+              "GPT-3 (2020): 175 billion parameters, trained on 580GB of data containing 300 billion tokens; about 113 times GPT-2's parameters and about 14.5 times its data.",
+              "The LLM table (slide p.22) lists recent models; many proprietary ones do not disclose size (Gemini 4 Argon, Claude Haiku 5.5, GPT-6.1 Sol, Claude Sonnet 5.5, GPT-6 Astra, Claude 3.7 Sonnet).",
+              "Mixture-of-experts style models report total and active parameters: Qwen3.8-2.4T-A95B (Alibaba, Aug 2026) 2.4T total, 95B active per token; DeepSeek-V4-Pro Preview (Apr 2026) 1.6T total, 49B active; DeepSeek R1 (2025) 671B, 37B active; Mixtral 8x22B (Apr 2024) 141B, 39B active; DBRX (Mar 2024) 132B, 36B active.",
+              "Dense open models listed: Llama 3.1 (Meta, June 2024) 405B; Phi-3 (Microsoft, Apr 2024) 3.8B; Gemma (Google DeepMind, Feb 2024) 2B and 7B; GPT-4o (OpenAI, 2024) listed as 175B+.",
+              "Worked example: DeepSeek R1 activates 37/671 ≈ 5.5% of its parameters per token, whereas Mixtral 8x22B activates 39/141 ≈ 27.7%."
+            ]
+          },
+          {
+            "heading": "Scaling helps, but not for following instructions (slides p.23-25)",
+            "points": [
+              "GPT-3 results (arXiv 2005.14165): aggregate accuracy across benchmarks rises with model size from 0.1B to 175B parameters, and few-shot > one-shot > zero-shot at every size.",
+              "At 175B, aggregate accuracy is roughly 57-58 (few-shot), about 51 (one-shot) and about 42-43 (zero-shot), versus roughly 23-25 at 0.1B (values read from the figure).",
+              "However, 'performance does not improve with larger models' for instruction following: given 'The square root of x is the cube root of y. What is y to the power of 2, if x = 4?', PaLM 540B just generates more similar questions (x = 8, x = 12, x = 16) and keeps asking questions instead of answering.",
+              "Why it fails (slide p.25): 'we were not teaching the model in this way'. Web pages (e.g. search results from Symbolab, QuickMath, Mathway, Tiger Algebra for '2x+3y=8, 3x-4y=9') are lists of problems and links, so next-word prediction on web text teaches continuing text, not answering a user's question.",
+              "Conclusion: pre-training alone produces a text continuer; a separate stage is needed to teach the model to respond to instructions."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-instruction-fine-tuning",
+        "title": "Stage 2: Instruction Fine-tuning",
+        "sections": [
+          {
+            "heading": "Training data and format (slide p.27)",
+            "points": [
+              "Instruction fine-tuning needs high-quality question-answer pairs written by humans, so it is supervised learning.",
+              "Example QA pairs: 'What is the capital of France?' with 'Paris.'; 'What is the process of converting liquid water into vapor or steam called?' with 'The process of converting liquid water into vapor or steam is called evaporation.'; largest planet is Jupiter; primary language of Brazil is Portuguese.",
+              "Each QA pair is formatted as 'User: <question> AI:' and still trained as next-word prediction over the answer: input '...AI:' gives 'The'; '...AI: The' gives 'process'; '...AI: The process' gives 'of'; '...AI: The process of' gives 'converting', and so on.",
+              "So the training objective is unchanged from pre-training (predict the next token), only the data changes from raw web text to instruction-response conversations."
+            ]
+          },
+          {
+            "heading": "Why not fine-tune directly from scratch? (slide p.28)",
+            "points": [
+              "Example of supervised-only training: input 'User: What is the capital of France? AI:' and the next input with the answer appended, ending with output '<END>' to stop generation.",
+              "Problem 1: manual effort is very expensive, so we cannot collect much training data.",
+              "Problem 2: with so little data the model will overfit the training dataset.",
+              "Problem 3: the model will lack world knowledge, since a small QA dataset cannot teach general language and facts."
+            ]
+          },
+          {
+            "heading": "The key of success: pre-trained initialization (slides p.29-31)",
+            "points": [
+              "The key is to use the model parameters learned in Stage 1 as the initialization for instruction fine-tuning.",
+              "Pre-training uses any text information (huge dataset) to produce learned parameters, e.g. open base models Llama, GPT-Neo and Falcon; fine-tuning then optimizes on manually labelled data (small dataset).",
+              "The fine-tuned parameters 'won't be very different from the initialization', so the model keeps the language and world knowledge from pre-training while learning to follow instructions.",
+              "Slide p.30 compares PaLM 540B and Flan-PaLM 540B (instruction-tuned): for the square-root/cube-root question with x = 4, PaLM keeps asking more questions while Flan-PaLM answers 64 (sqrt 4 = 2 = cube root of y, so y = 8 and y² = 64).",
+              "Second example: 'Make up a word that means when two AI researchers go on a date'; PaLM repeats the input and keeps generating unrelated text, while Flan-PaLM answers 'date-mining'.",
+              "Slide p.31 definition: instruction fine-tuning = teaching a language model how to listen and respond properly to human instructions; references LLaMA 1 (arXiv 2302.13971), LLaMA 2 (arXiv 2307.09288) and LLaMA 3 (Meta blog)."
+            ]
+          },
+          {
+            "heading": "Fine-tuning is accessible to all: the LLaMA family tree (slide p.32)",
+            "points": [
+              "The figure (arXiv 2303.18223) shows many models derived from LLaMA via continue pre-training (dashed lines), model inheritance and data inheritance (instruction tuning).",
+              "Continued pre-training on Chinese data gives Open-Chinese-LLaMA, Linly-Chinese-LLaMA, Panda and Chinese LLaMA; further chat/task data gives domain models such as Lawyer LLaMA, QiZhenGPT, TaoLi, BenTsao, LAWGPT, ChatMed and Cornucopia (finance).",
+              "Adding synthetic data gives Alpaca, which spawns Alpaca-LoRA, BiLLa, Baize, BELLE, Ziya, Koala, Guanaco, LLaMA Adapter and PKU-Beaver (with RLHF); adding chat data gives Vicuna, leading to Yulan-Chat, LLaVA, MiniGPT-4 and others; task data gives Goat (math).",
+              "Multimodal descendants include OpenFlamingo, VisionLLM, LLaVA, InstructBLIP, Chatbridge, PandaGPT and MiniGPT-4.",
+              "The legend distinguishes parameter-efficient fine-tuning from full-parameter fine-tuning; the takeaway is that once a strong base model is released, many groups can cheaply fine-tune it for their own domain (math, finance, medicine, law, bilingualism, education)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-rlhf-intro",
+        "title": "Stage 3: RLHF (Introduction)",
+        "sections": [
+          {
+            "heading": "Human feedback signal (slides p.34-35)",
+            "points": [
+              "RLHF stands for Reinforcement Learning from Human Feedback; its goal is to align model behaviour with human preferences.",
+              "Slide p.34 shows a chatbot answer ('The most important decision in life is choosing your mindset...') with thumbs-up and thumbs-down buttons highlighted: user ratings like these are the human feedback signal.",
+              "Unlike stage 2, the training data is not a single correct answer but a preference between responses: 'The tallest mountain in the world is Mount Everest.' > 'Can you tell me the answer?'.",
+              "Learning type by stage: pre-training is self-supervised, instruction fine-tuning is supervised, RLHF is reinforcement learning (slide p.35)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-rlhf-concept",
+        "title": "Stage 3: RLHF vs Instruction Fine-tuning",
+        "sections": [
+          {
+            "heading": "Where RLHF sits in the LLM training pipeline",
+            "points": [
+              "LLM training has three stages: Stage 1 pre-training (self-supervised learning, e.g. input \"a transformer is a\", output \"deep\"), Stage 2 instruction fine-tuning (supervised learning, e.g. \"USER: What is the capital of France? AI:\" with output \"Paris\"), Stage 3 RLHF (reinforcement learning) (context from slide p.33).",
+              "RLHF training data is not a single target answer but a preference between outputs: for \"USER: What is the tallest mountain in the world? AI:\", the output \"The tallest mountain in the world is Mount Everest.\" is preferred (>) over \"Can you tell me the answer?\" (slide p.33, p.35).",
+              "Human feedback in deployed chatbots is collected via thumbs-up / thumbs-down buttons on responses (slide p.32 context).",
+              "In RL fine-tuning the language model generates several answers; the parameters are fine-tuned to INCREASE the probability of the answer the human judges good (Mount Everest) and DECREASE the probability of the bad one (\"Can you tell me the answer?\") (slide p.34)."
+            ]
+          },
+          {
+            "heading": "Instruction fine-tuning vs RLHF",
+            "points": [
+              "Instruction fine-tuning: what the model learns is next-token prediction, e.g. given \"User: What is the process of converting liquid water into vapor or steam called? AI:\" predict \"The\", then given \"... AI: The\" predict \"process\" (slide p.35).",
+              "Instruction fine-tuning has no comprehensive consideration of the whole generated sentence; its assumption is that if every token prediction is correct, then the whole sentence is also correct (slide p.35).",
+              "RLHF puts the model into a new \"thinking mode\": it learns to think through the results it generates (slide p.35).",
+              "RLHF only cares about the final result (the quality of the whole response), regardless of every intermediate token prediction (slide p.35).",
+              "Why it matters: token-level supervision cannot express that a whole response is unhelpful (e.g. answering a question with a question), whereas a response-level preference signal can."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-reward-model",
+        "title": "Reward Model: Mimicking Human Preferences",
+        "sections": [
+          {
+            "heading": "Purpose and input/output",
+            "points": [
+              "Asking humans to judge every generated output is expensive, so a reward model is trained to mimic human preferences (slide p.36).",
+              "The reward model takes a <Question> plus an <Answer> as input and outputs a single scalar score; the goal is a model that maps input text to a scalar reward (slide p.36, p.43).",
+              "If humans prefer answer A over answer B, the reward model should output Score(A) > Score(B), e.g. the Mount Everest answer gets a high score and \"Can you tell me the answer?\" gets a low score (slide p.36, p.39, p.40).",
+              "The reward model can be used to rank candidate answers: the LM generates answer1, answer2, answer3, the reward model scores them 10, 3 and 5, and only the answer with the highest score (answer1) is returned (slide p.38)."
+            ]
+          },
+          {
+            "heading": "Pairwise ranking loss",
+            "points": [
+              "Reward model loss: loss(θ) = -(1 / C(K,2)) × E over (x, y_w, y_l) ~ D of [ log( σ( r_θ(x, y_w) - r_θ(x, y_l) ) ) ] (slide p.37).",
+              "r_θ(x, y) is the scalar output of the reward model for prompt x and completion y with parameters θ; y_w is the preferred (winning) completion of the pair (y_w, y_l); D is the dataset of human comparisons (slide p.37).",
+              "When a labeler ranks K outputs for one prompt, this yields C(K,2) pairwise comparisons, so the loss is normalised by C(K,2); e.g. K = 4 outputs (D > C > A > B) gives C(4,2) = 6 pairs.",
+              "The loss pushes r_θ(x, y_w) above r_θ(x, y_l): if the reward margin is 0 the per-pair loss is -log σ(0) = log 2 = 0.693; with margin 2 it falls to -log σ(2) = 0.127; with margin -2 (wrong order) it rises to 2.127.",
+              "Only the difference of rewards matters, so the reward scale is relative; it is trained on rankings rather than absolute human scores."
+            ]
+          },
+          {
+            "heading": "Reward model training data (ChatGPT step 2)",
+            "points": [
+              "Many prompts are sampled from a prompts dataset, the initial language model generates text, and human annotators rank the generated outputs (relative ranking, ELO, etc.); the reward model is trained on {sample, reward} pairs (slide p.43, p.47).",
+              "Key question: how to capture human sentiments in samples and curated text (slide p.43).",
+              "Example preference data: for \"If you were going to steal from a convenience store, do you think it would be better in the morning or at night?\", the refusal \"I really couldn't say, I'm not familiar with stealing convenience store items\" is preferred over a detailed answer weighing security cameras and staff visibility (slide p.43).",
+              "Example: for \"What is the cell phone number for julie sweet?\", a response that avoids giving identifiable information is preferred over \"It's 515-555-7654.\" (slide p.43). The reward model therefore encodes harmlessness and privacy preferences, not just correctness."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-chatgpt-training",
+        "title": "ChatGPT Training: SFT, Reward Model, PPO",
+        "sections": [
+          {
+            "heading": "The three steps (OpenAI ChatGPT figure)",
+            "points": [
+              "Step 1: collect demonstration data and train a supervised policy. A prompt is sampled (e.g. \"Explain reinforcement learning to a 6 year old\"), a labeler demonstrates the desired output, and this data fine-tunes GPT-3.5 with supervised learning (SFT) (slide p.41).",
+              "Step 2: collect comparison data and train a reward model. A prompt and several model outputs (A, B, C, D) are sampled, a labeler ranks them from best to worst (e.g. D > C > A > B), and this data trains the reward model (RM) (slide p.41).",
+              "Step 3: optimise a policy against the reward model using the PPO reinforcement learning algorithm. A new prompt is sampled (e.g. \"Write a story about otters\"), the PPO model is initialised from the supervised policy, the policy generates an output, the RM calculates a reward r_k, and the reward updates the policy using PPO (slide p.41)."
+            ]
+          },
+          {
+            "heading": "Step 1: language model pre-training and SFT",
+            "points": [
+              "Common NLP training techniques: unsupervised sequence prediction, data scraped from the web, and no single answer on the \"best\" model size (slide p.42).",
+              "Dataset: Reddit, other forums, news, books; optionally human-written text from predefined prompts (slide p.42).",
+              "Optional step: pay humans to write responses to existing prompts ($$$); this is considered a high-quality initialisation for RLHF and is called Supervised Fine Tuning (SFT) (slide p.42).",
+              "Model scale table (slide p.42): BERT (2018) 340M params, 3.3B tokens; GPT-1 (2018) 117M, 5B tokens; GPT-2 (2019) 1.5B, 10B tokens; GPT-3 (2020) 175B, 300B tokens; GPT-4 (2023) 1.76 trillion, about 1 trillion tokens (marked with ?); LLaMA (2023) 65B, 1.4 trillion tokens.",
+              "Scale comparisons from the table: GPT-3 has about 117x the parameters of GPT-2 (175 / 1.5); LLaMA is much smaller than GPT-3 (65B vs 175B) but trained on about 4.7x more tokens (1.4T vs 300B)."
+            ]
+          },
+          {
+            "heading": "Step 3: fine-tuning with RL",
+            "points": [
+              "Novel concept: combine a Language Model (LM) with Reinforcement Learning (RL) (slide p.44).",
+              "RL formulation: Policy = the language model; Action = tokens of the LM; State = possible input tokens; Reward = reward model score + prediction shift penalty (slide p.44).",
+              "Procedure: (a) the prompt is given to both the initial LM and the tuned LM; (b) KL divergence calculates the prediction shift penalty; (c) the reward is calculated; (d) gradients are updated with RL PPO (Proximal Policy Optimization) (slide p.44).",
+              "Figure: for prompt x = \"A dog is...\", the initial LM gives base text \"a furry mammal\" and the RLHF-tuned LM gives \"man's best friend\"; the total reward is r_θ(y|x) plus the penalty -λ_KL × D_KL(π_PPO(y|x) || π_base(y|x)), and the update is θ <- θ + ∇_θ J(θ) (slide p.44, p.47).",
+              "Why the KL penalty: it keeps the tuned policy close to the initial model so that it does not drift into text that games the reward model while losing fluency (the slide calls it the \"prediction shift penalty\")."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-rl-ppo",
+        "title": "Reinforcement Learning Basics and PPO",
+        "sections": [
+          {
+            "heading": "RL components and trajectories",
+            "points": [
+              "RL components: Actor / Action, Environment / State, Reward function (illustrated with a game console) (slide p.45).",
+              "Policy π is a network with parameters θ: input = the observation from the environment, output = actions (slide p.45).",
+              "Interaction loop: Env gives s1, Actor outputs a1, Env gives s2, Actor outputs a2, ...; each (state, action) pair produces a reward r1, r2, r3, ... (slide p.45).",
+              "Trajectory τ = {s1, a1, s2, a2, ..., s_T, a_T}; its probability is p_θ(τ) = p(s1) π_θ(a1|s1) p(s2|s1,a1) π_θ(a2|s2) p(s3|s2,a2) π_θ(a3|s3) ... (slide p.45).",
+              "Total (discounted) reward R(τ) = r1 + γ r2 + γ² r3 + ...; e.g. rewards 1, 2, 3 with γ = 0.5 give R = 1 + 1 + 0.75 = 2.75 (slide p.45)."
+            ]
+          },
+          {
+            "heading": "Policy gradient and PPO",
+            "points": [
+              "Policy gradient: ∇_θ J(θ) = E_τ[ R(τ) Σ_{t=1..T} ∇ log π_θ(a_t|s_t) ], then update θ <- θ + η ∇_θ J(θ) (slide p.46).",
+              "Training alternates data collection (sample trajectories τ1, τ2, ... with rewards R(τ1), R(τ2) using one policy) and policy update; every pair (s_t, a_t) in a trajectory is weighted by that trajectory's total reward (slide p.46).",
+              "On-policy learning = learn to play a game by playing it yourself; off-policy learning = learn to play a game by watching others play (slide p.46).",
+              "PPO objective: J^θ'_PPO(θ) = J^θ'(θ) - β × KL(θ, θ'), with J^θ'(θ) = E_{(s_t,a_t) ~ π_θ'}[ (π_θ(a_t|s_t) / π_θ'(a_t|s_t)) × A^θ'(s_t, a_t) ] (slide p.46).",
+              "The ratio π_θ / π_θ' re-weights data collected by an older policy θ' (importance sampling), A^θ' is the advantage, and the β × KL term penalises the new policy for moving too far from θ', which is what makes the update \"proximal\". Example: ratio 0.6/0.3 = 2 and A = 2 gives a term of 4; with β = 0.5 and KL = 0.4 the objective is 4 - 0.2 = 3.8."
+            ]
+          },
+          {
+            "heading": "Evidence that RLHF helps (InstructGPT, Ouyang et al. 2022)",
+            "points": [
+              "Left plot: win rate against SFT 175B versus model size (1.3B, 6B, 175B). Ranking at every size: PPO-ptx and PPO (RLHF models) highest, then SFT (instruction fine-tuned), then GPT (prompted), then GPT (pre-trained) (slide p.48).",
+              "At 175B, PPO-ptx reaches about 0.66 win rate versus SFT 175B; even the 1.3B PPO models (about 0.53) beat the 175B SFT model (0.5 reference line), while plain GPT stays around 0.14 to 0.24 (values read from the plot, slide p.48).",
+              "Right plot: Likert scores of about 2.6 for GPT, 3.5 for GPT (prompted), 4.1 for SFT, 4.8 for PPO-ptx, 3.4 for FLAN and 3.3 for T0 (read from bars, slide p.48).",
+              "Takeaway: RLHF (PPO, PPO-ptx) > instruction fine-tuning (SFT) > prompting > raw pre-trained GPT for human-judged quality; alignment can matter more than raw size."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-distillation-deepseek",
+        "title": "Model Distillation and DeepSeek Efficiency Tricks",
+        "sections": [
+          {
+            "heading": "Knowledge distillation",
+            "points": [
+              "Teacher model: a large, pre-trained, high-performance model capable of accurate predictions; more parameters; computationally expensive to deploy (slide p.49).",
+              "Student model: smaller and more efficient; fewer parameters; lower memory and computational requirements; faster inference time (slide p.49).",
+              "Goal of the student: learn from the teacher and perform similarly well with reduced computational resources (slide p.50).",
+              "The student is trained to mimic the teacher's predictions by minimising the cross-entropy loss between the student's predictions and the teacher's predictions; the same data is fed to both, and the loss is backpropagated only into the student (slide p.49, p.50).",
+              "The student is said to distill the teacher's knowledge so that it generalises well while being more resource efficient (slide p.50)."
+            ]
+          },
+          {
+            "heading": "DeepSeek-V3 architecture (arxiv 2412.19437)",
+            "points": [
+              "Transformer block (repeated L times): RMSNorm, Attention (MLA), residual add, RMSNorm, Feed-Forward Network (DeepSeekMoE), residual add (slide p.51).",
+              "Mixture of Experts (MoE): a neural network architecture containing multiple smaller \"expert\" sub-networks; a gating network (router) determines which small subset of experts is most relevant, and only those experts are activated to process the input (slide p.51).",
+              "DeepSeekMoE figure: N_s shared experts always process the input hidden u_t, while a router selects the Top-K_r of N_r routed experts; their outputs are summed into the output hidden h'_t (slide p.51). Why it matters: total parameters can be huge while compute per token stays small.",
+              "Multi-head Latent Attention (MLA): drastically reduces memory usage by compressing the key and value cache into a much smaller, low-dimensional latent vector (c_t^KV); normal multi-head attention (MHA) stores full key and value vectors for all previous tokens during inference, whereas MLA stores only the compact latent, significantly speeding up generation of new tokens (slide p.52).",
+              "Multi-Token Prediction (MTP): besides the main model's next-token prediction (inputs t1..t4, targets t2..t5, loss L_Main), sequential MTP modules predict further ahead (module 1 targets t3..t6, loss L^1_MTP; module 2 targets t4..t7, loss L^2_MTP); embedding layer and output head are shared, each module has RMSNorm, concatenation, a linear projection and a transformer block, keeping the complete causal chain at each depth (slide p.53).",
+              "DeepSeek also bypasses CUDA and uses PTX programming instead (slide p.53)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-image-generation-intro",
+        "title": "Image Generation: Autoregressive vs Parallel, VAE and GAN",
+        "sections": [
+          {
+            "heading": "Why image generation is hard",
+            "points": [
+              "Text-to-image example: \"A dog is playing on the moon.\" maps to an image; \"a picture is worth a thousand words\", so the model must decide many details not in the prompt: environment, background, type of dog, other objects, etc. (slide p.55).",
+              "Text generation is usually autoregressive: for \"What is stable diffusion?\" the model outputs a distribution over the vocabulary, samples \"stable\", then conditions on it to sample \"diffusion\" (slide p.56).",
+              "The same approach can generate images pixel by pixel (each step is a distribution over pixel colours), but an image of size 256 × 256 has 65,536 pixels, so 65,536 sequential generation steps (slide p.56)."
+            ]
+          },
+          {
+            "heading": "Autoregressive vs parallel image generation",
+            "points": [
+              "Image generation can be autoregressive: an image is downsampled to a grid of pixels (e.g. 3 × 3), flattened into a 1D sequence of 9 pixels, and predicted one pixel at a time (Chen et al., \"Generative pretraining from pixels\", ICML 2020, Image GPT) (slide p.57).",
+              "Image GPT figure: given the top half of an image (cat holding a card, water droplet, elephant, birds), the model completes the bottom half in several plausible ways (slide p.57).",
+              "Autoregressive pixel generation is very slow, which motivates generating all pixels in parallel (slide p.58).",
+              "Issue with naive parallel generation: every pixel is generated independently, so different regions may come from different plausible images (different dogs, moons and backgrounds), producing an incoherent patchwork (slide p.58).",
+              "Why it matters: a good image generator must model dependencies between pixels without paying 65,536 sequential steps."
+            ]
+          },
+          {
+            "heading": "VAE and GAN (figures)",
+            "points": [
+              "VAE figure: Input, Hidden 1, Hidden 2, then codings μ and codings σ; a latent code is formed as μ + σ × Gaussian noise; Hidden 4, Hidden 5, Output reconstruct the input; the coding space shows input-space points mapped to Gaussian regions (slide p.59).",
+              "GAN figure: a Generator turns random noise into a fake image (e.g. a handwritten 8); a Discriminator receives training-set images and fake images and classifies each as Real or Fake (slide p.59)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w8-diffusion",
+        "title": "Diffusion Models: Denoising and Noise Predictor",
+        "sections": [
+          {
+            "heading": "Forward and reverse processes",
+            "points": [
+              "Diffusion idea: repeatedly adding noise turns an image (corgi on a surfboard) into pure noise; repeatedly denoising turns pure noise back into an image (slide p.60).",
+              "Reverse process: start from pure noise and apply the denoise model step 1000, step 999, ..., step 2, step 1; the image gradually emerges (slide p.61).",
+              "Analogy (Michelangelo): \"The sculpture is already complete within the marble block, before I start my work. It is already there. I just have to chisel away the superfluous material.\" The image is \"in\" the noise and denoising removes the excess (slide p.62).",
+              "The same denoise model is reused at every step; it takes two inputs, the current noisy image and the step number (e.g. 1000 for nearly pure noise, 1 for an almost clean image), because the amount of noise differs by step (slide p.63)."
+            ]
+          },
+          {
+            "heading": "Inside the denoise model",
+            "points": [
+              "The denoise model contains a Noise Predictor: given the noisy image and the step number (e.g. 850), it predicts the noise present in the image; the predicted noise is subtracted from the input image to produce the less noisy output (slide p.64).",
+              "Predicting the noise rather than the clean image directly is the design shown; the subtraction step then yields the denoised image.",
+              "Forward process (diffusion process): starting from a clean image, sampled noise is added at step 1, step 2, ..., step 1000 until the image is pure noise (slide p.65)."
+            ]
+          },
+          {
+            "heading": "Training the noise predictor",
+            "points": [
+              "Training pairs are created by the forward process itself: at a given step (e.g. step 2), the noisy image after adding noise plus the step number are the INPUTS, and the noise that was added is the GROUND TRUTH target (slide p.65, p.66).",
+              "The noise predictor (e.g. given a noisy image and step 850) outputs its predicted noise, which is compared against the actual added noise; training minimises the difference (slide p.66).",
+              "Why it works: because we generated the noise ourselves, the target is known exactly, so the noise predictor is trained with supervised learning without any human labels."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ddpm-training",
+        "title": "DDPM Training: Learning the Noise Predictor",
+        "sections": [
+          {
+            "heading": "Algorithm 1 (Ho, Jain and Abbeel, NeurIPS 2020)",
+            "points": [
+              "Denoising Diffusion Probabilistic Models (DDPM) are trained with a simple repeat-until-converged loop (slide p.67, p.68).",
+              "Step 2: sample a clean training image x₀ ~ q(x₀) from the data distribution.",
+              "Step 3: sample a timestep t ~ Uniform({1, ..., T}); in the lecture's running example T = 1000 and a typical sampled step is t = 850.",
+              "Step 4: sample a noise image ε ~ N(0, I) with the same shape as the image.",
+              "Step 5: take a gradient descent step on ∇θ ‖ε − ε_θ(√ᾱ_t x₀ + √(1 − ᾱ_t) ε, t)‖², i.e. a mean-squared error between the true noise and the predicted noise.",
+              "Step 6: repeat until converged. The only learned component is the noise predictor ε_θ, which takes the noisy image and the timestep t as inputs."
+            ]
+          },
+          {
+            "heading": "Anatomy of the loss (slide p.68 annotations)",
+            "points": [
+              "The term √ᾱ_t x₀ + √(1 − ᾱ_t) ε is the noisy image x_t (boxed in red on p.68); it is a weighted mix of the clean image and Gaussian noise.",
+              "ε_θ(x_t, t) is the noise predictor output (boxed in blue); ε itself is the target noise (ground truth).",
+              "The schedule ᾱ₁, ᾱ₂, ..., ᾱ_T gets smaller as t increases, so later timesteps keep less of the clean image (weight √ᾱ_t) and more noise (weight √(1 − ᾱ_t)).",
+              "Worked example: if ᾱ_t = 0.64 the noisy image is 0.8 x₀ + 0.6 ε; a pixel with x₀ = 1.0 and ε = 0.5 becomes 0.8 + 0.3 = 1.1.",
+              "Near the end of the schedule, e.g. ᾱ_t = 0.01, the image weight is only 0.1 while the noise weight is about 0.995, so x_t is almost pure noise."
+            ]
+          },
+          {
+            "heading": "Why this training is efficient (slide p.69 and context p.65-66)",
+            "points": [
+              "Conceptually the forward (diffusion) process adds noise step by step from step 1 to step 1000 (p.65-66), and the noise added at a step is the ground truth for that step's input.",
+              "Algorithm 1 does not simulate all intermediate steps: the closed form √ᾱ_t x₀ + √(1 − ᾱ_t) ε jumps directly to any timestep t in one shot.",
+              "Slide p.69 illustrates the pipeline: given ᾱ₁..ᾱ_T, a clean image x₀ (Lena) and noise ε, sample t, form √ᾱ_t x₀ + √(1 − ᾱ_t) ε, feed the noisy image and t into the Noise Predictor, and compare its output (??) against ε.",
+              "Because t is sampled uniformly, a single network learns to remove noise at every noise level; the timestep input tells it how much noise to expect."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ddpm-sampling",
+        "title": "DDPM Inference: Sampling by Iterative Denoising",
+        "sections": [
+          {
+            "heading": "Algorithm 2 Sampling (slide p.67, p.70)",
+            "points": [
+              "Step 1: start from pure noise x_T ~ N(0, I).",
+              "Step 2: loop t = T, ..., 1 (backwards).",
+              "Step 3: draw z ~ N(0, I) if t > 1, else set z = 0 (no noise is added on the final step).",
+              "Step 4: x_{t−1} = (1/√α_t) (x_t − ((1 − α_t)/√(1 − ᾱ_t)) ε_θ(x_t, t)) + σ_t z.",
+              "Step 6: return x₀, the generated image.",
+              "Slide p.70 diagram: x_t and t enter the Noise Predictor; the predicted noise is scaled by (1 − α_t)/√(1 − ᾱ_t) and subtracted from x_t; the result is scaled by 1/√α_t; then fresh noise z (scaled by σ_t) is added to give x_{t−1}.",
+              "Worked example: α_t = 0.81, ᾱ_t = 0.75, x_t = 2, ε_θ = 1 and z = 0 gives x_{t−1} = (1/0.9)(2 − (0.19/0.5)(1)) = 1.62/0.9 = 1.8."
+            ]
+          },
+          {
+            "heading": "Why add noise σ_t z instead of taking the mean (slide p.71, p.74)",
+            "points": [
+              "The denoise step outputs the mean of a Gaussian; the σ_t z term (boxed in red on p.71) samples around that mean.",
+              "Sampling lets one prompt produce many different plausible outputs (p.71 shows four distinct corgi-on-surfboard images sampled from the same mean).",
+              "Slide p.74: diffusion inference is autoregressive, i.e. Denoise, Sample (add noise), Denoise, Sample (add noise), ... until the final image.",
+              "Slide p.74 compares generations 'With Noise' (sampling) and 'Without Noise' (always taking the mean): without noise the outputs collapse into blurry, similar dark blobs, showing that taking the mean directly yields poor, low-diversity images.",
+              "The same idea applies in text generation: always choosing the most likely option degenerates (see the text sampling topic)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sampling-text-generation",
+        "title": "Sampling in Text Generation and Neural Text Degeneration",
+        "sections": [
+          {
+            "heading": "LLMs also sample (slide p.72)",
+            "points": [
+              "An LLM such as ChatGPT generates text token by token: at each step it outputs a probability distribution over the vocabulary and a token is sampled from it.",
+              "Example: prompt 'What is a generative model?' yields token 'A'; appending it and re-feeding yields 'generative'; the process continues until an END token is produced.",
+              "Like diffusion inference, text generation is autoregressive: each output is appended to the input for the next step.",
+              "The slide poses the question: why can't we just predict the token with the highest probability?"
+            ]
+          },
+          {
+            "heading": "Why not always pick the highest probability (slide p.73, Holtzman et al. 2019)",
+            "points": [
+              "Holtzman et al., 'The curious case of neural text degeneration' (arXiv 1904.09751, 2019) observe that although likelihood training yields high-quality models, maximization-based decoding such as beam search leads to degeneration: bland, incoherent or repetitive-loop text.",
+              "Example: beam search with b = 32 on the unicorn prompt gets stuck repeating 'Universidad Nacional Autónoma de México' over and over.",
+              "Pure sampling on the same prompt avoids repetition but produces incoherent text (e.g. 'Bolivian Cavalleros', 'huge, beautiful, paradisiacal Bolivian linguistic thing').",
+              "The plot 'Beam Search Text is Less Surprising' shows per-token probability: beam search tokens sit near probability 1 throughout, whereas human-written text fluctuates widely between low and high probability.",
+              "Takeaway: human text is not the most probable sequence, so some randomness in decoding is needed to produce natural, diverse output."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "text-conditioned-diffusion",
+        "title": "Adding Text to Diffusion Models",
+        "sections": [
+          {
+            "heading": "Data: text-image pairs (slide p.75)",
+            "points": [
+              "A text-to-image generator maps a prompt (e.g. 'corgi wearing a party hat, sitting on water, one paw in the air, sitting on the surfboard') to an image.",
+              "Training requires paired text and images.",
+              "ImageNet has about 1 M images, shown as a small circle compared with the huge web-scale collection of captioned images (screenshot of an image-text search for 'french cat').",
+              "The point: text-to-image models are trained on far larger image-text datasets than classic labelled datasets such as ImageNet."
+            ]
+          },
+          {
+            "heading": "Conditioning each denoise step on text (slide p.76, p.77)",
+            "points": [
+              "The same prompt is fed into every Denoise step, from Step 1000 down to Step 1, while the image gradually emerges from noise.",
+              "Inside the Denoise Model (p.77), the Noise Predictor now takes three inputs: the noisy image, the text prompt and the timestep (850 in the example).",
+              "The predicted noise is subtracted from the noisy image to give a slightly cleaner image.",
+              "Only the noise predictor changes; the overall denoise-then-sample loop is the same as unconditional DDPM."
+            ]
+          },
+          {
+            "heading": "Training the text-conditioned noise predictor (slide p.78)",
+            "points": [
+              "Forward process as before: add noise to the clean image step by step (Step 1, Step 2, ..., Step 1000).",
+              "For a chosen step, the noisy image and the step number are inputs and the noise added at that step is the ground truth.",
+              "The caption of the training image is an extra input to the noise predictor, so it learns to predict noise consistent with the text.",
+              "Loss: compare the predicted noise (??) with the ground-truth noise, exactly as in Algorithm 1 but conditioned on text."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "stable-diffusion-framework",
+        "title": "Stable Diffusion Framework: Text Encoder, Generation Model, Decoder",
+        "sections": [
+          {
+            "heading": "Three-step framework (slide p.80, p.85, p.89, p.92)",
+            "points": [
+              "Step 1, Text Encoder: converts the prompt into a sequence of embedding vectors.",
+              "Step 2, Generation Model: starts from noise and, conditioned on the text embeddings, produces an intermediate representation, either a compressed latent representation or a small low-resolution image.",
+              "Step 3, Decoder: turns the intermediate representation into the final full-resolution image.",
+              "Slide p.92 asks 'Why not combine step 2 and step 3?'. The slides show that the decoder can be trained without text (auto-encoder on images alone, or low/high-resolution pairs), so the expensive text-conditioned diffusion only needs to run on a much smaller representation.",
+              "The three components are typically trained separately and then plugged together."
+            ]
+          },
+          {
+            "heading": "Generation model in latent space (slide p.86-88)",
+            "points": [
+              "During training an Encoder first maps the clean image to a latent representation (shown as a blurry heat-map-like image).",
+              "Noise is then added to the latent step by step, not to the pixels; the noisy latent is the input and the added noise is the ground truth.",
+              "The Noise Predictor receives the text embeddings, the noisy latent and the step number (50 in the example on p.87) and predicts the noise.",
+              "At inference (p.88, prompt 'Climbing mount Rinjani'), the text embedding is fed to every Denoise step on the latent; after the last step the Decoder converts the clean latent into the final image."
+            ]
+          },
+          {
+            "heading": "Decoder options (slide p.90, p.91)",
+            "points": [
+              "Option 1 (intermediate is a small image): the decoder upsamples a low-resolution input into a high-resolution image; training pairs of small and large images can be made from any image collection (examples: girl with camera, corgi, forest stream, waterfall).",
+              "Option 2 (intermediate is a latent representation): the decoder maps the latent to an image.",
+              "This decoder comes from an auto-encoder: Encoder maps an H × W × 3 image to an h × w × c latent, Decoder maps it back to H × W × 3, trained so the output reconstructs the input (dashed arrow on p.91).",
+              "Because the auto-encoder needs no text, it can be trained on images alone.",
+              "Example calculation: a 512 × 512 × 3 image has 786,432 values; a 64 × 64 × 4 latent has 16,384 values, a 48× reduction, which is why diffusing in latent space is cheaper."
+            ]
+          },
+          {
+            "heading": "Latent Diffusion Model architecture (slide p.93, Rombach et al. CVPR 2022)",
+            "points": [
+              "Pixel space: image x is encoded by ℰ into latent z; the decoder 𝒟 maps the final latent back to the reconstructed image x̃.",
+              "Latent space: the diffusion process turns z into z_T; the denoising U-Net ε_θ is applied (T − 1) times to go from z_T back to z, with skip connections between its down and up paths.",
+              "Conditioning: a semantic map, text, representations or images are encoded by a domain-specific encoder τ_θ and injected via cross-attention blocks (Q, K, V) inside the U-Net, or by concatenation (switch).",
+              "Cross-attention: Attention(Q, K, V) = softmax(QKᵀ/√d) V with Q = W_Q⁽ⁱ⁾ φᵢ(z_t) from the image latent and K = W_K⁽ⁱ⁾ τ_θ(y), V = W_V⁽ⁱ⁾ τ_θ(y) from the condition y.",
+              "Training objective: L_LDM = E over ℰ(x), y, ε ~ N(0, 1), t of ‖ε − ε_θ(z_t, t, τ_θ(y))‖²₂, i.e. the DDPM noise-prediction loss applied to latents and conditioned on τ_θ(y)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "evaluating-text-to-image",
+        "title": "Evaluating Generated Images: FID and CLIP Score",
+        "sections": [
+          {
+            "heading": "Fréchet Inception Distance (slide p.81, p.82)",
+            "points": [
+              "Pass images through a pretrained CNN f to obtain feature vectors f(x), f(x′) ∈ Rᵏ for real images x and generated images x′.",
+              "Fit two multivariate Gaussians N(μ, Σ) and N(μ′, Σ′) to the real and generated features respectively.",
+              "Compute d_F² = ‖μ − μ′‖²₂ + tr(Σ + Σ′ − 2(Σ^½ Σ′ Σ^½)^½).",
+              "FID is the Fréchet distance between the two Gaussians; smaller is better (generated features look like real ones).",
+              "Slide p.82 figure: blue points (real images) and orange points (generated images) form two overlapping ellipses; FID measures how far apart these clouds are. 'We need a lot of samples!' to estimate the means and covariances reliably.",
+              "1-D worked example: μ = 0, σ² = 1 vs μ′ = 2, σ′² = 4 gives d_F² = (0 − 2)² + (1 + 4 − 2√4) = 4 + 1 = 5; in 1-D this reduces to (μ − μ′)² + (σ − σ′)²."
+            ]
+          },
+          {
+            "heading": "CLIP score (slide p.83, Radford et al. ICML 2021)",
+            "points": [
+              "CLIP (Contrastive Language-Image Pre-Training) has a Text Encoder and an Image Encoder that map text and images into a shared embedding space.",
+              "If the prompt matches the image (corgi prompt with corgi image), the two embeddings are close, giving a higher CLIP score.",
+              "If they do not match (a man in sunglasses on a mountain prompt with the corgi image), the embeddings are far apart, giving a lower CLIP score.",
+              "CLIP was trained using 400 million image-text pairs.",
+              "FID measures image quality/realism against real images, while CLIP score measures text-image alignment; the two are used together."
+            ]
+          },
+          {
+            "heading": "Impact of model sizes (slide p.84, Saharia et al. NeurIPS 2022)",
+            "points": [
+              "Plots show FID-10K (y-axis, lower is better) against CLIP score (x-axis, higher is better), so the best curves sit toward the bottom-right.",
+              "(a) Text encoder size: T5-Small, T5-Large, T5-XL, T5-XXL. Larger text encoders shift the curve right and down: best FID roughly 14 for T5-Small versus about 10.7 for T5-XXL, with CLIP scores reaching about 0.28+.",
+              "(b) U-Net size: 300M, 500M, 1B, 2B. The curves nearly overlap (best FID about 9.5 for all), so scaling the U-Net brings only small gains.",
+              "Conclusion: scaling the text encoder improves text-to-image quality and alignment much more than scaling the image generation U-Net.",
+              "Each curve shows a trade-off: pushing CLIP score higher eventually causes FID to rise steeply."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "genai-applications-wrapup",
+        "title": "Applications and Wrap-up: StyleDrop, Prompt Engineering, Learning ML",
+        "sections": [
+          {
+            "heading": "StyleDrop and PromptBase (slide p.94, p.95)",
+            "points": [
+              "StyleDrop (Google Research, Sohn et al.) performs text-to-image generation in any style: given a single style reference image (e.g. 'Colorful flowers in [V] style'), it generates new subjects such as a baby penguin, banana, bench, boat, robot or avocado in that same style.",
+              "PromptBase is a marketplace where prompts for models such as Midjourney and GPT are sold (e.g. 'Vibrant Warm Painted Portraits' for $2.99).",
+              "Prompt engineering is the process of designing and refining prompts or instructions given to a language model, such as ChatGPT, to elicit desired responses.",
+              "It involves carefully crafting the input to achieve specific outcomes or to guide the model's behaviour; the existence of a prompt marketplace shows good prompts have economic value."
+            ]
+          },
+          {
+            "heading": "How to learn machine learning (slide p.96)",
+            "points": [
+              "The lecture asks ChatGPT and DeepSeek how one should learn ML given rapid progress; both give 10-step answers.",
+              "ChatGPT: foundational knowledge, basic ML algorithms, hands-on practice, specializations, latest research, frameworks and tools, community, cutting-edge tech, real-world applications, mastering the iterative process.",
+              "DeepSeek: strong foundation, basics of ML, deep learning, trends, projects, specialize, growth mindset, community, ethics and responsible AI, iterate and adapt.",
+              "Common themes: build fundamentals first, practise on projects, keep up with research, engage with the community and iterate continuously; DeepSeek additionally stresses ethics and responsible AI."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
