@@ -16,14 +16,44 @@ export interface KahootSet {
 
 export const kahootSets: readonly KahootSet[] = [
   {
+    id: "w1",
+    title: "Week 1: ML basics & Bayes",
+    blurb: "Quick-fire traps and mental maths on the ML landscape, Bayes theorem, MLE vs MAP, Gaussian classifiers, naive Bayes, Laplace smoothing and the Week 1 naive Bayes lab.",
+  },
+  {
+    id: "w1a",
+    title: "Week 1a: Probability, linear algebra & information",
+    blurb: "Traps and quick calculations on conditional probability, projections, Mahalanobis distance, PCA, entropy, cross-entropy, KL divergence and mutual information.",
+  },
+  {
+    id: "w2",
+    title: "Week 2: Regression & regularisation",
+    blurb: "Quick-fire checks on MSE/RMSE/R2, polynomial features, gradient descent, bias-variance and Ridge/Lasso, plus the regression lab.",
+  },
+  {
+    id: "w3",
+    title: "Week 3: Logistic regression & metrics",
+    blurb: "Odds, sigmoid, decision boundary, softmax, confusion-matrix metrics, thresholds and ROC/AUC, plus the logistic lab.",
+  },
+  {
     id: 'instructor-dt',
     title: 'Instructor Kahoot: Decision Trees',
     blurb: 'The 5 decision-tree questions played in class, with the answers and worked entropy from the instructor note (Week 5 folder).',
   },
   {
+    id: "w4",
+    title: "Week 4: Trees & ensembles",
+    blurb: "Gini, gain ratio, thresholds, pruning, grid/random search, CV splitters, OOB, random forest, AdaBoost, gradient boosting, stacking and feature engineering.",
+  },
+  {
     id: 'instructor',
     title: 'Instructor Kahoot: Ensembles & NN',
     blurb: 'The 9 questions played in class, with the answers and explanations from the instructor note (Week 6 folder).',
+  },
+  {
+    id: "w5",
+    title: "Week 5: Neural networks",
+    blurb: "Activations, MLP parameter counts, output-layer gradients, gradient descent variants, dropout, early stopping, initialisation and vanishing/exploding gradients.",
   },
   {
     id: 'cnn',
@@ -34,6 +64,11 @@ export const kahootSets: readonly KahootSet[] = [
     id: 'cnn-lab',
     title: 'CNN & Filter Labs',
     blurb: 'Quick-fire questions on the Week 6 notebooks: Keras MNIST models and the numpy image-filter lab.',
+  },
+  {
+    id: "w7",
+    title: "Week 7: Attention & Transformers",
+    blurb: "Quick-fire checks on RNNs, LSTM gates, seq2seq, self-attention, masking, multi-head attention, BERT and ViT.",
   },
   {
     id: 'genai',
@@ -1303,4 +1338,1718 @@ const week8: KahootQuestion[] = [
   }
 ]
 
-export const kahootQuestions: readonly KahootQuestion[] = [...instructorDt, ...instructor, ...week6, ...week8]
+const review: KahootQuestion[] = [
+  {
+    "id": "k-w1-1",
+    "set": "w1",
+    "question": "Spam filter in Mitchell's <T, P, E>: 'percentage of emails correctly classified' is which part?",
+    "options": [
+      "Performance measure P",
+      "Task T",
+      "Experience E"
+    ],
+    "answerIndex": 0,
+    "explanation": "P is how performance is measured. T is categorising emails as spam or legitimate, and E is the labelled email database.",
+    "ref": "01_introduction.pdf, Mitchell definition"
+  },
+  {
+    "id": "k-w1-2",
+    "set": "w1",
+    "question": "Training data includes desired outputs for only a few examples. Is this unsupervised learning?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "A few desired outputs makes it semi-supervised learning. Unsupervised learning has no desired outputs at all.",
+    "ref": "01_introduction.pdf, types of ML"
+  },
+  {
+    "id": "k-w1-3",
+    "set": "w1",
+    "question": "Predicting a person's body weight (a real number) from height is which task?",
+    "options": [
+      "Binary classification",
+      "Clustering",
+      "Regression",
+      "Multi-class classification"
+    ],
+    "answerIndex": 2,
+    "explanation": "A continuous output means regression (slide example wgt = 80 + 2*hgt). Classification needs a discrete output, and clustering has no labels.",
+    "ref": "01_introduction.pdf, regression"
+  },
+  {
+    "id": "k-w1-4",
+    "set": "w1",
+    "question": "Does a generative classifier estimate p(y|x) directly, without modelling x?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "A generative model fits the joint p(x, y) (a blob per class) and then infers p(y|x) with Bayes rule. Estimating p(y|x) directly is what a discriminative model does.",
+    "ref": "01_introduction.pdf, discriminative vs generative"
+  },
+  {
+    "id": "k-w1-5",
+    "set": "w1",
+    "question": "Which interaction mode lets the learner pick an x and query its label y?",
+    "options": [
+      "Batch learning",
+      "Online learning",
+      "Reinforcement learning",
+      "Active learning"
+    ],
+    "answerIndex": 3,
+    "explanation": "Active learning queries y for chosen x and then improves the model (like asking questions in class). Online learning only receives the next x in sequence.",
+    "ref": "01_introduction.pdf, interaction modes"
+  },
+  {
+    "id": "k-w1-6",
+    "set": "w1",
+    "question": "P(D|h) = 0.8, P(h) = 0.01, P(D) = 0.04. What is the posterior P(h|D)?",
+    "options": [
+      "0.2",
+      "0.008",
+      "0.32",
+      "0.8"
+    ],
+    "answerIndex": 0,
+    "explanation": "P(h|D) = 0.8 x 0.01 / 0.04 = 0.2. Answering 0.8 confuses the likelihood with the posterior.",
+    "ref": "01_bayesian_learning.pdf, Bayes theorem"
+  },
+  {
+    "id": "k-w1-7",
+    "set": "w1",
+    "question": "Meningitis causes stiff neck 50% of the time. Is P(meningitis | stiff neck) also about 50%?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "With P(M) = 1/50,000 and P(S) = 1/20, P(M|S) = 0.5 x (1/50,000) / (1/20) = 0.0002. The tiny prior dominates, so P(S|M) and P(M|S) are very different.",
+    "ref": "01_bayesian_learning.pdf, meningitis example"
+  },
+  {
+    "id": "k-w1-8",
+    "set": "w1",
+    "question": "With a uniform prior over all hypotheses, MAP and MLE pick the same hypothesis.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "MAP maximises p(D|h)p(h). If p(h) is the same constant for every h, it does not change the argmax, so MAP reduces to MLE.",
+    "ref": "01_bayesian_learning.pdf, MAP vs MLE"
+  },
+  {
+    "id": "k-w1-9",
+    "set": "w1",
+    "question": "To find h_MAP, must you compute the evidence p(D)?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "p(D) is the same for every hypothesis, so h_MAP = argmax p(D|h)p(h). You only need p(D) to get normalised posterior values, not to rank hypotheses.",
+    "ref": "01_bayesian_learning.pdf, MAP"
+  },
+  {
+    "id": "k-w1-10",
+    "set": "w1",
+    "question": "MLE variance (divide by n) of the data {1, 3, 5, 7}?",
+    "options": [
+      "4",
+      "6.67",
+      "5",
+      "20"
+    ],
+    "answerIndex": 2,
+    "explanation": "Mean is 4, squared deviations are 9+1+1+9 = 20, and 20/4 = 5. Dividing by n-1 gives 6.67, but the MLE uses 1/n.",
+    "ref": "01_bayesian_learning.pdf, MLE for a normal"
+  },
+  {
+    "id": "k-w1-11",
+    "set": "w1",
+    "question": "If 5 samples are enough in 1-D, how many are needed to cover 4-D equally densely?",
+    "options": [
+      "20",
+      "125",
+      "1024",
+      "625"
+    ],
+    "answerIndex": 3,
+    "explanation": "The requirement grows as 5^d, so 5^4 = 625. Multiplying 5 by 4 (20) is the linear trap; the curse of dimensionality is exponential.",
+    "ref": "01_bayesian_learning.pdf, curse of dimensionality"
+  },
+  {
+    "id": "k-w1-12",
+    "set": "w1",
+    "question": "Too few samples make the class covariance matrix singular. The slide's fix?",
+    "options": [
+      "Diagonalize the covariance",
+      "Add more classes",
+      "Use a uniform prior",
+      "Drop the class prior"
+    ],
+    "answerIndex": 0,
+    "explanation": "Keeping only the diagonal (per-feature variances) avoids inverting a singular full matrix. This is exactly the naive Bayes conditional-independence assumption.",
+    "ref": "01_bayesian_learning.pdf, covariance singularity"
+  },
+  {
+    "id": "k-w1-13",
+    "set": "w1",
+    "question": "Does the class with the highest likelihood P(x|C) always win in a Bayes classifier?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "The decision uses P(x|C)P(C). In the lab, class 0 had likelihood 0.756 vs 0.448, but priors 0.2 vs 0.4 flipped the posterior to class 1 (0.541 vs 0.456).",
+    "ref": "Week 1 lab, toy GaussianNB"
+  },
+  {
+    "id": "k-w1-14",
+    "set": "w1",
+    "question": "Car class C1: prior 0.5, P(white|C1) = 0.4, P(petrol|C1) = 0.9. Unnormalised NB score for a white petrol car?",
+    "options": [
+      "0.36",
+      "0.45",
+      "0.18",
+      "1.8"
+    ],
+    "answerIndex": 2,
+    "explanation": "Naive Bayes multiplies prior and per-feature likelihoods: 0.5 x 0.4 x 0.9 = 0.18. Forgetting the prior gives 0.36.",
+    "ref": "01_bayesian_learning.pdf, car example"
+  },
+  {
+    "id": "k-w1-15",
+    "set": "w1",
+    "question": "Naive Bayes assumes the features are independent of each other, ignoring the class.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "The assumption is conditional independence given the class, so p(x|C) is the product of p(x_j|C). Features may still be correlated overall.",
+    "ref": "01_bayesian_learning.pdf, naive Bayes"
+  },
+  {
+    "id": "k-w1-16",
+    "set": "w1",
+    "question": "Without smoothing, can one unseen test word make P(x|C_k) zero for every class?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 0,
+    "explanation": "An unseen word has count 0 in every class, so p(word|C_k) = 0 and the whole product collapses to 0. Laplace (add-one) smoothing prevents this.",
+    "ref": "01_bayesian_learning.pdf, Laplace smoothing"
+  },
+  {
+    "id": "k-w1-17",
+    "set": "w1",
+    "question": "Add-one smoothing: word count 0 in class k, 90 words in class k, |V| = 10. p(word|C_k)?",
+    "options": [
+      "0.01",
+      "0",
+      "0.011",
+      "0.1"
+    ],
+    "answerIndex": 0,
+    "explanation": "(0 + 1) / (90 + 10) = 1/100 = 0.01. Forgetting to add |V| to the denominator gives 1/90 = 0.011.",
+    "ref": "01_bayesian_learning.pdf, Laplace smoothing"
+  },
+  {
+    "id": "k-w1-18",
+    "set": "w1",
+    "question": "Die with P(1) = 0.5, other faces 0.1 each. Is P(6,1,1,2) different from P(2,1,6,1)?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "Both are 0.1 x 0.5 x 0.5 x 0.1 = 0.0025. Order does not change the product, which is why a sentence can be treated as a bag of words.",
+    "ref": "01_bayesian_learning.pdf, multinomial distribution"
+  },
+  {
+    "id": "k-w1-19",
+    "set": "w1",
+    "question": "Coin with P(H) = 0.6, flipped twice. Probability of exactly one head?",
+    "options": [
+      "0.24",
+      "0.36",
+      "0.48",
+      "0.6"
+    ],
+    "answerIndex": 2,
+    "explanation": "HT and TH each have probability 0.6 x 0.4 = 0.24, so the total is 0.48. Answering 0.24 counts only one ordering.",
+    "ref": "01_bayesian_learning.pdf, binomial coin example"
+  },
+  {
+    "id": "k-w1-20",
+    "set": "w1",
+    "question": "In the Week 1 lab, the occupancy GaussianNB was trained only on the 200-row balanced sample.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "The 100 + 100 balanced sample was only used to draw readable pairplots. The model was fitted on all 8,143 training rows.",
+    "ref": "Week 1 lab, occupancy data"
+  },
+  {
+    "id": "k-w1a-1",
+    "set": "w1a",
+    "question": "Two fair coins. Given at least one is heads, what is P(both heads)?",
+    "options": [
+      "1/4",
+      "1/2",
+      "3/4",
+      "1/3"
+    ],
+    "answerIndex": 3,
+    "explanation": "P(HH | at least one H) = (1/4) / (3/4) = 1/3. Answering 1/2 wrongly treats it as 'the other coin is heads'.",
+    "ref": "01a_conditional_prob.pdf, conditional probability"
+  },
+  {
+    "id": "k-w1a-2",
+    "set": "w1a",
+    "question": "If events A and B are independent, must P(A and B) be 0?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "Independence means P(A|B) = P(A), so P(A and B) = P(A)P(B), which is usually non-zero. P(A and B) = 0 describes mutually exclusive events, and those are dependent whenever both have non-zero probability.",
+    "ref": "01a_conditional_prob.pdf, independence"
+  },
+  {
+    "id": "k-w1a-3",
+    "set": "w1a",
+    "question": "P(A) = 0.5, P(B) = 0.4, P(A and B) = 0.2. What is P(A or B)?",
+    "options": [
+      "0.7",
+      "0.9",
+      "0.2",
+      "1.1"
+    ],
+    "answerIndex": 0,
+    "explanation": "Inclusion-exclusion: 0.5 + 0.4 - 0.2 = 0.7. Just adding (0.9) double-counts the overlap.",
+    "ref": "01a_conditional_prob.pdf, axioms"
+  },
+  {
+    "id": "k-w1a-4",
+    "set": "w1a",
+    "question": "Joint table row Y = y4 is (8/32, 0, 0, 0) over x1..x4. What is P(X = x1 | Y = y4)?",
+    "options": [
+      "8/32",
+      "1/4",
+      "1",
+      "1/2"
+    ],
+    "answerIndex": 2,
+    "explanation": "P(x1|y4) = (8/32) / P(y4) = (8/32) / (8/32) = 1. The trap is reporting the joint 8/32 instead of dividing by the marginal.",
+    "ref": "01a_conditional_prob.pdf, 32nds table"
+  },
+  {
+    "id": "k-w1a-5",
+    "set": "w1a",
+    "question": "w = (3, 4). A point x has w.x = 10. True distance of its projection along w?",
+    "options": [
+      "10",
+      "2.5",
+      "50",
+      "2"
+    ],
+    "answerIndex": 3,
+    "explanation": "|w| = 5, so the distance is w.x / |w| = 10/5 = 2. w.x is a distance only when w is a unit vector.",
+    "ref": "01b_linear_algebra.pdf, unit vectors"
+  },
+  {
+    "id": "k-w1a-6",
+    "set": "w1a",
+    "question": "Is the gap between hyperplanes w.x = 0 and w.x = 1 always equal to 1?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "The gap is 1/|w|, which equals 1 only when |w| = 1. This is why w is normalised to a unit vector.",
+    "ref": "01b_linear_algebra.pdf, hyperplanes"
+  },
+  {
+    "id": "k-w1a-7",
+    "set": "w1a",
+    "question": "Two points on the same contour of a correlated 2-D Gaussian always have equal Euclidean distance to the mean.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "They have equal Mahalanobis distance, not Euclidean distance. Only after translation, rotation and scaling do they become equidistant.",
+    "ref": "01b_linear_algebra.pdf, Mahalanobis distance"
+  },
+  {
+    "id": "k-w1a-8",
+    "set": "w1a",
+    "question": "In PCA, the principal components are...",
+    "options": [
+      "Top eigenvectors of the covariance",
+      "Rows of the data matrix",
+      "Smallest-eigenvalue eigenvectors",
+      "The class means"
+    ],
+    "answerIndex": 0,
+    "explanation": "PCA centres the data, forms Sigma = (1/n) X^T X, and keeps the eigenvectors with the largest eigenvalues. Smallest-eigenvalue directions carry the least variance.",
+    "ref": "01b_linear_algebra.pdf, PCA algorithm"
+  },
+  {
+    "id": "k-w1a-9",
+    "set": "w1a",
+    "question": "8 equally likely ball colours. Entropy in bits?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "8"
+    ],
+    "answerIndex": 2,
+    "explanation": "Uniform over n outcomes gives log2(n) = log2(8) = 3 bits, i.e. 3 fingers. 8 is the number of outcomes, not the bits.",
+    "ref": "01c_info_theory.pdf, entropy"
+  },
+  {
+    "id": "k-w1a-10",
+    "set": "w1a",
+    "question": "Entropy of a ball with P(red) = 1/2, P(blue) = 1/4, P(green) = 1/4?",
+    "options": [
+      "1.5",
+      "1",
+      "1.58",
+      "2"
+    ],
+    "answerIndex": 0,
+    "explanation": "(1/2)(1) + (1/4)(2) + (1/4)(2) = 1.5 bits. 1.58 = log2(3) would only hold if the three colours were equally likely.",
+    "ref": "01c_info_theory.pdf, expected uncertainty"
+  },
+  {
+    "id": "k-w1a-11",
+    "set": "w1a",
+    "question": "Can a 6-sided die have lower entropy than a fair coin?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 0,
+    "explanation": "A fair die has log2(6) bits, but a biased die (e.g. 0.95 on one face, 0.01 on the others) has about 0.40 bits, below the coin's 1 bit.",
+    "ref": "01c_info_theory.pdf, multinomial entropy"
+  },
+  {
+    "id": "k-w1a-12",
+    "set": "w1a",
+    "question": "Model gives the true class probability 0.25. Cross-entropy loss (log base 2)?",
+    "options": [
+      "0.25",
+      "1",
+      "2",
+      "4"
+    ],
+    "answerIndex": 2,
+    "explanation": "With a one-hot p, H(p, q) = -log2(0.25) = 2. Lower probability on the true class gives a higher penalty.",
+    "ref": "01c_info_theory.pdf, cross entropy as loss"
+  },
+  {
+    "id": "k-w1a-13",
+    "set": "w1a",
+    "question": "H(p, q) = 2.5 bits and H(p) = 2.25 bits. What is D_KL(p || q)?",
+    "options": [
+      "0.9",
+      "1.11",
+      "4.75",
+      "0.25"
+    ],
+    "answerIndex": 3,
+    "explanation": "KL divergence is the gap H(p, q) - H(p) = 2.5 - 2.25 = 0.25. It is a difference, not a ratio or a sum.",
+    "ref": "01c_info_theory.pdf, KL divergence"
+  },
+  {
+    "id": "k-w1a-14",
+    "set": "w1a",
+    "question": "If X and Y are independent, is the mutual information I(X;Y) equal to H(X)?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "Independence gives I(X;Y) = 0 because H(X|Y) = H(X). I(X;Y) = H(X) holds when Y fully determines X.",
+    "ref": "01c_info_theory.pdf, mutual information"
+  },
+  {
+    "id": "k-w2-1",
+    "set": "w2",
+    "question": "Residuals are 1, -1, 2, -2. What is the MSE?",
+    "options": [
+      "0",
+      "1.5",
+      "10",
+      "2.5"
+    ],
+    "answerIndex": 3,
+    "explanation": "MSE = (1+1+4+4)/4 = 2.5. Answering 0 means you summed raw residuals, which cancel; that is why the error is squared.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-2",
+    "set": "w2",
+    "question": "Residuals are 3, -3, 3, -3. What is the RMSE?",
+    "options": [
+      "3",
+      "0",
+      "9",
+      "12"
+    ],
+    "answerIndex": 0,
+    "explanation": "MSE = 36/4 = 9 and RMSE = sqrt(9) = 3, back in the units of y. 9 is the MSE, not the RMSE.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-3",
+    "set": "w2",
+    "question": "100 houses, 4 features, plus the x0 = 1 column. Shape of X in the normal equation?",
+    "options": [
+      "4 x 100",
+      "100 x 4",
+      "100 x 5",
+      "5 x 5"
+    ],
+    "answerIndex": 2,
+    "explanation": "X is n x (m+1): one row per example and one column per feature plus the constant x0 = 1 that absorbs the intercept.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-4",
+    "set": "w2",
+    "question": "SST = 200 and SSE = 50. What is R2?",
+    "options": [
+      "0.25",
+      "0.75",
+      "0.5",
+      "4"
+    ],
+    "answerIndex": 1,
+    "explanation": "R2 = 1 - SSE/SST = 1 - 50/200 = 0.75. 0.25 is SSE/SST, the unexplained fraction.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-5",
+    "set": "w2",
+    "question": "The house model scored R2 = 0.73 on its training data. Will its test R2 be about the same?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. In the lab the same model scored only 0.42 on the held-out 20%; in-sample R2 is optimistic, so always score on a test split.",
+    "ref": "Week 2 lab"
+  },
+  {
+    "id": "k-w2-6",
+    "set": "w2",
+    "question": "PolynomialFeatures(2) on 2 input features gives how many columns (bias included)?",
+    "options": [
+      "4",
+      "5",
+      "9",
+      "6"
+    ],
+    "answerIndex": 3,
+    "explanation": "Columns are 1, x0, x1, x0^2, x0*x1, x1^2 = 6. Forgetting the bias column or the cross term gives 5 or 4.",
+    "ref": "Week 2 lab"
+  },
+  {
+    "id": "k-w2-7",
+    "set": "w2",
+    "question": "Polynomial regression fits a curved line. Is it still a linear model?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 0,
+    "explanation": "Yes. It is linear in the weights: expand x to (x, x^2, ...) and fit ordinary linear regression on the new features.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-8",
+    "set": "w2",
+    "question": "Gradient descent: w = 5, learning rate 0.1, dJ/dw = 20. New w?",
+    "options": [
+      "3",
+      "7",
+      "4.9",
+      "25"
+    ],
+    "answerIndex": 0,
+    "explanation": "w <- w - alpha * gradient = 5 - 0.1*20 = 3. Answering 7 means you moved uphill (added the gradient).",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-9",
+    "set": "w2",
+    "question": "If the learning rate is too large, gradient descent simply converges more slowly.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. A too-large alpha overshoots, J may not decrease every iteration and can diverge. Slow convergence is the too-small alpha problem.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-10",
+    "set": "w2",
+    "question": "You may update w0 first, then use the new w0 to compute the gradient for w1.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. All parameters must be updated simultaneously, using partial derivatives computed at the same current point.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-11",
+    "set": "w2",
+    "question": "The linear regression MSE cost is convex. Can gradient descent get stuck in a bad local minimum?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. For a convex function every local minimum is a global minimum; sensitivity to initialization only matters for non-convex costs.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-12",
+    "set": "w2",
+    "question": "Mini-batch gradient descent with a batch of just 1 example is called...?",
+    "options": [
+      "Batch gradient descent",
+      "Normal equation",
+      "Stochastic gradient descent",
+      "Newton's method"
+    ],
+    "answerIndex": 2,
+    "explanation": "SGD is the extreme case k = 1 of sampling a subset of the summand gradients each update.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-13",
+    "set": "w2",
+    "question": "Why prefer gradient descent over w = (XtX)^-1 Xt y on big problems?",
+    "options": [
+      "The normal equation gives wrong answers",
+      "Inverting XtX is costly with many features",
+      "Gradient descent is always exact",
+      "The normal equation needs a learning rate"
+    ],
+    "answerIndex": 1,
+    "explanation": "The closed form is exact but needs a matrix inverse that is expensive for many features; the slide says the formulae only show that complexity.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-14",
+    "set": "w2",
+    "question": "Training error keeps falling as polynomial degree rises. Does true (test) error keep falling too?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. Training error falls monotonically but true error is U-shaped: past the best model, extra complexity overfits.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-15",
+    "set": "w2",
+    "question": "The lab's constant mean predictor (m1) shows which error pattern?",
+    "options": [
+      "Low bias, low variance",
+      "Low bias, high variance",
+      "High bias, high variance",
+      "High bias, low variance"
+    ],
+    "answerIndex": 3,
+    "explanation": "Its errors were tightly clustered but far from the origin: consistent yet systematically wrong. The degree-4 model was the high-variance one.",
+    "ref": "Week 2 lab"
+  },
+  {
+    "id": "k-w2-16",
+    "set": "w2",
+    "question": "Which regulariser can set coefficients exactly to zero?",
+    "options": [
+      "Lasso (L1)",
+      "Ridge (L2)",
+      "Neither",
+      "Plain least squares"
+    ],
+    "answerIndex": 0,
+    "explanation": "Lasso's diamond-shaped constraint has corners on the axes; at alpha = 1 it zeroed 7 of 10 diabetes coefficients while Ridge kept all 10 non-zero.",
+    "ref": "Week 2 lab"
+  },
+  {
+    "id": "k-w2-17",
+    "set": "w2",
+    "question": "w = (3, -4). What is the L1 norm ||w||1?",
+    "options": [
+      "-1",
+      "5",
+      "7",
+      "25"
+    ],
+    "answerIndex": 2,
+    "explanation": "L1 = |3| + |-4| = 7. 5 is the L2 norm and 25 is the squared L2 norm used by Ridge; -1 forgets the absolute value.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w2-18",
+    "set": "w2",
+    "question": "Raising alpha in Ridge or Lasso gives a more complex model.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. Larger alpha penalises ||w|| more, shrinking weights toward zero: a simpler model with more bias and less variance.",
+    "ref": "Week 2 regression"
+  },
+  {
+    "id": "k-w3-1",
+    "set": "w3",
+    "question": "A model gives p(positive) = 0.8. What are the odds?",
+    "options": [
+      "0.8",
+      "1.25",
+      "0.25",
+      "4"
+    ],
+    "answerIndex": 3,
+    "explanation": "Odds = p/(1-p) = 0.8/0.2 = 4, i.e. 4:1. 0.25 is the odds of the negative class.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-2",
+    "set": "w3",
+    "question": "sigmoid(2) is about 0.88. What is sigmoid(-2)?",
+    "options": [
+      "0.12",
+      "-0.88",
+      "0.5",
+      "0.88"
+    ],
+    "answerIndex": 0,
+    "explanation": "sigmoid(-x) = 1 - sigmoid(x) = 1 - 0.88 = 0.12. The sigmoid is never negative.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-3",
+    "set": "w3",
+    "question": "The sigmoid output is non-linear. Is logistic regression's decision boundary non-linear?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. The boundary is where the odds equal 1, i.e. wTx = 0, which is a straight line (hyperplane).",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-4",
+    "set": "w3",
+    "question": "1-D logistic regression with w = 2, b = -6. At what x is the decision boundary?",
+    "options": [
+      "-3",
+      "0",
+      "3",
+      "6"
+    ],
+    "answerIndex": 2,
+    "explanation": "The boundary is wx + b = 0, so 2x - 6 = 0 gives x = 3, where p = 0.5.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-5",
+    "set": "w3",
+    "question": "Like linear regression, the logistic loss has a closed-form solution.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. The logistic loss is convex but has no closed form, so it is minimised with gradient descent.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-6",
+    "set": "w3",
+    "question": "Why is MSE a poor objective for classification with labels +1/-1?",
+    "options": [
+      "It cannot be minimised",
+      "It penalises confidently correct predictions",
+      "It ignores wrong predictions",
+      "It only works for K > 2 classes"
+    ],
+    "answerIndex": 1,
+    "explanation": "A correct prediction with |wTx| far beyond 1 still incurs large squared error, so MSE punishes being confidently right.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-7",
+    "set": "w3",
+    "question": "Softmax over four classes with scores [3, 3, 3, 3]. Probability of class 1?",
+    "options": [
+      "0",
+      "0.75",
+      "3",
+      "0.25"
+    ],
+    "answerIndex": 3,
+    "explanation": "Equal scores give equal exponentials, so each class gets 1/4 = 0.25 regardless of the score value.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-8",
+    "set": "w3",
+    "question": "One-vs-All on a 4-class problem trains how many binary classifiers?",
+    "options": [
+      "4",
+      "1",
+      "3",
+      "6"
+    ],
+    "answerIndex": 0,
+    "explanation": "One classifier per class (class k vs the rest), then predict the class with the highest probability. 6 would be one-vs-one pairs.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-9",
+    "set": "w3",
+    "question": "TP = 6, FP = 2, FN = 4, TN = 8. Precision?",
+    "options": [
+      "0.6",
+      "0.7",
+      "0.75",
+      "0.8"
+    ],
+    "answerIndex": 2,
+    "explanation": "Precision = TP/(TP+FP) = 6/8 = 0.75. 0.6 is the recall, 0.7 the accuracy.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-10",
+    "set": "w3",
+    "question": "TP = 6, FP = 2, FN = 4, TN = 8. Recall?",
+    "options": [
+      "0.7",
+      "0.6",
+      "0.75",
+      "0.8"
+    ],
+    "answerIndex": 1,
+    "explanation": "Recall = TP/(TP+FN) = 6/10 = 0.6. Using FP in the denominator gives the precision 0.75 instead.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-11",
+    "set": "w3",
+    "question": "Precision = 0.6 and recall = 0.4. What is F1?",
+    "options": [
+      "0.24",
+      "0.4",
+      "0.5",
+      "0.48"
+    ],
+    "answerIndex": 3,
+    "explanation": "F1 = 2PR/(P+R) = 2*0.24/1.0 = 0.48. The arithmetic mean 0.5 is wrong because F1 is the harmonic mean.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-12",
+    "set": "w3",
+    "question": "99% of transactions are legitimate. Does 99% accuracy show a good fraud detector?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. Predicting 'not fraud' for everything already scores 99% with zero recall; use precision and recall on imbalanced data.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-13",
+    "set": "w3",
+    "question": "Raise the decision threshold from 0.5 to 0.9. Does recall usually go up?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. Fewer samples are predicted positive, so recall falls or stays the same while precision typically rises.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-14",
+    "set": "w3",
+    "question": "Which ROC point represents perfect classification?",
+    "options": [
+      "(0, 1)",
+      "(0, 0)",
+      "(1, 1)",
+      "(1, 0)"
+    ],
+    "answerIndex": 0,
+    "explanation": "ROC plots TPR (y) against FPR (x); perfect is FPR = 0 and TPR = 1, the upper-left corner.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-15",
+    "set": "w3",
+    "question": "A classifier has ROC AUC = 0.5. This means it is...",
+    "options": [
+      "Perfect",
+      "Always wrong",
+      "No better than random guessing",
+      "Highly precise"
+    ],
+    "answerIndex": 2,
+    "explanation": "AUC is the chance a random positive is ranked above a random negative; 0.5 is a coin flip, i.e. the diagonal.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-16",
+    "set": "w3",
+    "question": "The true positive rate (TPR) on an ROC curve is the same formula as recall.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "True. TPR = TP/(TP+FN), the probability of detection, which is exactly recall. FPR = FP/(FP+TN) is the other axis.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w3-17",
+    "set": "w3",
+    "question": "In sklearn LogisticRegression, a smaller C means weaker regularisation.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. C is the inverse strength: C = 0.0001 shrank ||w|| to 0.0136 and underfit (accuracy 0.825 vs 0.8875 at C = 1).",
+    "ref": "Week 3 lab"
+  },
+  {
+    "id": "k-w3-18",
+    "set": "w3",
+    "question": "A larger beta in F-beta makes precision more important than recall.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. Larger beta weights recall more; smaller beta favours precision.",
+    "ref": "Week 3 logistic"
+  },
+  {
+    "id": "k-w4-1",
+    "set": "w4",
+    "question": "Gini impurity of a node with 5 positives and 5 negatives?",
+    "options": [
+      "0.25",
+      "1.0",
+      "0.5"
+    ],
+    "answerIndex": 2,
+    "explanation": "Gini = 1 - 0.5^2 - 0.5^2 = 0.5, the maximum for two classes. 1.0 is the entropy of a 50/50 node, not its Gini.",
+    "ref": "Week 4 decision trees (Gini example)"
+  },
+  {
+    "id": "k-w4-2",
+    "set": "w4",
+    "question": "An ID column has 8 unique values over 8 rows. Its SplitInfo (log base 2)?",
+    "options": [
+      "3",
+      "1",
+      "2",
+      "8"
+    ],
+    "answerIndex": 0,
+    "explanation": "SplitInfo = -8 x (1/8) log2(1/8) = log2 8 = 3. Dividing its IG of 0.954 by 3 gives a gain ratio of only about 0.32.",
+    "ref": "Week 4 decision trees lab (gain ratio)"
+  },
+  {
+    "id": "k-w4-3",
+    "set": "w4",
+    "question": "Raw information gain favours attributes with many distinct values, such as an ID column.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "Many values create many tiny, near-pure subsets, so IG looks high. That is exactly why gain ratio divides by SplitInfo.",
+    "ref": "Week 4 decision trees (gain ratio)"
+  },
+  {
+    "id": "k-w4-4",
+    "set": "w4",
+    "question": "Is ID3 guaranteed to find the smallest tree that fits the training data?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "Finding the smallest tree is NP-hard. ID3 is a greedy top-down search that picks the locally best attribute, so it tends to find small trees but gives no guarantee.",
+    "ref": "Week 4 decision trees (ID3)"
+  },
+  {
+    "id": "k-w4-5",
+    "set": "w4",
+    "question": "For a regression tree (continuous target), splits are chosen by...",
+    "options": [
+      "Information gain",
+      "Gini gain",
+      "Gain ratio",
+      "Variance reduction"
+    ],
+    "answerIndex": 3,
+    "explanation": "With a continuous target, the split that most reduces Var(S) - sum (|Si|/|S|) Var(Si) is picked. Entropy, Gini and gain ratio need class labels.",
+    "ref": "Week 4 decision trees (regression trees)"
+  },
+  {
+    "id": "k-w4-6",
+    "set": "w4",
+    "question": "Sorted values 10(+), 20(+), 30(-), 40(-). Candidate threshold(s) for the split?",
+    "options": [
+      "15",
+      "25",
+      "35",
+      "All three midpoints"
+    ],
+    "answerIndex": 1,
+    "explanation": "Thresholds are proposed only at midpoints where the class label changes, here between 20(+) and 30(-), so 25.",
+    "ref": "Week 4 decision trees (continuous attributes)"
+  },
+  {
+    "id": "k-w4-7",
+    "set": "w4",
+    "question": "Raising min_samples_leaf from 1 to 10 makes a tree less likely to overfit.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "A larger min_samples_leaf is a pre-pruning constraint: every leaf must hold more rows, so the tree is smaller and smoother. In the lab, min_samples_leaf=10 turned the jagged regression-tree steps into broader, smoother ones. It does not add capacity.",
+    "ref": "Week 4 decision trees lab (regularised trees)"
+  },
+  {
+    "id": "k-w4-8",
+    "set": "w4",
+    "question": "Is it fine to pick hyperparameters by comparing test-set accuracy, if you never train on the test set?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "Choosing the architecture on the test set is data leakage: the model choice becomes fitted to the test data. Use a validation set or cross-validation.",
+    "ref": "Week 4 ensembles (validation)"
+  },
+  {
+    "id": "k-w4-9",
+    "set": "w4",
+    "question": "GridSearchCV: 4 max_depth values x 2 criteria, 5-fold CV. How many CV fits (ignore refit)?",
+    "options": [
+      "40",
+      "8",
+      "13",
+      "45"
+    ],
+    "answerIndex": 0,
+    "explanation": "4 x 2 = 8 combinations, each trained once per fold: 8 x 5 = 40 fits. The final refit on all data would make 41, not 45.",
+    "ref": "Week 4 ensembles (grid search)"
+  },
+  {
+    "id": "k-w4-10",
+    "set": "w4",
+    "question": "Random search with 60 trials usually finds a top-5% region of the grid.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "Bergstra and Bengio: P(miss) = 0.95^60 is about 0.05, so roughly 95% of the time at least one trial lands in the top 5%.",
+    "ref": "Week 4 ensembles (random search)"
+  },
+  {
+    "id": "k-w4-11",
+    "set": "w4",
+    "question": "Plain KFold always keeps the same class ratio in every fold.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "KFold can give skewed or contiguous class blocks, especially on ordered data. StratifiedKFold is the one that preserves the class ratio.",
+    "ref": "Week 4 ensembles (cross-validation)"
+  },
+  {
+    "id": "k-w4-12",
+    "set": "w4",
+    "question": "With a large bootstrap sample, about what fraction of rows are out-of-bag?",
+    "options": [
+      "10%",
+      "50%",
+      "37%",
+      "63%"
+    ],
+    "answerIndex": 2,
+    "explanation": "P(row never drawn) = (1 - 1/m)^m, which tends to 1/e = 0.368. 63% is the fraction of distinct rows that ARE in the bag; OOB rows give oob_score.",
+    "ref": "Week 4 ensembles (bagging)"
+  },
+  {
+    "id": "k-w4-13",
+    "set": "w4",
+    "question": "Average 4 independent models, each with variance 8. Variance of the average?",
+    "options": [
+      "4",
+      "8",
+      "32",
+      "2"
+    ],
+    "answerIndex": 3,
+    "explanation": "Var of the mean of n independent models is sigma^2 / n = 8 / 4 = 2. Averaging cuts variance; it does not keep it at 8.",
+    "ref": "Week 4 ensembles (variance reduction)"
+  },
+  {
+    "id": "k-w4-14",
+    "set": "w4",
+    "question": "What does a random forest add on top of bagged trees?",
+    "options": [
+      "Random feature subset per split",
+      "Sequential reweighting",
+      "A meta-model",
+      "Pruning every tree"
+    ],
+    "answerIndex": 0,
+    "explanation": "RF = bootstrap rows plus a random subset of features (max_features) at each split, which decorrelates the trees. Reweighting is boosting; a meta-model is stacking.",
+    "ref": "Week 4 ensembles (random forest)"
+  },
+  {
+    "id": "k-w4-15",
+    "set": "w4",
+    "question": "AdaBoost: a weak learner has weighted error 0.5. Its vote weight alpha is...",
+    "options": [
+      "0.5",
+      "0",
+      "1",
+      "ln 2"
+    ],
+    "answerIndex": 1,
+    "explanation": "alpha = 0.5 ln((1 - 0.5)/0.5) = 0.5 ln 1 = 0. A coin-flip learner gets no say in the weighted vote.",
+    "ref": "Week 4 ensembles (AdaBoost)"
+  },
+  {
+    "id": "k-w4-16",
+    "set": "w4",
+    "question": "In gradient boosting, each new tree is fit to...",
+    "options": [
+      "A fresh bootstrap sample",
+      "Out-of-fold predictions",
+      "The current residuals",
+      "A random feature subset"
+    ],
+    "answerIndex": 2,
+    "explanation": "Each stage fits h(x) to y - F_m(x), the residual (negative gradient) of the current ensemble. Out-of-fold predictions are stacking.",
+    "ref": "Week 4 ensembles (gradient boosting)"
+  },
+  {
+    "id": "k-w4-17",
+    "set": "w4",
+    "question": "Blending builds its meta-features with k-fold cross-validation, just like stacking.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Blending uses a single hold-out validation split instead; stacking uses out-of-fold (cross-validated) predictions as meta-features.",
+    "ref": "Week 4 ensembles (stacking vs blending)"
+  },
+  {
+    "id": "k-w4-18",
+    "set": "w4",
+    "question": "Is watch_time = -1 a good way to encode 'undefined' in a feature?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "Avoid magic values; the model treats -1 as a real number. Add a boolean such as watch_time_is_defined instead.",
+    "ref": "Week 4 ensembles (feature engineering)"
+  },
+  {
+    "id": "k-w5-1",
+    "set": "w5",
+    "question": "Do 3 stacked linear layers with no activation give a non-linear model?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "A composition of linear maps is still linear, so it collapses to one layer. A non-linear activation after each hidden layer is needed.",
+    "ref": "Week 5 neural networks (multilayer)"
+  },
+  {
+    "id": "k-w5-2",
+    "set": "w5",
+    "question": "MLP: 4 inputs, 3 hidden, 2 outputs, with biases. Total weights?",
+    "options": [
+      "14",
+      "20",
+      "26",
+      "23"
+    ],
+    "answerIndex": 3,
+    "explanation": "m(d+1) + k(m+1) = 3 x 5 + 2 x 4 = 15 + 8 = 23. Forgetting biases gives 12 + 6 = 18.",
+    "ref": "Week 5 neural networks (parameter count)"
+  },
+  {
+    "id": "k-w5-3",
+    "set": "w5",
+    "question": "Leaky ReLU with slope a = 0.1. Output for input -3?",
+    "options": [
+      "0",
+      "-3",
+      "-0.3",
+      "0.3"
+    ],
+    "answerIndex": 2,
+    "explanation": "For x < 0, leaky ReLU returns a x = 0.1 x (-3) = -0.3. Plain ReLU would return 0.",
+    "ref": "Week 5 neural networks (activations)"
+  },
+  {
+    "id": "k-w5-4",
+    "set": "w5",
+    "question": "Which activation was proposed to fix the 'dying ReLU' problem?",
+    "options": [
+      "Leaky ReLU",
+      "Sigmoid",
+      "Step",
+      "Identity"
+    ],
+    "answerIndex": 0,
+    "explanation": "Leaky ReLU keeps a small slope for negative inputs, so the gradient is never exactly zero and neurons can recover.",
+    "ref": "Week 5 neural networks (activations)"
+  },
+  {
+    "id": "k-w5-5",
+    "set": "w5",
+    "question": "The perceptron's step activation is smooth, so gradient descent works on it directly.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "The step function is not smooth (zero gradient almost everywhere), which is why the differentiable logistic unit is used for gradient training.",
+    "ref": "Week 5 neural networks (perceptron)"
+  },
+  {
+    "id": "k-w5-6",
+    "set": "w5",
+    "question": "Sigmoid output + binary cross-entropy: y = 1, y_hat = 0.8. dJ/dv at the output?",
+    "options": [
+      "0.2",
+      "-1.25",
+      "-0.2",
+      "0.16"
+    ],
+    "answerIndex": 2,
+    "explanation": "With the matching sigmoid + cross-entropy pair, dJ/dv = y_hat - y = 0.8 - 1 = -0.2. The y_hat(1 - y_hat) terms cancel.",
+    "ref": "Week 5 neural networks (output-layer gradient)"
+  },
+  {
+    "id": "k-w5-7",
+    "set": "w5",
+    "question": "w = 1, dJ/dw = -2, learning rate 0.1. New w after one GD step?",
+    "options": [
+      "0.8",
+      "-1",
+      "3",
+      "1.2"
+    ],
+    "answerIndex": 3,
+    "explanation": "w <- w - eta x grad = 1 - 0.1 x (-2) = 1.2. A negative gradient means increasing w reduces the loss.",
+    "ref": "Week 5 neural networks (gradient descent)"
+  },
+  {
+    "id": "k-w5-8",
+    "set": "w5",
+    "question": "Which gradient descent variant has the noisiest, most zig-zag path?",
+    "options": [
+      "Stochastic GD",
+      "Batch GD",
+      "Mini-batch GD"
+    ],
+    "answerIndex": 0,
+    "explanation": "SGD estimates the gradient from one sample, so it is fastest per step but rough. Batch GD uses all data for a smooth path; mini-batch is the compromise.",
+    "ref": "Week 5 neural networks (SGD vs batch)"
+  },
+  {
+    "id": "k-w5-9",
+    "set": "w5",
+    "question": "Within one mini-batch, every sample's gradient is computed with the same old weights.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "Gradients are accumulated with the old W and the weights are replaced only at the end of the mini-batch.",
+    "ref": "Week 5 neural networks (training loop)"
+  },
+  {
+    "id": "k-w5-10",
+    "set": "w5",
+    "question": "Lecture convention (no rescaling in training): drop rate 0.2. At test time, scale pre-activations by...",
+    "options": [
+      "0.2",
+      "1.25",
+      "0.8",
+      "1 (no change)"
+    ],
+    "answerIndex": 2,
+    "explanation": "All units are active at test time, so the slides discount pre-activations by alpha = 1 - drop rate = 0.8 (or push alpha into W). Keras-style inverted dropout instead scales by 1.25 during training, which is not the lecture's version.",
+    "ref": "Week 5 neural networks (dropout)"
+  },
+  {
+    "id": "k-w5-11",
+    "set": "w5",
+    "question": "At test time, dropout still randomly switches off neurons.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Dropout is applied only during training. At test time all neurons are used, with the alpha scaling correction.",
+    "ref": "Week 5 neural networks (dropout)"
+  },
+  {
+    "id": "k-w5-12",
+    "set": "w5",
+    "question": "Early stopping halts training when...",
+    "options": [
+      "Training loss reaches 0",
+      "Learning rate hits 0",
+      "Weights stop changing",
+      "Validation error starts rising"
+    ],
+    "answerIndex": 3,
+    "explanation": "Stop at the minimum of the validation curve; beyond it the model overfits even though training error keeps falling.",
+    "ref": "Week 5 neural networks (early stopping)"
+  },
+  {
+    "id": "k-w5-13",
+    "set": "w5",
+    "question": "Should initial weights be large to avoid vanishing gradients?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "Too large leads to exploding gradients (and saturated sigmoids); too small leads to vanishing. Use small, scaled schemes such as Xavier or He.",
+    "ref": "Week 5 neural networks (initialisation)"
+  },
+  {
+    "id": "k-w5-14",
+    "set": "w5",
+    "question": "Each sigmoid derivative is at most 0.25. Max product of the two derivatives across 2 sigmoid layers?",
+    "options": [
+      "0.0625",
+      "0.5",
+      "0.25",
+      "0"
+    ],
+    "answerIndex": 0,
+    "explanation": "0.25 x 0.25 = 0.0625, and it shrinks further with each layer. That repeated multiplication is the vanishing gradient problem.",
+    "ref": "Week 5 neural networks (vanishing gradients)"
+  },
+  {
+    "id": "k-w5-15",
+    "set": "w5",
+    "question": "Which heuristic directly guards against exploding gradients?",
+    "options": [
+      "Gradient clipping",
+      "Dropout",
+      "Data augmentation",
+      "Early stopping"
+    ],
+    "answerIndex": 0,
+    "explanation": "Gradient clipping caps the gradient size. Proper initialisation and normalisation are the remedies listed for vanishing gradients.",
+    "ref": "Week 5 neural networks (training challenges)"
+  },
+  {
+    "id": "k-w5-16",
+    "set": "w5",
+    "question": "Which initialisation scales Xavier by sqrt(2) for ReLU layers?",
+    "options": [
+      "LSUV",
+      "Zero init",
+      "Uniform(0,1)",
+      "He"
+    ],
+    "answerIndex": 3,
+    "explanation": "He initialisation is the ReLU variant (Xavier x sqrt 2). Zero init makes all units identical and breaks learning.",
+    "ref": "Week 5 neural networks (initialisation)"
+  },
+  {
+    "id": "k-w5-17",
+    "set": "w5",
+    "question": "Feature scaling has no effect on gradient descent for neural networks.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Roughly zero-centred features in a range like [-1, 1] help gradient descent converge and avoid the NaN trap.",
+    "ref": "Week 5 neural networks (normalisation)"
+  },
+  {
+    "id": "k-w7-1",
+    "set": "w7",
+    "question": "An RNN is run on sequences of length 100 instead of 10. Does it need more weights?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. Every time step reuses the same cell and weights, so the parameter count does not depend on sequence length.",
+    "ref": "07_attention.pdf p.20"
+  },
+  {
+    "id": "k-w7-2",
+    "set": "w7",
+    "question": "Vanilla RNN cell, input size 5, hidden size 10 (no output layer). How many parameters?",
+    "options": [
+      "110",
+      "150",
+      "160",
+      "60"
+    ],
+    "answerIndex": 2,
+    "explanation": "W_x is 5x10 = 50, W_h is 10x10 = 100, bias 10, so 160. Forgetting the recurrent W_h (n x n) gives the trap answer 60.",
+    "ref": "07_attention.pdf p.24"
+  },
+  {
+    "id": "k-w7-3",
+    "set": "w7",
+    "question": "An LSTM layer with the same sizes (input 5, hidden 10) has how many parameters?",
+    "options": [
+      "640",
+      "160",
+      "320",
+      "480"
+    ],
+    "answerIndex": 0,
+    "explanation": "An LSTM has four weight blocks (forget, input, candidate, output), each the size of a vanilla cell: 4 x 160 = 640.",
+    "ref": "07_attention.pdf p.36-39"
+  },
+  {
+    "id": "k-w7-4",
+    "set": "w7",
+    "question": "Gradient clipping is the lecture's remedy for VANISHING gradients in RNNs.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. Clipping rescales gradients that are too large, which fixes exploding gradients. Vanishing gradients need an architecture change such as LSTM.",
+    "ref": "07_attention.pdf p.31"
+  },
+  {
+    "id": "k-w7-5",
+    "set": "w7",
+    "question": "Which LSTM gate decides what to erase from the cell state?",
+    "options": [
+      "Input gate",
+      "Output gate",
+      "Forget gate",
+      "Candidate tanh layer"
+    ],
+    "answerIndex": 2,
+    "explanation": "The forget gate f_t multiplies C_(t-1) element-wise; values near 0 erase memory. The input gate controls what is added, the output gate what is read out.",
+    "ref": "07_attention.pdf p.36, p.40"
+  },
+  {
+    "id": "k-w7-6",
+    "set": "w7",
+    "question": "LSTM: f = 0.5, C_prev = 4, i = 1, candidate = 0.5. New cell state C_t?",
+    "options": [
+      "4.5",
+      "2.5",
+      "2.0",
+      "1.0"
+    ],
+    "answerIndex": 1,
+    "explanation": "C_t = f x C_prev + i x candidate = 0.5 x 4 + 1 x 0.5 = 2.5. The update is additive, which is why gradients survive along the cell state.",
+    "ref": "07_attention.pdf p.38"
+  },
+  {
+    "id": "k-w7-7",
+    "set": "w7",
+    "question": "Bag of words: do 'dog bites man' and 'man bites dog' get the same vector?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 0,
+    "explanation": "Yes. Bag of words only counts words and throws away order, so both sentences give the same count vector. That lost structure motivates RNNs.",
+    "ref": "07_attention.pdf p.15"
+  },
+  {
+    "id": "k-w7-8",
+    "set": "w7",
+    "question": "Spam filtering (email words in, spam/not spam out) is which sequence configuration?",
+    "options": [
+      "One to many",
+      "Many to one",
+      "Many to many (synced)",
+      "One to one"
+    ],
+    "answerIndex": 1,
+    "explanation": "A whole sequence of words produces a single label at the end, so it is many to one. Image captioning is one to many.",
+    "ref": "07_attention.pdf p.7"
+  },
+  {
+    "id": "k-w7-9",
+    "set": "w7",
+    "question": "In a seq2seq RNN without attention, what is the bottleneck?",
+    "options": [
+      "Size of the output vocabulary",
+      "Number of decoder layers",
+      "One final encoder state holds the whole source",
+      "The softmax at each step"
+    ],
+    "answerIndex": 2,
+    "explanation": "All source information must pass through a single final encoder state. Attention fixes this by letting each decoder step read all encoder states.",
+    "ref": "07_attention.pdf p.62"
+  },
+  {
+    "id": "k-w7-10",
+    "set": "w7",
+    "question": "The score q_j.k_i always equals q_i.k_j, so attention scores are symmetric.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. The score is w_j^T W^Q (W^K)^T w_i, and W^Q differs from W^K, so the learned similarity is asymmetric, unlike a plain dot product of embeddings.",
+    "ref": "07_attention.pdf p.51"
+  },
+  {
+    "id": "k-w7-11",
+    "set": "w7",
+    "question": "Two keys get equal scores. Values v1 = [2,0], v2 = [0,4]. Attention output?",
+    "options": [
+      "[2, 4]",
+      "[1, 1]",
+      "[2, 0]",
+      "[1, 2]"
+    ],
+    "answerIndex": 3,
+    "explanation": "Equal scores give softmax weights 0.5 and 0.5, so the output is 0.5[2,0] + 0.5[0,4] = [1, 2]. Weights sum to 1, so it is an average, not a sum.",
+    "ref": "07_attention.pdf p.75"
+  },
+  {
+    "id": "k-w7-12",
+    "set": "w7",
+    "question": "Why are the raw scores QK^T divided by sqrt(d_k)?",
+    "options": [
+      "To make each row sum to 1",
+      "Stop scores growing with d_k and saturating softmax",
+      "To add position information",
+      "To cut the number of parameters"
+    ],
+    "answerIndex": 1,
+    "explanation": "sqrt(d_k) is the standard deviation of the raw scores, so dividing normalises them as d_k grows. Making rows sum to 1 is the softmax's job, not the scaling.",
+    "ref": "07_attention.pdf p.80-81"
+  },
+  {
+    "id": "k-w7-13",
+    "set": "w7",
+    "question": "Self-attention over 10 tokens. How many entries are in the attention matrix?",
+    "options": [
+      "10",
+      "20",
+      "45",
+      "100"
+    ],
+    "answerIndex": 3,
+    "explanation": "A = QK^T is n x n, so 10 x 10 = 100. This quadratic growth is why attention memory grows with sequence length.",
+    "ref": "07_attention.pdf p.80"
+  },
+  {
+    "id": "k-w7-14",
+    "set": "w7",
+    "question": "Causal mask on 5 tokens: how many of the 25 attention weights are kept?",
+    "options": [
+      "15",
+      "10",
+      "20",
+      "25"
+    ],
+    "answerIndex": 0,
+    "explanation": "Token i sees positions 1..i, so 1 + 2 + 3 + 4 + 5 = 15 kept and 10 blocked. 10 is the number masked out, not kept.",
+    "ref": "07_attention.pdf p.99"
+  },
+  {
+    "id": "k-w7-15",
+    "set": "w7",
+    "question": "In masked self-attention, can token 3 attend to token 2?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 0,
+    "explanation": "Yes. Token i attends to all positions up to and including i; only later positions are blocked, since the decoder generates left to right.",
+    "ref": "07_attention.pdf p.99"
+  },
+  {
+    "id": "k-w7-16",
+    "set": "w7",
+    "question": "Without positional encoding, does self-attention know the word order?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. Self-attention treats the inputs as an unordered set; positional encodings are added to the embeddings to inject order.",
+    "ref": "07_attention.pdf p.89"
+  },
+  {
+    "id": "k-w7-17",
+    "set": "w7",
+    "question": "Sinusoidal positional encoding with d_model = 4. What is PE at pos = 0?",
+    "options": [
+      "[0, 0, 0, 0]",
+      "[0, 1, 0, 1]",
+      "[1, 0, 1, 0]",
+      "[1, 1, 1, 1]"
+    ],
+    "answerIndex": 1,
+    "explanation": "Even dimensions use sin(0) = 0 and odd dimensions use cos(0) = 1, giving [0, 1, 0, 1]. It is not all zeros because of the cosine terms.",
+    "ref": "07_attention.pdf p.89"
+  },
+  {
+    "id": "k-w7-18",
+    "set": "w7",
+    "question": "Multi-head attention: how are the head outputs combined?",
+    "options": [
+      "Averaged",
+      "Max-pooled",
+      "Concatenated, then multiplied by W^O",
+      "Only the best head is kept"
+    ],
+    "answerIndex": 2,
+    "explanation": "b^i = W^O [b^(i,1); b^(i,2)]: the heads are stacked and mixed by a learned output matrix, so every head contributes.",
+    "ref": "07_attention.pdf p.86"
+  },
+  {
+    "id": "k-w7-19",
+    "set": "w7",
+    "question": "In the decoder's cross-attention, the queries come from the encoder output.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. Keys and values come from the encoder output; the query comes from the decoder's masked self-attention output.",
+    "ref": "07_attention.pdf p.103-104"
+  },
+  {
+    "id": "k-w7-20",
+    "set": "w7",
+    "question": "Layer norm gives the same output for [1,2,3,4] and [2,4,6,8].",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "True. Each vector is normalised by its own mean and std, so both become about [-1.34, -0.45, 0.45, 1.34]. It uses one vector's statistics, not the batch's.",
+    "ref": "07_attention.pdf p.88"
+  },
+  {
+    "id": "k-w7-21",
+    "set": "w7",
+    "question": "Is BERT a left-to-right, decoder-only model like GPT?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. BERT is an encoder-only, bidirectional model that outputs contextual vectors for every token. GPT is the decoder-only, next-word-prediction style.",
+    "ref": "07_attention.pdf p.90; Week 8 GPT"
+  },
+  {
+    "id": "k-w7-22",
+    "set": "w7",
+    "question": "An autoregressive decoder keeps generating forever. What is the fix?",
+    "options": [
+      "Add an END token to the vocabulary",
+      "Remove the positional encoding",
+      "Use more attention heads",
+      "Divide scores by sqrt(d_k)"
+    ],
+    "answerIndex": 0,
+    "explanation": "The softmax runs over the vocabulary plus an END token, and generation stops when END is chosen. The other options do not tell the decoder when to stop.",
+    "ref": "07_attention.pdf p.100-102"
+  },
+  {
+    "id": "k-w7-23",
+    "set": "w7",
+    "question": "ViT: 64x64 image, 16x16 patches, plus a [class] token. How many input tokens?",
+    "options": [
+      "16",
+      "5",
+      "17",
+      "257"
+    ],
+    "answerIndex": 2,
+    "explanation": "64/16 = 4 patches per side, so 4 x 4 = 16 patches, plus 1 class token = 17. Forgetting the class token gives 16.",
+    "ref": "07_attention.pdf p.118"
+  },
+  {
+    "id": "k-w7-24",
+    "set": "w7",
+    "question": "Per the lecture, a CNN is self-attention restricted to a fixed receptive field.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "True. CNN functions are a subset of self-attention functions; self-attention is like a CNN with a learnable receptive field.",
+    "ref": "07_attention.pdf p.56"
+  },
+  {
+    "id": "k-w7-25",
+    "set": "w7",
+    "question": "Optional: linear attention (RetNet/Mamba family) is self-attention without which part?",
+    "options": [
+      "The values V",
+      "The softmax",
+      "The queries Q",
+      "The keys K"
+    ],
+    "answerIndex": 1,
+    "explanation": "y(t) = sum over s <= t of v(s) k(s)^T q(t) keeps Q, K and V but drops the softmax, which allows a fixed-size recurrent state.",
+    "ref": "07_attention.pdf p.114-115"
+  }
+]
+
+export const kahootQuestions: readonly KahootQuestion[] = [...instructorDt, ...instructor, ...week6, ...week8, ...review]

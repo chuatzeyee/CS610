@@ -12,7 +12,7 @@ assert(await page.getByRole('link', { name: /Kahoot Practice/ }).isVisible(), 'h
 
 await page.getByRole('navigation').getByRole('link', { name: 'Kahoot' }).click()
 await page.waitForSelector('text=Kahoot Practice')
-for (const set of ['Everything (all sets)', 'Instructor Kahoot: Decision Trees', 'Instructor Kahoot: Ensembles & NN', 'CNN Lecture', 'CNN & Filter Labs', 'Week 8: Generative AI'])
+for (const set of ['Weeks 1 to 8 mixed review', 'Week 1: ML basics', 'Week 7: Attention', 'Everything (all sets)', 'Instructor Kahoot: Decision Trees', 'Instructor Kahoot: Ensembles & NN', 'CNN Lecture', 'CNN & Filter Labs', 'Week 8: Generative AI'])
   assert(await page.getByRole('button', { name: new RegExp(set.replace(/[()&]/g, '.')) }).isVisible(), `set missing: ${set}`)
 
 await page.getByRole('button', { name: /Instructor Kahoot: Ensembles/ }).click()

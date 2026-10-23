@@ -35,12 +35,26 @@ function shuffled<T>(arr: readonly T[]): T[] {
 const bestKey = (setId: string) => `cs610-kahoot-best-${setId}`
 const readBest = (setId: string): number => Number(localStorage.getItem(bestKey(setId)) ?? 0)
 
+const REVIEW_SIZE = 30
+
+function reviewRound(): KahootQuestion[] {
+  const bySet = kahootSets.map(s => shuffled(kahootQuestions.filter(q => q.set === s.id))).filter(g => g.length > 0)
+  const picked: KahootQuestion[] = []
+  for (let round = 0; picked.length < REVIEW_SIZE && bySet.some(g => g.length > round); round++) {
+    for (const group of shuffled(bySet)) {
+      if (group[round] && picked.length < REVIEW_SIZE) picked.push(group[round])
+    }
+  }
+  return shuffled(picked)
+}
+
 const setsWithAll = [
+  { id: 'review', title: `Weeks 1 to 8 mixed review (${REVIEW_SIZE} questions)`, blurb: 'A fresh random round drawn evenly from every week, like the cumulative in-class Kahoot.' },
   { id: 'all', title: 'Everything (all sets)', blurb: 'Every question from all sets, shuffled.' },
   ...kahootSets,
 ].map(s => ({
   ...s,
-  count: kahootQuestions.filter(q => s.id === 'all' || q.set === s.id).length,
+  count: s.id === 'review' ? Math.min(REVIEW_SIZE, kahootQuestions.length) : kahootQuestions.filter(q => s.id === 'all' || q.set === s.id).length,
 })).filter(s => s.count > 0)
 
 export default function Kahoot() {
@@ -66,7 +80,7 @@ export default function Kahoot() {
   }, [results])
 
   const begin = () => {
-    const pool = kahootQuestions.filter(k => setId === 'all' || k.set === setId)
+    const pool = setId === 'review' ? reviewRound() : kahootQuestions.filter(k => setId === 'all' || k.set === setId)
     setOrder(shuffled(pool))
     setIdx(0)
     setResults([])
