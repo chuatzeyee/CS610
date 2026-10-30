@@ -4186,5 +4186,681 @@ export const questions: readonly QuizQuestion[] = [
     ],
     "answerIndex": 1,
     "explanation": "Slide p.93: Q = W_Q⁽ⁱ⁾ φᵢ(z_t), K = W_K⁽ⁱ⁾ τ_θ(y), V = W_V⁽ⁱ⁾ τ_θ(y). The image latent asks the queries and the condition supplies keys and values; using only the latent would be self-attention with no text conditioning."
+  },
+  {
+    "id": "uns1",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Which statement best distinguishes semi-supervised learning from unsupervised learning?",
+    "options": [
+      "Semi-supervised learning uses rewards from a sequence of actions",
+      "Semi-supervised training data includes a few desired outputs, unsupervised includes none",
+      "Semi-supervised learning only performs clustering",
+      "Unsupervised learning uses a few labels to guide clustering"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.4 defines semi-supervised learning as training data including a few desired outputs, whereas unsupervised learning has no desired outputs. Rewards from action sequences describe reinforcement learning, not semi-supervised learning."
+  },
+  {
+    "id": "uns2",
+    "topic": "Unsupervised & Embeddings",
+    "question": "According to the lecture, which of the following is listed as a representation learning method rather than a clustering or anomaly detection method?",
+    "options": [
+      "DBSCAN",
+      "Local Outlier Factor",
+      "BERT",
+      "One-class SVM"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.5 lists PCA, ICA, SimCLR, BERT and autoencoders under representation learning. DBSCAN is a clustering method, and Local Outlier Factor and One-class SVM are anomaly detection methods."
+  },
+  {
+    "id": "uns3",
+    "topic": "Unsupervised & Embeddings",
+    "question": "A good clustering should have which combination of properties?",
+    "options": [
+      "Minimised intra-cluster distance and maximised inter-cluster distance",
+      "Maximised intra-cluster distance and minimised inter-cluster distance",
+      "Minimised intra-cluster and minimised inter-cluster distance",
+      "Equal intra-cluster and inter-cluster distance"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.15 states intra-cluster distances are minimised (points in a cluster are similar) and inter-cluster distances are maximised (clusters are well separated). Reversing them would produce spread-out, overlapping groups."
+  },
+  {
+    "id": "uns4",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In k-means, a cluster currently owns the points (1,2), (3,4) and (5,0). What is the centre after the update step?",
+    "options": [
+      "(3, 3)",
+      "(9, 6)",
+      "(2, 3)",
+      "(3, 2)"
+    ],
+    "answerIndex": 3,
+    "explanation": "The update μ_j = Σ m_ij x_i / Σ m_ij is the mean: ((1+3+5)/3, (2+4+0)/3) = (3, 2) (slide p.19). (9, 6) is the sum without dividing by the count of 3."
+  },
+  {
+    "id": "uns5",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In 1D, centres are at 1 and 6. During the k-means assignment step, where does the point x = 4 go and why?",
+    "options": [
+      "Centre 1, because it was initialised first",
+      "Centre 6, because (4 − 6)² = 4 is smaller than (4 − 1)² = 9",
+      "Centre 1, because (4 − 1)² = 9 is larger",
+      "Both clusters with membership 0.5 each"
+    ],
+    "answerIndex": 1,
+    "explanation": "Step 1 sets m_ij = 1 for j = argmin (x_i − μ_j)² (slide p.19); 4 is closer to 6 (squared distance 4) than to 1 (squared distance 9). k-means uses hard memberships, so a split of 0.5 each is impossible because Σ_j m_ij = 1 with m_ij in {0, 1}."
+  },
+  {
+    "id": "uns6",
+    "topic": "Unsupervised & Embeddings",
+    "question": "What does the constraint Σ_{j=1..k} m_ij = 1 for all x_i in the k-means formulation enforce?",
+    "options": [
+      "Each cluster contains exactly one point",
+      "Cluster centres sum to one",
+      "Each point belongs to exactly one cluster",
+      "The total objective equals one"
+    ],
+    "answerIndex": 2,
+    "explanation": "With binary m_ij, summing to 1 over clusters means exactly one cluster indicator is on for each point, so any x_i belongs to only one cluster (slide p.18). It constrains points, not cluster sizes or centres."
+  },
+  {
+    "id": "uns7",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Why does k-means alternate between updating memberships and updating centres instead of solving for both at once?",
+    "options": [
+      "Because memberships and centres are correlated, and each is easy to optimise when the other is fixed",
+      "Because centres do not affect the objective",
+      "Because memberships must be learned from labels",
+      "Because the objective is linear in both variables"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.19 notes that memberships and centres are correlated: given centres, the best membership is the nearest centre; given memberships, the best centre is the mean. Labels are not used since this is unsupervised learning."
+  },
+  {
+    "id": "uns8",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In k-means++, candidate points have distances D = 1, 2 and 3 to their nearest chosen centroid. What is the probability that the point with D = 3 is chosen next?",
+    "options": [
+      "3/6 = 0.5",
+      "1/3 ≈ 0.333",
+      "3/14 ≈ 0.214",
+      "9/14 ≈ 0.643"
+    ],
+    "answerIndex": 3,
+    "explanation": "k-means++ uses probability D(x)² / Σ D(x)² (slide p.28): 9 / (1 + 4 + 9) = 9/14 ≈ 0.643. 3/6 incorrectly uses unsquared distances and 1/3 is uniform sampling."
+  },
+  {
+    "id": "uns9",
+    "topic": "Unsupervised & Embeddings",
+    "question": "What failure mode is illustrated by the 'Choosing the initial centroids' slide (p.27)?",
+    "options": [
+      "k-means fails to converge and oscillates forever",
+      "A poor initialisation splits one natural blob into two clusters and merges two separate blobs into one",
+      "k-means produces more clusters than k",
+      "All points are assigned to a single cluster"
+    ],
+    "answerIndex": 1,
+    "explanation": "On p.27 two initial centres start in the upper blob, so it is split, while the two lower blobs share one centre that sits in empty space between them. The algorithm still converges (by iteration 5), just to a poor local optimum."
+  },
+  {
+    "id": "uns10",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Which property of k-means++ seeding is stated on slide p.28?",
+    "options": [
+      "It guarantees the globally optimal clustering",
+      "It chooses all initial centres uniformly at random",
+      "It is O(log k) competitive: expected cost at most about log k times the optimal",
+      "It removes the need to choose k"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.28 says k-means++ is O(log k) competitive with the optimal clustering. It does not guarantee the optimum, only the first centre is uniform (later ones are D²-weighted), and k must still be specified."
+  },
+  {
+    "id": "uns11",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In scikit-learn KMeans(n_clusters=3, init='k-means++', n_init=10, ...), what does n_init=10 implement from the lecture?",
+    "options": [
+      "Ten iterations of the assignment-update loop",
+      "Multiple runs with different initialisations, keeping the one with smallest error",
+      "Ten clusters as the upper bound for the elbow method",
+      "A tolerance of 10 for convergence"
+    ],
+    "answerIndex": 1,
+    "explanation": "Remedy 1 on p.28 is to perform multiple runs and select the clustering with the smallest error; n_init controls how many runs. The iteration cap is max_iter=300 and the tolerance is tol=1e-4."
+  },
+  {
+    "id": "uns12",
+    "topic": "Unsupervised & Embeddings",
+    "question": "For a point i, the mean distance to its own cluster is a(i) = 2 and the smallest mean distance to another cluster is b(i) = 5. What is its silhouette value?",
+    "options": [
+      "0.6",
+      "−0.6",
+      "0.4",
+      "1.5"
+    ],
+    "answerIndex": 0,
+    "explanation": "s(i) = (b − a) / max(a, b) = (5 − 2) / 5 = 0.6 (slide p.30). A negative value would require a(i) > b(i); 1.5 comes from dividing by a instead of max(a, b)."
+  },
+  {
+    "id": "uns13",
+    "topic": "Unsupervised & Embeddings",
+    "question": "A point has a(i) = 4 and b(i) = 2. What is s(i) and how should it be interpreted?",
+    "options": [
+      "0.5, well clustered",
+      "0, on the boundary",
+      "−0.5, probably assigned to the wrong cluster",
+      "−2, invalid assignment"
+    ],
+    "answerIndex": 2,
+    "explanation": "s(i) = (2 − 4) / max(4, 2) = −0.5. Negative values (towards −1) mean the point is closer on average to a neighbouring cluster than to its own, i.e. not fitted to its cluster (p.30). The silhouette is bounded in [−1, 1], so −2 is impossible."
+  },
+  {
+    "id": "uns14",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In the elbow plot on slide p.29, why is k = 3 chosen rather than k = 10, which has the lowest SSE?",
+    "options": [
+      "Because SSE increases after k = 3",
+      "Because k-means cannot run with k = 10",
+      "Because the silhouette at k = 10 is negative",
+      "Because beyond k = 3 extra clusters only reduce SSE marginally"
+    ],
+    "answerIndex": 3,
+    "explanation": "SSE keeps decreasing as k grows, so the lowest SSE always favours more clusters. The elbow method picks the k where the curve changes from steep to shallow, after which additional clusters separate data only marginally (p.29)."
+  },
+  {
+    "id": "uns15",
+    "topic": "Unsupervised & Embeddings",
+    "question": "On slide p.31, the average silhouette is about 0.70 for k = 2 and about 0.59 for k = 3. Using the silhouette criterion alone, which k is preferred?",
+    "options": [
+      "k = 2, because higher average silhouette suggests more appropriate clusters",
+      "k = 3, because more clusters always fit better",
+      "k = 3, because a lower silhouette means tighter clusters",
+      "Neither, silhouette cannot compare different k"
+    ],
+    "answerIndex": 0,
+    "explanation": "Slide p.30 says clusters with high average silhouette values are likely more appropriate, so k = 2 (about 0.70) wins over k = 3 (about 0.59). Lower silhouette indicates worse separation, not tighter clusters."
+  },
+  {
+    "id": "uns16",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Which pair correctly matches clustering categories with examples from the lecture?",
+    "options": [
+      "Partitioning: DBSCAN; Density: K-means",
+      "Partitioning: K-means and Gaussian Mixture Model",
+      "Hierarchical: Gaussian Mixture Model",
+      "Density: Local Outlier Factor"
+    ],
+    "answerIndex": 1,
+    "explanation": "Slide p.17 gives K-means and the Gaussian Mixture Model as partitioning examples, among the three categories partitioning, hierarchical and density. DBSCAN is density-based, and Local Outlier Factor is listed as anomaly detection on p.5."
+  },
+  {
+    "id": "uns17",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Two clusters on a line are A = {0, 1} and B = {4, 7}. What is their complete-linkage distance?",
+    "options": [
+      "3",
+      "5",
+      "7",
+      "4"
+    ],
+    "answerIndex": 2,
+    "explanation": "Complete linkage uses the maximum pairwise distance: |0 − 7| = 7 (p.36). 3 is the single-linkage (minimum) distance and 5 is the average of 4, 7, 3, 6."
+  },
+  {
+    "id": "uns18",
+    "topic": "Unsupervised & Embeddings",
+    "question": "For A = {0, 1} and B = {4, 7}, what is the average-linkage distance?",
+    "options": [
+      "3",
+      "5",
+      "5.5",
+      "7"
+    ],
+    "answerIndex": 1,
+    "explanation": "Average linkage is the mean of all pairwise distances: |0-4|, |0-7|, |1-4|, |1-7| = 4, 7, 3, 6, so the mean is 20/4 = 5 (p.36). 3 is the single-linkage (minimum) distance, 7 is the complete-linkage (maximum) distance, and 5.5 is only the position of B's centroid, not a distance between the clusters."
+  },
+  {
+    "id": "uns19",
+    "topic": "Unsupervised & Embeddings",
+    "question": "On a dataset of an outer ring surrounding an inner blob (p.38), which method separates ring from blob correctly?",
+    "options": [
+      "Single-linkage hierarchical clustering",
+      "k-means with k = 2",
+      "k-means with more iterations",
+      "k-means with standardised features"
+    ],
+    "answerIndex": 0,
+    "explanation": "Single linkage chains nearby points, so it follows the ring and isolates the blob (panel D). k-means assumes spherical clusters around centroids and splits the picture left/right (panel C) no matter how long it runs."
+  },
+  {
+    "id": "uns20",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Which slide-stated remedy addresses k-means' assumption that clusters are 'perfectly round'?",
+    "options": [
+      "Increase k",
+      "DBSCAN with larger min_sample",
+      "Gaussian Mixture Models",
+      "Run PCA before k-means"
+    ],
+    "answerIndex": 2,
+    "explanation": "p.35 names Gaussian Mixture Models, which give each cluster its own covariance so clusters can be elliptical. Increasing k just slices the data into more round pieces, it does not change the shape assumption."
+  },
+  {
+    "id": "uns21",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In DBSCAN, what happens to a point that is not density connected to any other object?",
+    "options": [
+      "It joins the nearest cluster",
+      "It becomes its own singleton cluster",
+      "It starts a new cluster seed",
+      "It is labelled as noise"
+    ],
+    "answerIndex": 3,
+    "explanation": "p.39: if p is not density connected to any other object it is taken as noise. Assigning every point to the nearest cluster is k-means behaviour, which is why k-means is sensitive to outliers."
+  },
+  {
+    "id": "uns22",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Which clustering method in this lecture does NOT require specifying the number of clusters in advance and finds arbitrary shapes?",
+    "options": [
+      "DBSCAN",
+      "k-means",
+      "GMM with fixed components",
+      "k-medoids"
+    ],
+    "answerIndex": 0,
+    "explanation": "DBSCAN's parameters are ε and min_sample; clusters grow from dense neighbourhoods and can have arbitrary shape (p.39). k-means needs k and produces convex, roughly spherical clusters."
+  },
+  {
+    "id": "uns23",
+    "topic": "Unsupervised & Embeddings",
+    "question": "PCA with d = 1000 features and k = 10 components: what is the shape of the projection matrix U in z = Uᵀx?",
+    "options": [
+      "10 × 1000",
+      "1000 × 10",
+      "1000 × 1000",
+      "10 × 10"
+    ],
+    "answerIndex": 1,
+    "explanation": "U ∈ ℝ^(d×k) with columns u1..uk (p.42-43), so it is 1000 × 10 and Uᵀx is 10-dimensional. 1000 × 1000 is the covariance matrix Σ, not U."
+  },
+  {
+    "id": "uns24",
+    "topic": "Unsupervised & Embeddings",
+    "question": "With unit vector u = (0.6, 0.8) and x = (3, 4), what is the 1D PCA coordinate z = uᵀx?",
+    "options": [
+      "7",
+      "4.2",
+      "2.4",
+      "5"
+    ],
+    "answerIndex": 3,
+    "explanation": "z = 0.6·3 + 0.8·4 = 1.8 + 3.2 = 5 (projection, p.42). 7 is the plain sum of x's entries, which ignores the basis vector."
+  },
+  {
+    "id": "uns25",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Project x = (3, 4) onto u = (1, 0) and reconstruct with x̃ = uuᵀx. What is the squared reconstruction error?",
+    "options": [
+      "4",
+      "9",
+      "16",
+      "25"
+    ],
+    "answerIndex": 2,
+    "explanation": "z = 3, x̃ = (3, 0), so ||x − x̃||² = 0² + 4² = 16 (p.43). 9 is the captured squared length, and 25 = 9 + 16 is the total, matching variance = captured + error (p.44)."
+  },
+  {
+    "id": "uns26",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Covariance eigenvalues are 6, 3, 1. What fraction of variance do the top 2 principal components capture?",
+    "options": [
+      "60%",
+      "67%",
+      "90%",
+      "100%"
+    ],
+    "answerIndex": 2,
+    "explanation": "(6 + 3)/(6 + 3 + 1) = 0.9 (p.53: eigenvalue magnitude indicates fraction of variance captured). 60% is only the first component."
+  },
+  {
+    "id": "uns27",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Why is maximising captured variance equivalent to minimising reconstruction error in PCA?",
+    "options": [
+      "Total variance is fixed and equals captured variance plus reconstruction error",
+      "Both are non-convex",
+      "Eigenvectors are orthogonal",
+      "The data are standardised to unit variance"
+    ],
+    "answerIndex": 0,
+    "explanation": "p.44: E[||x||²] = E[||Uᵀx||²] + E[||x − UUᵀx||²]; the left side is fixed so increasing one term decreases the other. Orthogonality of eigenvectors is true but is not the reason for the equivalence."
+  },
+  {
+    "id": "uns28",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Which step comes BEFORE computing Σ = (1/n)ẌᵀẌ in the PCA algorithm?",
+    "options": [
+      "Sort eigenvalues",
+      "Subtract the mean x̄ from each row of X",
+      "Select top-k eigenvectors",
+      "Scale by Λ⁻¹"
+    ],
+    "answerIndex": 1,
+    "explanation": "Steps 1-2 (p.45) compute x̄ and centre the data to get Ẍ; only then is the covariance formed. Without centring, ẌᵀẌ/n would not be the variance-covariance matrix."
+  },
+  {
+    "id": "uns29",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Σ = diag(4, 1) and x − x̄ = (2, 1). What is the Mahalanobis distance?",
+    "options": [
+      "√5",
+      "2",
+      "1",
+      "√2"
+    ],
+    "answerIndex": 3,
+    "explanation": "√(2²/4 + 1²/1) = √(1 + 1) = √2 (p.51). √5 is the Euclidean distance, which ignores that the first axis has variance 4."
+  },
+  {
+    "id": "uns30",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In the PCA geometry (p.47-49), what does the 'scaling' step achieve?",
+    "options": [
+      "Moves the centre to the origin",
+      "Aligns axes with eigenvectors",
+      "Makes probability contours round",
+      "Removes noise points"
+    ],
+    "answerIndex": 2,
+    "explanation": "After scaling by Λ⁻¹ the contours are circles and V follows a standard normal (p.48-49). Moving to the origin is translation and aligning axes is rotation."
+  },
+  {
+    "id": "uns31",
+    "topic": "Unsupervised & Embeddings",
+    "question": "A corpus has 1000 documents; word w appears in 10 of them. What is log10 inv-freq(w)?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "100"
+    ],
+    "answerIndex": 1,
+    "explanation": "inv-freq = |D| / df = 1000/10 = 100, and log10(100) = 2 (p.61-62). 100 is the raw inv-freq before taking the log, which the slides say works worse empirically."
+  },
+  {
+    "id": "uns32",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Why does the lecture justify using log[inv-freq(w)] rather than inv-freq(w)?",
+    "options": [
+      "Zipf's law: frequency ∝ 1/(rank+b)^a, so log inv-freq ∝ log(rank+b)",
+      "Logs make vectors sparse",
+      "Logs remove stop words",
+      "Logs make IDF negative for rare words"
+    ],
+    "answerIndex": 0,
+    "explanation": "p.62 derives log(inv-freq) ∝ log(rank + b) from Zipf's law, and notes log works better empirically. Logs do not make IDF negative: inv-freq ≥ 1, so log inv-freq ≥ 0."
+  },
+  {
+    "id": "uns33",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Count vector (give, man, fish, feed, day, teach, lifetime) = (1,2,2,2,1,1,1). How many counted tokens does it hold?",
+    "options": [
+      "7",
+      "10",
+      "12",
+      "24"
+    ],
+    "answerIndex": 1,
+    "explanation": "1+2+2+2+1+1+1 = 10 (p.57). 7 is the number of dimensions (distinct terms), not the total count."
+  },
+  {
+    "id": "uns34",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Which technique on p.56 is described as truncated Singular Value Decomposition?",
+    "options": [
+      "Latent Dirichlet Allocation",
+      "DBSCAN",
+      "Probabilistic LSA",
+      "Latent Semantic Analysis"
+    ],
+    "answerIndex": 3,
+    "explanation": "LSA = truncated SVD of the term-document matrix (p.56). PLSA is its probabilistic version (Probabilistic Latent Semantic Indexing) and LDA is a separate probabilistic topic model."
+  },
+  {
+    "id": "uns35",
+    "topic": "Unsupervised & Embeddings",
+    "question": "A corpus has 1000 documents. Word w appears 3 times in document d and in 10 documents overall. Using log base 10, what is tf-idf(w, d)?",
+    "options": [
+      "2",
+      "0.3",
+      "6",
+      "300"
+    ],
+    "answerIndex": 2,
+    "explanation": "tf = 3 and idf = log10(1000/10) = log10(100) = 2, so tf-idf = 3 × 2 = 6 (slide p.64). Answer 300 forgets the log, and 2 is only the idf part."
+  },
+  {
+    "id": "uns36",
+    "topic": "Unsupervised & Embeddings",
+    "question": "What is the idf of a word that appears in every document of the corpus?",
+    "options": [
+      "1",
+      "Undefined",
+      "log|D|",
+      "0"
+    ],
+    "answerIndex": 3,
+    "explanation": "idf = log(|D|/|D|) = log 1 = 0, so such a word gets zero tf-idf weight (p.64). log|D| would be the idf of a word appearing in only one document."
+  },
+  {
+    "id": "uns37",
+    "topic": "Unsupervised & Embeddings",
+    "question": "On the Zipf's law plot (p.63), what is plotted and what shape appears?",
+    "options": [
+      "Frequency vs rank; exponential decay",
+      "log(frequency) vs log(rank); roughly straight line with negative slope",
+      "log(frequency) vs rank; straight line with positive slope",
+      "Rank vs document count; bell curve"
+    ],
+    "answerIndex": 1,
+    "explanation": "Words are sorted by frequency and log(frequency) is plotted against log(rank), giving an approximately straight downward line since frequency ∝ 1/rank. Plotting raw frequency vs rank gives a curve, not the straight line shown."
+  },
+  {
+    "id": "uns38",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In the document-word matrix X (n documents × m words), how is a single word represented?",
+    "options": [
+      "A row vector of length m",
+      "A k × k diagonal matrix",
+      "A scalar tf-idf",
+      "A column vector of length n"
+    ],
+    "answerIndex": 3,
+    "explanation": "Each word j is the column w_j = (x_{1,j}, ..., x_{n,j}) with one entry per document (p.65). Rows of length m represent documents, not words."
+  },
+  {
+    "id": "uns39",
+    "topic": "Unsupervised & Embeddings",
+    "question": "For X = U Σ Vᵀ with X of size n × m, what are the shapes on slide p.69?",
+    "options": [
+      "U: n × d, Σ: d × d, V: m × d",
+      "U: n × n, Σ: n × m, V: m × m",
+      "U: m × d, Σ: d × d, V: n × d",
+      "U: d × n, Σ: d × d, V: d × m"
+    ],
+    "answerIndex": 0,
+    "explanation": "The slide uses U: n × d, Σ: d × d, V: m × d, so Vᵀ is d × m and the product is n × m. Swapping n and m mixes up which factor indexes documents and which indexes words."
+  },
+  {
+    "id": "uns40",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Why does LSA sort singular values in descending order before truncation?",
+    "options": [
+      "So that U becomes symmetric",
+      "To make all singular values equal to 1",
+      "Because SVD only works on sorted matrices",
+      "So that the top-k terms Σσ_i u_i v_iᵀ capture the largest contributions to X"
+    ],
+    "answerIndex": 3,
+    "explanation": "X = Σ σ_i u_i v_iᵀ, so ordering σ_1 ≥ σ_2 ≥ ... ensures that keeping the first k terms keeps the most important rank-1 components (p.69 to p.70). Sorting does not change symmetry or validity of the decomposition."
+  },
+  {
+    "id": "uns41",
+    "topic": "Unsupervised & Embeddings",
+    "question": "X is 1000 documents × 5000 words. Truncated SVD keeps k = 100. How many numbers are stored in U_k, Σ_k (diagonal only) and V_k?",
+    "options": [
+      "5,000,000",
+      "600,100",
+      "610,000",
+      "60,100"
+    ],
+    "answerIndex": 1,
+    "explanation": "U_k: 1000×100 = 100,000; Σ_k diagonal: 100; V_k: 5000×100 = 500,000; total 600,100 (shapes from p.70). 5,000,000 is the full X, which truncation avoids storing."
+  },
+  {
+    "id": "uns42",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In the p.71 figure, U is 8 × 6, Σ is 6 × 6, Vᵀ is 6 × 7, and the last two components are highlighted as dropped. What is k and the shape of X_k?",
+    "options": [
+      "k = 2, X_k is 8 × 7",
+      "k = 4, X_k is 8 × 7",
+      "k = 4, X_k is 4 × 4",
+      "k = 6, X_k is 8 × 6"
+    ],
+    "answerIndex": 1,
+    "explanation": "6 − 2 = 4 components remain, and U_k (8×4) Σ_k (4×4) V_kᵀ (4×7) is still 8 × 7: truncation reduces rank, not the size of the reconstructed matrix. k = 2 confuses the dropped count with the kept count."
+  },
+  {
+    "id": "uns43",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Two documents have LSA topic vectors (rows of U_k) of (3, 4) and (4, 3). What is their cosine similarity?",
+    "options": [
+      "0.96",
+      "24",
+      "0.75",
+      "1.00"
+    ],
+    "answerIndex": 0,
+    "explanation": "Dot product 3·4 + 4·3 = 24; norms are 5 and 5; 24/25 = 0.96 (formula p.73). 24 forgets normalisation; 1.00 would require the vectors to point in the same direction."
+  },
+  {
+    "id": "uns44",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In scikit-learn, xtr = TruncatedSVD(n_components=k).fit_transform(x). According to the p.74 exercise, what is xtr?",
+    "options": [
+      "U_k",
+      "V_k",
+      "U_k Σ_k",
+      "Σ_k V_kᵀ"
+    ],
+    "answerIndex": 2,
+    "explanation": "The code recovers Σ as the column norms of xtr and sets U[:, i] = xtr[:, i] / Σ[i, i], so xtr = U_k Σ_k. V_k comes from components_.transpose(), not from fit_transform."
+  },
+  {
+    "id": "uns45",
+    "topic": "Unsupervised & Embeddings",
+    "question": "If X = U Σ Vᵀ and σ_1 = 3, what is the corresponding eigenvalue of the document similarity matrix XXᵀ, and which vector is its eigenvector?",
+    "options": [
+      "3, with eigenvector v_1",
+      "√3, with eigenvector u_1",
+      "9, with eigenvector v_1",
+      "9, with eigenvector u_1"
+    ],
+    "answerIndex": 3,
+    "explanation": "XXᵀ = U Σ² Uᵀ, so u_i are its eigenvectors with eigenvalues σ_i² = 9 (p.77). v_1 is the eigenvector of the word similarity matrix XᵀX, not XXᵀ."
+  },
+  {
+    "id": "uns46",
+    "topic": "Unsupervised & Embeddings",
+    "question": "A: n × k, B: k × l, C: l × m. Using the p.68 identity, M = ABC equals which expression?",
+    "options": [
+      "Σ_i Σ_j b_{i,j} a_i c_jᵀ, an n × m matrix",
+      "Σ_i b_{i,i} a_iᵀ c_i, a scalar",
+      "Σ_j b_{j,j} c_j a_jᵀ, an m × n matrix",
+      "Σ_i Σ_j a_i b_{i,j} c_j, a k × l matrix"
+    ],
+    "answerIndex": 0,
+    "explanation": "With a_i the columns of A and c_jᵀ the rows of C, ABC = Σ_{i=1}^{k} Σ_{j=1}^{l} b_{i,j} a_i c_jᵀ, a sum of n × m outer products. Only the diagonal terms survive when B is diagonal, which gives the SVD form; the inner product version would collapse to a scalar."
+  },
+  {
+    "id": "uns47",
+    "topic": "Unsupervised & Embeddings",
+    "question": "In LDA's generative process, what is z_dn drawn from?",
+    "options": [
+      "Dirichlet(α)",
+      "Categorical(φ_k)",
+      "Categorical(θ_d)",
+      "Dirichlet(β)"
+    ],
+    "answerIndex": 2,
+    "explanation": "Each token's topic z_dn ∼ Categorical(θ_d), then the word w_dn ∼ Categorical(φ_{z_dn}) (p.81). Dirichlet(α) generates θ_d itself, one level higher."
+  },
+  {
+    "id": "uns48",
+    "topic": "Unsupervised & Embeddings",
+    "question": "LDA is run on M = 1000 documents with K = 10 topics and a 5000-word vocabulary. How many values make up all the topic-word distributions φ_1..φ_K?",
+    "options": [
+      "10,000",
+      "50,000",
+      "5,000,000",
+      "15,000"
+    ],
+    "answerIndex": 1,
+    "explanation": "There are K = 10 vectors φ_k, each a distribution over 5000 words: 10 × 5000 = 50,000. 10,000 is the size of all document-topic distributions θ_d (1000 × 10)."
+  },
+  {
+    "id": "uns49",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Why does LDA place Dirichlet priors on the document-topic and topic-word distributions?",
+    "options": [
+      "To make the model deterministic",
+      "To force each document to have exactly one topic",
+      "To remove stop words",
+      "To smooth the distributions, reducing overfitting and improving performance"
+    ],
+    "answerIndex": 3,
+    "explanation": "Slide p.80: the prior distribution (Dirichlet) smooths the two distributions to reduce overfitting and give better performance. Stop words are handled by CountVectorizer, not the prior."
+  },
+  {
+    "id": "uns50",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Skip-gram with context size 2 on the 9-word sentence 'The quick brown fox jumps over the lazy dog.' produces how many (center, context) pairs?",
+    "options": [
+      "36",
+      "32",
+      "30",
+      "18"
+    ],
+    "answerIndex": 2,
+    "explanation": "Pairs per center word are 2, 3, 4, 4, 4, 4, 4, 3, 2 because edge words have fewer neighbours (p.86), totalling 30. 36 = 9 × 4 ignores the sentence boundaries."
+  },
+  {
+    "id": "uns51",
+    "topic": "Unsupervised & Embeddings",
+    "question": "Word2Vec with vocabulary V = 10,000 and embedding size N = 300. How many weights are in W and W′ combined?",
+    "options": [
+      "3,000,000",
+      "600",
+      "10,300",
+      "6,000,000"
+    ],
+    "answerIndex": 3,
+    "explanation": "W is V × N = 3,000,000 and W′ is N × V = 3,000,000, so 6,000,000 in total (dimensions p.89, sizes as in the p.88 figure). 3,000,000 counts only one of the two matrices."
+  },
+  {
+    "id": "uns52",
+    "topic": "Unsupervised & Embeddings",
+    "question": "After training Word2Vec, which matrix is usually used as the final word embeddings?",
+    "options": [
+      "The output-embedding matrix W′",
+      "The softmax output y",
+      "The input-embedding matrix W (E)",
+      "The average of the one-hot vectors"
+    ],
+    "answerIndex": 2,
+    "explanation": "Slide p.90 states it is usually the input-embedding matrix that is taken as the final embeddings for downstream tasks. The output embeddings represent words as prediction targets and are typically discarded."
   }
 ]

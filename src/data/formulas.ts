@@ -1595,5 +1595,251 @@ export const formulas: readonly Formula[] = [
     "formula": "Encoder: H × W × 3 to h × w × c;  Decoder: h × w × c to H × W × 3;  compression = (H × W × 3)/(h × w × c)",
     "note": "Decoder of a reconstruction-trained auto-encoder is Step 3 of Stable Diffusion (slide p.91).",
     "week": "W8"
+  },
+  {
+    "name": "k-means objective",
+    "formula": "argmin_{μ_j, m_ij} Σ_{i=1..n} Σ_{j=1..k} m_ij (x_i − μ_j)²",
+    "note": "Minimise total within-cluster squared distance (SSE) over centres and hard memberships (p.18).",
+    "week": "W9"
+  },
+  {
+    "name": "Hard membership indicator",
+    "formula": "m_ij = 1 if x_i ∈ cluster j, else 0;  Σ_{j=1..k} m_ij = 1 for all x_i",
+    "note": "Each point belongs to exactly one cluster (p.18).",
+    "week": "W9"
+  },
+  {
+    "name": "k-means assignment step",
+    "formula": "m_ij = 1 if j = argmin_{j'} (x_i − μ_{j'})², else 0",
+    "note": "With centres fixed, assign each point to its nearest centre (p.19).",
+    "week": "W9"
+  },
+  {
+    "name": "k-means centre update step",
+    "formula": "μ_j = Σ_{i=1..n} m_ij x_i / Σ_{i=1..n} m_ij",
+    "note": "With memberships fixed, each centre is the mean of its assigned points (p.19).",
+    "week": "W9"
+  },
+  {
+    "name": "k-means++ seeding probability",
+    "formula": "P(x) = D(x)² / Σ_{x∈X} D(x)²",
+    "note": "Choose next centre with probability proportional to squared distance to nearest chosen centre; first centre uniform (p.28).",
+    "week": "W9"
+  },
+  {
+    "name": "k-means++ guarantee",
+    "formula": "E[cost(k-means++)] = O(log k) × cost(optimal)",
+    "note": "Seeding is O(log k) competitive with the optimal clustering (p.28).",
+    "week": "W9"
+  },
+  {
+    "name": "Silhouette coefficient",
+    "formula": "s(i) = (b(i) − a(i)) / max{a(i), b(i)},  s(i) ∈ [−1, 1]",
+    "note": "a(i) = mean intra-cluster distance; b(i) = min over other clusters of mean distance; near 1 good, near 0 boundary, near −1 misfit (p.30).",
+    "week": "W9"
+  },
+  {
+    "name": "Single linkage",
+    "formula": "d(A,B) = min_{a∈A, b∈B} d(a,b)",
+    "note": "Cluster distance = closest pair; chains points, follows non-convex shapes (p.36).",
+    "week": "W9"
+  },
+  {
+    "name": "Complete linkage",
+    "formula": "d(A,B) = max_{a∈A, b∈B} d(a,b)",
+    "note": "Cluster distance = farthest pair (p.36).",
+    "week": "W9"
+  },
+  {
+    "name": "Average linkage",
+    "formula": "d(A,B) = (1/(|A||B|)) Σ_{a∈A} Σ_{b∈B} d(a,b)",
+    "note": "Mean of all pairwise distances (p.36).",
+    "week": "W9"
+  },
+  {
+    "name": "Projection (dimensionality reduction)",
+    "formula": "zᵢ = Uᵀxᵢ,  U = [u₁ … u_k] ∈ ℝ^(d×k), k ≪ d",
+    "note": "Each new coordinate z_ij = u_jᵀxᵢ (p.42).",
+    "week": "W9"
+  },
+  {
+    "name": "Reconstruction",
+    "formula": "x̃ᵢ = U zᵢ = U Uᵀ xᵢ",
+    "note": "Map the reduced representation back to the original space (p.43).",
+    "week": "W9"
+  },
+  {
+    "name": "PCA objective",
+    "formula": "min_{U∈ℝ^(d×k)} Σᵢ ||xᵢ − U Uᵀ xᵢ||²",
+    "note": "Minimise total squared reconstruction error (p.43).",
+    "week": "W9"
+  },
+  {
+    "name": "Variance decomposition",
+    "formula": "E[||x||²] = E[||Uᵀx||²] + E[||x − UUᵀx||²]",
+    "note": "Fixed variance = captured variance + reconstruction error, so max variance ⇔ min error (p.44).",
+    "week": "W9"
+  },
+  {
+    "name": "Sample mean",
+    "formula": "x̄ = (1/n) Σᵢ xᵢ",
+    "note": "PCA step 1; subtract from each row to get centred Ẍ (p.45).",
+    "week": "W9"
+  },
+  {
+    "name": "Covariance matrix",
+    "formula": "Σ = (1/n) ẌᵀẌ",
+    "note": "PCA step 3 on centred data; d×d; eigenvectors are principal components (p.45).",
+    "week": "W9"
+  },
+  {
+    "name": "Eigen-decomposition of covariance",
+    "formula": "(1/n) ẌᵀẌ = Q Λ² Qᵀ,  Q⁻¹ = Qᵀ",
+    "note": "Q = rotation (eigenvectors), Λ = scales; derived from VᵀV = nI (p.50, optional).",
+    "week": "W9"
+  },
+  {
+    "name": "PCA whitening transform",
+    "formula": "Z = ẌQ,  V = ZΛ⁻¹ = ẌQΛ⁻¹",
+    "note": "Translate, rotate, scale so V is standard normal (p.49).",
+    "week": "W9"
+  },
+  {
+    "name": "Fraction of variance captured",
+    "formula": "(λ₁ + … + λ_k) / (λ₁ + … + λ_d)",
+    "note": "Eigenvalue magnitudes indicate fraction of variance captured (p.53).",
+    "week": "W9"
+  },
+  {
+    "name": "Multivariate normal density",
+    "formula": "p(x|μ,Σ) = exp(−½ (x − μ)ᵀ Σ⁻¹ (x − μ)) / √((2π)^d |Σ|)",
+    "note": "Compare 1D: p(x|μ,σ) = exp(−½((x − μ)/σ)²) / (σ√(2π)) (p.51).",
+    "week": "W9"
+  },
+  {
+    "name": "Inverse document frequency",
+    "formula": "inv-freq(w) = |D| / |{d ∈ D : w appears in d}|;  weight = log inv-freq(w)",
+    "note": "Rare terms weighted more; log works better empirically (p.61-62).",
+    "week": "W9"
+  },
+  {
+    "name": "Zipf's law and log IDF",
+    "formula": "frequency ∝ 1/(rank + b)^a ⇒ inv-freq ∝ (rank + b)^a ⇒ log(inv-freq) ∝ log(rank + b)",
+    "note": "Justifies the log in IDF (p.62).",
+    "week": "W9"
+  },
+  {
+    "name": "Zipf's law",
+    "formula": "freq(w) ∝ 1 / rank(w)  ⇒  log freq ≈ c − log rank",
+    "note": "Word frequency is inversely proportional to its frequency rank; straight negative line on a log-log plot (p.63).",
+    "week": "W9"
+  },
+  {
+    "name": "Term frequency",
+    "formula": "tf(w, d) = number of times w appears in d",
+    "note": "Raw count of word w in document d (p.64).",
+    "week": "W9"
+  },
+  {
+    "name": "tf-idf",
+    "formula": "tf-idf(w, d, D) = tf(w, d) × idf(w, D)",
+    "note": "Entry of the document-word matrix when using tf-idf weighting (p.64 to p.65).",
+    "week": "W9"
+  },
+  {
+    "name": "PCA eigen decomposition",
+    "formula": "Cov = Q Λ Qᵀ,  Λ = diag(λ_1, ..., λ_d),  Q = [e_1 ... e_d]",
+    "note": "PCA decomposes the covariance matrix into eigenvalues and eigenvectors (p.67).",
+    "week": "W9"
+  },
+  {
+    "name": "SVD",
+    "formula": "X = U Σ Vᵀ,  U: n × d, Σ: d × d (diagonal), V: m × d",
+    "note": "U, V column-orthogonal; used by LSA on the document-word matrix (p.66, p.69).",
+    "week": "W9"
+  },
+  {
+    "name": "Three-matrix product",
+    "formula": "A B C = Σ_{i=1}^{k} Σ_{j=1}^{l} b_{i,j} a_i c_jᵀ  (A: n×k with columns a_i, B: k×l, C: l×m with rows c_jᵀ)",
+    "note": "Product as weighted sum of outer products; with diagonal B gives the SVD rank-1 form (p.68).",
+    "week": "W9"
+  },
+  {
+    "name": "SVD as sum of rank-1 terms",
+    "formula": "X = Σ_{i=1}^{d} σ_i u_i v_iᵀ,  σ_1 ≥ σ_2 ≥ ... ≥ σ_d",
+    "note": "Singular values sorted descending in LSA (p.69).",
+    "week": "W9"
+  },
+  {
+    "name": "Truncated SVD",
+    "formula": "X ≈ X_k = Σ_{i=1}^{k} σ_i u_i v_iᵀ = U_k Σ_k V_kᵀ,  k ≤ d, usually k ≪ d",
+    "note": "Keep top-k singular values; rows of U_k are document topics, rows of V_k are term topics (p.70, p.72).",
+    "week": "W9"
+  },
+  {
+    "name": "Cosine similarity",
+    "formula": "cos(a, b) = a·b / (‖a‖‖b‖) = aᵀb / (‖a‖‖b‖)",
+    "note": "Similarity between topic representations (p.73).",
+    "week": "W9"
+  },
+  {
+    "name": "LSA document similarity",
+    "formula": "sim(d_{i1}, d_{i2}) = Σ_{p=1}^{k} u_{i1,p} u_{i2,p} / ( sqrt(Σ_p u_{i1,p}²) · sqrt(Σ_p u_{i2,p}²) )",
+    "note": "Cosine between rows of U_k (p.73).",
+    "week": "W9"
+  },
+  {
+    "name": "LSA word similarity",
+    "formula": "sim(w_{j1}, w_{j2}) = Σ_{p=1}^{k} v_{j1,p} v_{j2,p} / ( sqrt(Σ_p v_{j1,p}²) · sqrt(Σ_p v_{j2,p}²) )",
+    "note": "Cosine between rows of V_k (p.73).",
+    "week": "W9"
+  },
+  {
+    "name": "Similarity matrices via SVD",
+    "formula": "XXᵀ = U Σ² Uᵀ,  XᵀX = V Σ² Vᵀ",
+    "note": "u_i, v_i are eigenvectors of the document / word similarity matrices with eigenvalues σ_i² (p.77).",
+    "week": "W9"
+  },
+  {
+    "name": "Truncated similarity matrices (PCA link)",
+    "formula": "XXᵀ ≈ U_k Σ_k² U_kᵀ,  XᵀX ≈ V_k Σ_k² V_kᵀ",
+    "note": "k-dimensional PCA of XXᵀ and XᵀX (p.78).",
+    "week": "W9"
+  },
+  {
+    "name": "Recover U from sklearn TruncatedSVD",
+    "formula": "xtr = U_k Σ_k;  σ_i = ‖xtr[:, i]‖;  U_k = xtr Σ_k⁻¹;  V_k = components_ᵀ",
+    "note": "From the p.74 exercise; check UᵀU = VᵀV = I_k.",
+    "week": "W9"
+  },
+  {
+    "name": "LDA generative process",
+    "formula": "φ_k ∼ Dir(β) for k=1..K;  θ_d ∼ Dir(α) for d=1..M;  z_dn ∼ Cat(θ_d);  w_dn ∼ Cat(φ_{z_dn}) for n=1..N_d",
+    "note": "How LDA assumes documents are generated (p.81).",
+    "week": "W9"
+  },
+  {
+    "name": "CBOW objective",
+    "formula": "J(W, W′) = −(1/T) Σ_{t=1}^{T} log P(w_t | Context(w_t); W, W′),  Context(w_t) = (w_{t−m}, ..., w_{t−1}, w_{t+1}, ..., w_{t+m})",
+    "note": "Predict the center word from its window of m words each side (p.87).",
+    "week": "W9"
+  },
+  {
+    "name": "Skip-gram objective",
+    "formula": "J(W, W′) = −(1/T) Σ_{t=1}^{T} Σ_{−m≤j≤m, j≠0} log P(w_{t+j} | w_t; W, W′)",
+    "note": "Predict every context word from the center word (p.88).",
+    "week": "W9"
+  },
+  {
+    "name": "Word2Vec matrix dimensions",
+    "formula": "W: V × N (input),  W′: N × V (output);  total params = 2VN",
+    "note": "V vocabulary size, N embedding size, C context words (p.89).",
+    "week": "W9"
+  },
+  {
+    "name": "Hidden layer as lookup and output scores",
+    "formula": "h = Eᵀx = E_i (row i for one-hot x_i);  u = O h,  u_j = O_j · h;  y = softmax(u)",
+    "note": "Linear hidden layer selects the input embedding; scores via output embeddings (p.90).",
+    "week": "W9"
   }
 ]

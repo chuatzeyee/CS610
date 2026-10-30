@@ -3953,5 +3953,596 @@ export const sessions: readonly Session[] = [
         ]
       }
     ]
+  },
+  {
+    "id": "w9_unsupervised",
+    "title": "Unsupervised Learning and Embeddings",
+    "subtitle": "09_embedding.pdf",
+    "topics": [
+      {
+        "id": "w9-unsupervised-overview",
+        "title": "Unsupervised Learning: Overview and Lecture Roadmap",
+        "sections": [
+          {
+            "heading": "Lecture agenda (p.2)",
+            "points": [
+              "The main topic of the Week 9 lecture is word embedding (p.2).",
+              "Before introducing embeddings, the lecture covers three building blocks: clustering, representation learning and topic models (p.2).",
+              "Clustering, representation learning and topic models are all presented as examples of unsupervised learning (p.2)."
+            ]
+          },
+          {
+            "heading": "Types of machine learning (p.4)",
+            "points": [
+              "Supervised (inductive) learning: the training data includes the desired outputs (labels) (p.4).",
+              "Unsupervised learning: the training data does NOT include desired outputs, so the model must find structure in the inputs alone (p.4).",
+              "Semi-supervised learning: the training data includes only a few desired outputs, i.e. a small labelled subset plus unlabelled data (p.4).",
+              "Reinforcement learning: learning from rewards obtained from a sequence of actions rather than from labelled examples (p.4)."
+            ]
+          },
+          {
+            "heading": "Three families of unsupervised learning (p.5)",
+            "points": [
+              "Clustering groups a set of objects into clusters so that objects in the same cluster are more similar to each other than to those in other clusters; examples are K-means, hierarchical clustering and DBSCAN (p.5).",
+              "Representation learning finds an alternative, efficient and/or effective representation of the data; examples are PCA, ICA, SimCLR, BERT and autoencoders (p.5).",
+              "Anomaly detection identifies unexpected items or events in a dataset that differ from the norm; examples are One-class SVM and Local Outlier Factor (p.5).",
+              "Note that BERT and SimCLR are listed as representation learning methods: they learn useful features without needing human labels (p.5)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-clustering-concepts",
+        "title": "Clustering: Concept, Ambiguity and Applications",
+        "sections": [
+          {
+            "heading": "What clustering does (p.7-p.9)",
+            "points": [
+              "Clustering aims to find the underlying structure of given data when no label is available (p.7).",
+              "The p.7 figure plots customers by age (x-axis) against spending ($$$, y-axis) and circles three natural groups: a small high-spending young group (red), a large elongated group where spending rises with age (light blue) and a small older low-spending group (green).",
+              "Clusters can be ambiguous and subjective: the same set of points on p.8 and p.9 can be read as two, four or six clusters depending on the granularity you choose.",
+              "Because there is no ground truth, the 'right' number of clusters is a modelling choice, which motivates the elbow method and silhouette score later (p.29-p.31)."
+            ]
+          },
+          {
+            "heading": "Applications (p.10-p.14)",
+            "points": [
+              "Search result clustering: the eTools search for 'salsa' groups the top 100 results into folders such as Dance Salsa (21), Salsa Music (8), Applications (7), Salsa Sauce (6) and Tomato Salsa (5), separating different senses of the query (p.10).",
+              "Google News clusters many articles about the same story (e.g. multiple outlets reporting Boeing's $100 million fund for 737 Max crash victims) into a single grouped entry (p.11).",
+              "Image compression: k-means on pixel colours replaces each pixel by its cluster centre colour, so the clown image is reconstructed with only a few colours (the middle image shows cluster assignments, the right image the compressed result) (p.12).",
+              "Market segmentation divides a broad target market into subsets of consumers, businesses or countries with common needs, interests and priorities (p.13).",
+              "Social network analysis uses clustering for community discovery, identifying influential users and recommendation through social influence (p.14)."
+            ]
+          },
+          {
+            "heading": "The clustering principle and general pipeline (p.15-p.16)",
+            "points": [
+              "Clustering finds groups such that objects within a group are similar (related) and objects in different groups are different (unrelated) (p.15).",
+              "Equivalently, intra-cluster distances are minimised and inter-cluster distances are maximised (p.15).",
+              "General step 1, identify objects: decide what is to be clustered (p.16).",
+              "General step 2, identify features: decide which features describe each object (p.16).",
+              "General step 3, proximity measure: choose a suitable similarity or distance measure for comparing two objects (p.16).",
+              "General step 4, clustering algorithm: choose an algorithm suitable for the data and compatible with the chosen similarity/distance measure (p.16).",
+              "General step 5, performance evaluation: assess the quality of the clusters produced by the chosen measure and algorithm (p.16)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-partitioning-kmeans-objective",
+        "title": "Partitioning Clustering and the k-means Objective",
+        "sections": [
+          {
+            "heading": "Categories of clustering algorithms (p.17)",
+            "points": [
+              "Clustering algorithms are broadly classified into three categories: partitioning, hierarchical and density-based (p.17).",
+              "Partitioning clustering decomposes a set of N objects into k clusters so as to optimise a certain objective function (p.17).",
+              "In partitioning clustering each data point belongs to exactly one cluster (p.17).",
+              "Examples of partitioning methods given on the slide are K-means and the Gaussian Mixture Model (p.17)."
+            ]
+          },
+          {
+            "heading": "The k-means objective (p.18)",
+            "points": [
+              "A good clustering minimises the sum of (squared) distances within clusters: argmin over μ_j and m_ij of Σ_{i=1..n} Σ_{j=1..k} m_ij (x_i − μ_j)² (p.18).",
+              "m_ij is a hard membership indicator: m_ij = 1 if x_i is in the j-th cluster, and 0 otherwise (p.18).",
+              "The constraint Σ_j m_ij = 1 for every x_i means any point belongs to only one cluster (p.18).",
+              "The p.18 figure shows 2D data with five well-separated Gaussian blobs labelled C1 to C5, each circled with its centre marked.",
+              "Worked example: 1D points 1, 2, 3 assigned to one cluster with centre 2 give objective (1−2)² + (2−2)² + (3−2)² = 2."
+            ]
+          },
+          {
+            "heading": "Alternating optimisation (p.19)",
+            "points": [
+              "The memberships {m_ij} and the centres {μ_j} are correlated, so the objective is optimised by alternating between them (p.19).",
+              "Step 1 fixes the centres and estimates memberships: m_ij = 1 if j = argmin_j' (x_i − μ_j')², else 0, i.e. assign each point to its nearest centre (p.19).",
+              "Step 2 fixes the memberships and estimates centres: μ_j = Σ_i m_ij x_i / Σ_i m_ij, i.e. each centre becomes the mean of the points assigned to it (p.19).",
+              "Worked example: if a cluster owns (1,2), (3,4) and (5,0), the updated centre is ((1+3+5)/3, (2+4+0)/3) = (3, 2)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-kmeans-algorithm",
+        "title": "The k-means Algorithm in Practice",
+        "sections": [
+          {
+            "heading": "Algorithm steps (p.20-p.24)",
+            "points": [
+              "Step 0: start with a random guess of the cluster centres; Step 1: determine the membership of each data point; Step 2: adjust the cluster centres; Steps 1 and 2 repeat in a loop (p.20-p.22).",
+              "Procedural version: (1) ask the user how many clusters they want, e.g. k = 5; (2) randomly guess k centre locations; (3) each data point finds the centre it is closest to, so each centre 'owns' a set of points; (4) each centre moves to the centroid of the points it owns; repeat 3 and 4 (p.23-p.24).",
+              "The p.23 figure shows initial black centres with arrows moving to red centroids, with straight-line (Voronoi-style) boundaries separating the regions owned by each centre.",
+              "The p.24 figure shows the converged state where the five red centres sit in the middle of the five blobs.",
+              "The slide poses the question of how efficient step 3 (assignment) and step 4 (centroid update) are; assignment requires comparing every point with every centre, while the update only requires one pass averaging each cluster's points (p.24).",
+              "k must be specified by the user in advance; k-means does not discover the number of clusters itself (p.23)."
+            ]
+          },
+          {
+            "heading": "Visualising convergence (p.25)",
+            "points": [
+              "The p.25 exercise shows nine panels of k-means with k = 3 on 2D data (an Iris-like dataset): a red cluster at the bottom and green and blue clusters in the upper-left overlap region.",
+              "Across iterations the diamond centroids shift slightly and the boundary between the overlapping green and blue groups adjusts, until the assignments stop changing in the FINAL panel.",
+              "Convergence is reached when memberships no longer change, so the centres also stop moving (p.25)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-initial-centroids",
+        "title": "Choosing Initial Centroids and k-means++",
+        "sections": [
+          {
+            "heading": "Sensitivity to initialisation (p.26-p.27)",
+            "points": [
+              "k-means results depend on the initial centroids (p.26-p.27).",
+              "On p.26 a good initialisation converges over six iterations to three sensible clusters: one large upper cluster and two small lower clusters.",
+              "On p.27 a poor initialisation (two initial centres inside the upper blob) converges in five iterations to a bad solution: the upper blob is split into two clusters while the two separate lower blobs are merged into one cluster whose centre sits in empty space between them.",
+              "This shows k-means only finds a local optimum of its objective, not necessarily the global optimum (p.27)."
+            ]
+          },
+          {
+            "heading": "Remedies (p.28)",
+            "points": [
+              "Remedy 1: perform multiple runs with different initialisations and keep the clustering with the smallest error (p.28).",
+              "Remedy 2: k-means++ (Arthur et al., 'k-means++: The Advantages of Careful Seeding'), whose idea is that initial centroids should be far from each other (p.28).",
+              "k-means++ steps: pick the first centroid c0 uniformly at random; then choose a data point x as the next centroid with probability D(x)² / Σ_{x∈X} D(x)², where D(x) is the distance from x to its nearest already-chosen centroid; repeat until k centroids are chosen (p.28).",
+              "k-means++ is O(log k) competitive with the optimal clustering: its expected cost is at most about log k times the optimal cost (p.28).",
+              "Worked example: three candidate points with D = 1, 2, 3 have D² = 1, 4, 9, so the farthest point is picked with probability 9/14 ≈ 0.643; an already-chosen centroid (D = 0) has probability 0.",
+              "scikit-learn usage on the slide: KMeans(n_clusters=3, init='k-means++', n_init=10, max_iter=300, tol=1e-4, random_state=0) on 100 random 2D points; n_init=10 means 10 runs with different seeds, combining both remedies (p.28)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-choosing-k",
+        "title": "Choosing the Number of Clusters: Elbow and Silhouette",
+        "sections": [
+          {
+            "heading": "Elbow method (p.29)",
+            "points": [
+              "Compute the sum of squared errors (SSE) for each number of clusters k and plot it against k (p.29).",
+              "Look for the point where the slope changes from steep to shallow (the elbow); that k is taken as optimal (p.29).",
+              "The idea is to keep adding clusters only while they separate the data in a meaningful rather than marginal way (p.29).",
+              "In the p.29 plot SSE drops sharply from k = 1 to 2 to 3, then flattens from k = 3 to 10, so the elbow and 'Optimal k' is k = 3.",
+              "SSE always decreases as k grows, so simply minimising SSE would favour too many clusters; the elbow looks for diminishing returns instead."
+            ]
+          },
+          {
+            "heading": "Silhouette score (p.30)",
+            "points": [
+              "The silhouette score measures how close each point is to points in neighbouring clusters versus how well it fits into its own cluster (p.30).",
+              "Formula: s(i) = (b(i) − a(i)) / max{a(i), b(i)} (p.30).",
+              "a(i) is the mean distance of i to all other points in the same cluster; b(i) is the minimum, over all other clusters, of i's mean distance to that cluster (p.30).",
+              "s(i) close to 1 means i is far from neighbouring clusters; close to 0 means i is near the decision boundary between two clusters; close to −1 means i is not fitted to its cluster (p.30).",
+              "Clusterings with a high average silhouette value are likely to be more appropriate (p.30).",
+              "Worked examples: a = 2, b = 5 gives s = 3/5 = 0.6; a = 4, b = 2 gives s = −2/4 = −0.5 (point likely in the wrong cluster); a = b gives s = 0."
+            ]
+          },
+          {
+            "heading": "Silhouette analysis example (p.31)",
+            "points": [
+              "p.31 shows silhouette plots for KMeans on sample data with n_clusters = 2 and n_clusters = 3, each next to a scatter of the clustered data.",
+              "With k = 2 the far upper-right blob forms one cluster and the three lower-left blobs are merged into one cluster; the average silhouette (red dashed line) is about 0.7.",
+              "With k = 3 the lower-left region is split into a lower cluster and an upper (two-blob) cluster; the average silhouette drops to about 0.59, and the merged cluster 0 has many low silhouette values.",
+              "Silhouette plots show per-point coefficients sorted within each cluster, so you can inspect both cluster thickness (size) and how many points fall below the average (p.31)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kmeans-limitations",
+        "title": "Limitations of k-means",
+        "sections": [
+          {
+            "heading": "Failure cases shown on the slides (p.32-34)",
+            "points": [
+              "Non-spherical clusters (p.32): on two interleaved crescent / S-shaped clusters, k-means with k=2 cuts the data with a roughly straight boundary, mixing points from both true shapes in each cluster. On uniform data it simply splits the square into two halves around the two centroids.",
+              "Uneven cluster sizes (p.33): original data has one large central cluster and two small side clusters; k-means with k=3 splits the large cluster into pieces and absorbs the small clusters into its neighbours, because it prefers clusters of similar spatial extent.",
+              "Uneven densities (p.34): one sparse, widely spread cluster plus two small dense clusters; k-means with k=3 splits the sparse cluster in two and merges the two dense clusters into one.",
+              "Why it matters: k-means assigns each point to its nearest centroid, so the boundaries between clusters are always straight lines (perpendicular bisectors between centroids); any cluster structure not separable this way is recovered badly."
+            ]
+          },
+          {
+            "heading": "Model limitation and remedy (p.35)",
+            "points": [
+              "The underlying model limitation is that k-means assumes each cluster is a sphere (\"perfectly round\").",
+              "The slide's remedy is Gaussian Mixture Models (GMM), which model each cluster as a Gaussian with its own covariance, so clusters can be elongated, tilted ellipses of different sizes.",
+              "The p.35 figure shows unclustered 2D data (left) and a GMM clustering (right) into three overlapping elliptical clusters (blue, green, red) with different orientations and spreads, which k-means could not represent."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hierarchical-clustering",
+        "title": "Hierarchical clustering",
+        "sections": [
+          {
+            "heading": "Concept and approaches (p.36)",
+            "points": [
+              "Hierarchical clustering builds a hierarchy of clusters rather than a single flat partition, and it is often represented as a dendrogram (tree).",
+              "There are two approaches: divisive (top-down, start with everything in one cluster and split) and agglomerative (bottom-up).",
+              "Agglomerative clustering treats each data point as a singleton cluster, then successively merges the two closest clusters until all points have been merged into a single remaining cluster.",
+              "No k is needed up front: cutting the dendrogram at a chosen height gives a flat clustering (p.37 shows a horizontal dashed cut line producing groups)."
+            ]
+          },
+          {
+            "heading": "Linkage (cluster proximity) criteria (p.36)",
+            "points": [
+              "Single linkage: distance between two clusters = minimum distance between any element of one and any element of the other.",
+              "Complete linkage: distance = maximum distance between elements of the two clusters.",
+              "Average linkage: distance = mean of all pairwise distances between elements of the two clusters.",
+              "Worked example (1D): A = {0, 1}, B = {4, 7}. Pairwise distances are 4, 7, 3, 6, so single = 3, complete = 7, average = 5."
+            ]
+          },
+          {
+            "heading": "Dendrogram example and comparison with k-means (p.37-38)",
+            "points": [
+              "p.37 shows a dendrogram of the Iris dataset coloured by species (setosa, versicolor, virginica); setosa forms a cleanly separated branch while versicolor and virginica leaves are partly intermixed.",
+              "p.38 compares k-means and single-linkage on two datasets. A: on five vertical stripes of points, k-means (centroids marked x) cuts across stripes; B: single-linkage recovers each stripe as its own cluster.",
+              "C: on a ring surrounding a central blob, k-means with 2 clusters splits the picture left/right, mixing ring and blob; D: single-linkage correctly separates the outer ring from the inner blob.",
+              "Why it matters: single linkage chains nearby points together, so it can follow elongated or non-convex shapes that k-means' spherical assumption cannot."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dbscan",
+        "title": "Density-based clustering (DBSCAN)",
+        "sections": [
+          {
+            "heading": "Idea (p.39)",
+            "points": [
+              "Clusters are defined as areas of higher density separated by areas of low density.",
+              "Density-based clustering allows clusters of arbitrary shape (the figure shows a blue blob and a red curved band found as clusters, with scattered grey points left as noise).",
+              "DBSCAN = Density Based Spatial Clustering of Applications with Noise.",
+              "If p and q are density connected they belong to the same cluster; if p is not density connected to any other object it is labelled noise, so DBSCAN does not force every point into a cluster."
+            ]
+          },
+          {
+            "heading": "Parameters and algorithm (p.39)",
+            "points": [
+              "eps (ε): the size of the neighbourhood (shape) around a data point.",
+              "min_sample: the minimum number of points needed to form a cluster.",
+              "Algorithm: start with an arbitrary point and compute its ε-neighbourhood; if it contains at least min_sample points, form a cluster; keep expanding the cluster from the neighbour points.",
+              "Unlike k-means, the number of clusters is not specified in advance; it emerges from ε and min_sample."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "representation-learning-pca",
+        "title": "Representation learning and PCA",
+        "sections": [
+          {
+            "heading": "Representation learning (p.41)",
+            "points": [
+              "Goal: find an alternative representation of data that is efficient (reduce dimensions for higher efficiency) and/or effective (roughly preserve the relationship among data points).",
+              "A d-dimensional x = (x1, ..., xd) is mapped to a k-dimensional z = (z1, ..., zk). The same idea covers dimensionality reduction, word embedding (\"Apple\"), sentence embedding (\"AML is so fun!\") and image embedding."
+            ]
+          },
+          {
+            "heading": "Dimensionality reduction as projection (p.42-43)",
+            "points": [
+              "Seek k vectors u1, ..., uk, each of dimension d, usually with k << d. The inner product uj·xi gives the j-th new coordinate of xi.",
+              "Stacking gives zi = Uᵀxi where U = [u1 u2 ... uk] is d×k; this is called projection. Example: u = (0.6, 0.8), x = (3, 4) gives z = 0.6·3 + 0.8·4 = 5.",
+              "A good representation lets us reconstruct the original point: x̃i = U zi = U Uᵀ xi.",
+              "PCA objective: minimise over U ∈ ℝ^(d×k) the total squared reconstruction error Σᵢ ||xi − U Uᵀ xi||².",
+              "Example: u = (1, 0), x = (3, 4): x̃ = (3, 0), squared reconstruction error = 16."
+            ]
+          },
+          {
+            "heading": "Two equivalent views of PCA (p.44)",
+            "points": [
+              "Variance of data (fixed) = captured variance (want large) + reconstruction error (want small): E[||x||²] = E[||x̃||²] + E[||x − x̃||²] = E[||Uᵀx||²] + E[||x − UUᵀx||²].",
+              "Because the total is fixed, maximising captured variance and minimising squared reconstruction error are the same problem. E.g. total variance 10 with 7 captured leaves reconstruction error 3.",
+              "PCA finds {u1, ..., uk} such that projection onto them captures maximum variance, equivalently yields minimum squared reconstruction error."
+            ]
+          },
+          {
+            "heading": "PCA algorithm (p.45, p.52)",
+            "points": [
+              "Input: data matrix X (n rows x1ᵀ..xnᵀ) and k << d.",
+              "1. Compute the mean x̄ = (1/n) Σ xi. 2. Centre: Ẍ = X with x̄ subtracted from each row.",
+              "3. Compute the variance-covariance matrix Σ = (1/n) ẌᵀẌ (a d×d matrix).",
+              "4. Find eigenvalue/eigenvector pairs {λi, ei} of Σ sorted so λ1 ≥ λ2 ≥ ...; 5. select the top-k eigenvectors e1..ek as the principal components.",
+              "Intuition (p.52): eigenvalues of a linear mapping measure the distortion induced by the transformation, and eigenvectors tell you how that distortion is oriented."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pca-geometry-mahalanobis",
+        "title": "PCA geometry: translation, rotation, scaling and Mahalanobis distance",
+        "sections": [
+          {
+            "heading": "Normal distribution intuition (p.46-48)",
+            "points": [
+              "In a bivariate normal with correlation rho = 0.5 (p.46), contours are tilted ellipses; points A and B on the same contour have the \"same distance\" from the centre and hence the same density, even though their Euclidean distances differ.",
+              "Translation moves the centre to the origin (multi-dimensional data are translated just like 1D data).",
+              "Rotation = projection onto a new orthonormal basis (set of orthogonal unit vectors); after rotation the dimensions are independent (axis-aligned ellipse).",
+              "Scaling makes the probability contours round; now A and B are equidistant from the centre (p.47).",
+              "Points equidistant from the centre after rotation and scaling have the same probability density; further from centre means lower probability. The crucial gap is how to identify the orthonormal basis, which PCA answers (p.48)."
+            ]
+          },
+          {
+            "heading": "Visualising PCA in matrices (p.49-50, optional reading)",
+            "points": [
+              "Translation: Ẍ = X with rows xiᵀ − x̄ᵀ. Rotation: Z = ẌQ. Scaling: V = ZΛ⁻¹ with Λ diagonal (diagonal entries 1/λ on the inverse); V follows the standard normal in 2D.",
+              "Because the standard normal has identity covariance, VᵀV = nI. Substituting V = ẌQΛ⁻¹ gives Λ⁻¹QᵀẌᵀẌQΛ⁻¹ = nI.",
+              "Therefore (1/n)ẌᵀẌ = QΛ²Qᵀ, using Q⁻¹ = Qᵀ since Q is orthogonal.",
+              "So Q and Λ are found by eigen-decomposition of the covariance matrix Σ = (1/n)ẌᵀẌ: eigenvectors give the rotation, eigenvalues give the squared scales."
+            ]
+          },
+          {
+            "heading": "Mahalanobis distance (p.51, optional reading)",
+            "points": [
+              "In the final transformed space, distance from point v to the centre is the ordinary Euclidean √(vᵀv).",
+              "Since vᵀ = (xᵀ − x̄ᵀ)QΛ⁻¹, √(vᵀv) = √((x − x̄)ᵀ QΛ⁻²Qᵀ (x − x̄)) = √((x − x̄)ᵀ Σ⁻¹ (x − x̄)), the Mahalanobis distance.",
+              "Example: Σ = diag(4, 1), x − x̄ = (2, 1): distance = √(2²/4 + 1²/1) = √2.",
+              "The multivariate normal density p(x|μ,Σ) = exp(−½(x − μ)ᵀΣ⁻¹(x − μ)) / √((2π)^d |Σ|) generalises the 1D density exp(−½((x − μ)/σ)²) / (σ√(2π)), with the Mahalanobis distance replacing (x − μ)/σ."
+            ]
+          },
+          {
+            "heading": "Interpreting PCA (p.53)",
+            "points": [
+              "PCA chooses the eigenvectors of the covariance matrix with the largest eigenvalues.",
+              "Eigenvalues equal the variance of the data along the corresponding eigenvector directions, so PCA projects data along the directions where it varies most.",
+              "PCA preserves as much information as possible by preserving as much variance as possible; the magnitude of the eigenvalues indicates the fraction of variance captured (fraction for top-k = (λ1+...+λk)/Σλ).",
+              "Eigenvalues typically drop off sharply (scree plot on p.53: λ1 ≈ 1353.2, then the rest fall below ~150 and decay towards 0 by i = 11), so few components are needed.",
+              "Example: eigenvalues 6, 3, 1 → first PC captures 60%, first two capture 90%."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "topic-models-vsm-idf",
+        "title": "Topic models, vector space model and IDF",
+        "sections": [
+          {
+            "heading": "Topic models (p.55-56)",
+            "points": [
+              "Topic models discover topics from a collection of documents. A topic is not a sentence, paragraph or keyword list alone; it is an abstract context in association with a set of keywords.",
+              "Topic discovery is unsupervised (no topic labels are given) and differs from information retrieval, which answers a given query.",
+              "Techniques listed: Latent Semantic Analysis (truncated Singular Value Decomposition), Probabilistic LSA (Probabilistic Latent Semantic Indexing), other non-negative matrix factorisation, and Latent Dirichlet Allocation (LSA and LDA emphasised in bold)."
+            ]
+          },
+          {
+            "heading": "Vector space model / bag of words (p.57-59)",
+            "points": [
+              "Documents are represented as vectors with the bag-of-words model: each dimension is a term and the value is its count; word order is ignored.",
+              "Example document: \"Give a man a fish, and you feed him for a day. Teach a man to fish, and you feed him for a lifetime.\" Dimensions (give, man, fish, feed, day, teach, lifetime) give count vector (1, 2, 2, 2, 1, 1, 1); function words such as a/and/you/him/for/to are not included.",
+              "A corpus is a set of documents. If a count vector represents one document from a corpus, its dimension is the whole vocabulary (native 4-year-olds already know about 5,000 words; the most common foreign test-taker vocabulary is 4,500 words), so most entries are zero.",
+              "Sparse vector: a vector with many zero elements; the slide poses its main drawback as a question (high dimensional and mostly empty).",
+              "Document retrieval: (1) represent all documents as vectors, (2) index all dimensions (terms), (3) represent queries as vectors in the same space, (4) find similar documents by vector similarity (figure: Doc1, Doc2 and Query as arrows in a Term1/Term2/Term3 space)."
+            ]
+          },
+          {
+            "heading": "Term weighting and IDF (p.60-62)",
+            "points": [
+              "Raw frequency counts weigh all terms uniformly; the Scrabble-tile image (p.60) illustrates that rare letters such as Q and Z are worth 10 points while common ones like E are worth 1.",
+              "Rare terms should be weighed more because uniqueness is important in similarity measures, and (sociology analogy) rare events create stronger ties.",
+              "inv-freq(w) = |D| / |{d ∈ D : w appears in d}|, total documents divided by documents containing w. E.g. 1000 documents, w in 10 → inv-freq = 100.",
+              "Theoretically any weighting ∝ inv-freq(w) works; empirically log[inv-freq(w)] works better (e.g. log10(100) = 2; a word in every document gets log(1) = 0).",
+              "Zipf's law: in natural language the frequency of a word is inversely proportional to its rank: frequency ∝ 1/(rank + b)^a ⇒ inv-freq ∝ (rank + b)^a ⇒ log(inv-freq) ∝ log(rank + b). This justifies the log (log-log plot on p.62 shows straight lines for s = 1..4)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-zipf-tfidf-doc-word-matrix",
+        "title": "Zipf's Law, tf-idf and the Document-Word Matrix",
+        "sections": [
+          {
+            "heading": "Zipf's law: word frequency vs word rank (p.63)",
+            "points": [
+              "Procedure on slide p.63: count the frequency of each word, sort words by frequency in descending order (rank 1 = most frequent), then plot log(frequency) against log(rank).",
+              "The plot on p.63 (Wikipedia, ~30 languages including English, German, French, Latin, Esperanto) shows all languages falling on nearly the same roughly straight, downward-sloping line from about log(frequency) 12-13 at log(rank) 0 down to 0 at log(rank) about 12-13.",
+              "A straight line with negative slope on a log-log plot is the signature of Zipf's law: the frequency of any word is inversely proportional to its rank in the frequency table (context p.62).",
+              "Why it matters: because frequency ∝ 1/rank, log[inv-freq(w)] is proportional to log(rank of w), which justifies using a logarithm in the inverse document frequency weight (context p.62: any weighting ∝ inv-freq works in theory, but log[inv-freq] works better empirically)."
+            ]
+          },
+          {
+            "heading": "tf-idf weighting (p.64)",
+            "points": [
+              "Term frequency: tf(w, d) = number of times word w appears in document d (p.64).",
+              "Inverse document frequency: idf(w, D) = log( |D| / |{d ∈ D : w appears in d}| ), where |D| is the number of documents in corpus D and the denominator is the number of documents containing w (p.64).",
+              "Rare words appear in few documents, so the ratio is large and idf is large; a word that appears in every document has idf = log(1) = 0 and is weighed out completely.",
+              "Motivation (context p.61): rare terms should be weighed more because uniqueness is important in similarity measures (analogy: in sociology, rare events create stronger ties).",
+              "Worked example: |D| = 1000 documents, word appears in 10 of them, log base 10: idf = log10(100) = 2; if tf = 3 in a document, tf-idf = 3 × 2 = 6."
+            ]
+          },
+          {
+            "heading": "Document-word matrix X (p.65)",
+            "points": [
+              "X is an n × m matrix: n documents (rows) by m words (columns); entry x_{i,j} can be the tf or the tf-idf of word j in document i (p.65).",
+              "Each document i is represented by its row vector d_i = (x_{i,1}, ..., x_{i,m}), a vector in word space of length m.",
+              "Each word j is represented by its column vector w_j = (x_{1,j}, ..., x_{n,j}), a vector in document space of length n.",
+              "This matrix is the input to both LSA (truncated SVD) and, as raw counts, to LDA in the exercises (p.74, p.82)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-lsa-svd",
+        "title": "Latent Semantic Analysis via (Truncated) SVD",
+        "sections": [
+          {
+            "heading": "LSA goal and SVD (p.66, p.69)",
+            "points": [
+              "Goal of LSA: analyze semantics between words. Intuition: words with similar semantics should appear in similar documents. Technique: Singular Value Decomposition (p.66).",
+              "SVD: X = U × Σ × Vᵀ with U: n × d, Σ: d × d, V: m × d; U and V are column-orthogonal matrices and Σ is diagonal (p.66, p.69).",
+              "Equivalent sum-of-rank-1 form: X = Σ_{i=1}^{d} σ_i u_i v_iᵀ, where σ_i are the singular values, u_i are the columns of U and v_i the columns of V (p.69).",
+              "In LSA the singular values are arranged in descending order σ_1 ≥ σ_2 ≥ ... ≥ σ_d (p.69). The slide asks 'Why?': ordering means the first terms carry the largest contributions to X, so keeping the top-k terms gives the best low-rank approximation (this is what truncated SVD on p.70 exploits)."
+            ]
+          },
+          {
+            "heading": "PCA vs SVD and the 3-matrix product (p.67, p.68)",
+            "points": [
+              "PCA uses eigen decomposition of the covariance matrix: Cov = Q × Λ × Qᵀ, where Λ = diag(λ_1, ..., λ_d) is the diagonal matrix of eigenvalues and Q = [e_1 e_2 ... e_d] is the matrix of eigenvectors (p.67).",
+              "SVD instead decomposes the (possibly non-square) data matrix itself: X = U Σ Vᵀ, with two different column-orthogonal matrices U and V (p.67).",
+              "Special case of a 3-matrix product (p.68): A: n × k, B: k × l, C: l × m. Writing A = [a_1 ... a_k] (columns) and C = [c_1 ... c_l]ᵀ, the product M = A × B × C = Σ_{i=1}^{k} Σ_{j=1}^{l} b_{i,j} a_i c_jᵀ, an n × m matrix built from k·l weighted rank-1 outer products.",
+              "When B is diagonal (as Σ is in SVD) only the i = j terms survive, which is exactly why U Σ Vᵀ = Σ_i σ_i u_i v_iᵀ (p.68 to p.69)."
+            ]
+          },
+          {
+            "heading": "Truncated (rank-reduced) SVD (p.70, p.71)",
+            "points": [
+              "Select the top-k singular values with k ≤ d and usually k ≪ d: X ≈ X_k = Σ_{i=1}^{k} σ_i u_i v_iᵀ = U_k Σ_k V_kᵀ (p.70).",
+              "U_k = [u_1 ... u_k] (n × k), Σ_k = diag(σ_1, ..., σ_k) (k × k), V_k = [v_1 ... v_k] (m × k) (p.70).",
+              "Figure on p.71: U is 8 × 6, Σ is 6 × 6 with diagonal shaded darker-to-lighter (largest to smallest singular value), Vᵀ is 6 × 7; the last 2 columns of U, the last 2 rows/columns of Σ and the last 2 rows of Vᵀ are highlighted in yellow as discarded, leaving k = 4.",
+              "Storage benefit (derived): for n = 1000 documents, m = 5000 words, k = 100, keeping U_k, Σ_k and V_k needs 1000·100 + 100 + 5000·100 = 600,100 numbers versus 5,000,000 for X."
+            ]
+          },
+          {
+            "heading": "Where are the topics? Similarities (p.72, p.73)",
+            "points": [
+              "The k retained dimensions are the topics t_1 ... t_k (p.72).",
+              "Row i of U_k (u_{i,1}, ..., u_{i,k}) is the topic representation of document i; row j of V_k (v_{j,1}, ..., v_{j,k}) is the topic representation of term j (p.72).",
+              "Pairwise document similarities and pairwise word similarities are computed on these topic representations using cosine similarity: cos(a, b) = a·b / (‖a‖‖b‖) = aᵀb / (‖a‖‖b‖) = bᵀa / (‖a‖‖b‖) (p.73).",
+              "Document similarity: sim(d_{i1}, d_{i2}) = Σ_p u_{i1,p} u_{i2,p} / ( sqrt(Σ_p u_{i1,p}²) · sqrt(Σ_p u_{i2,p}²) ), sums over p = 1..k (p.73).",
+              "Word similarity: same formula using rows of V_k: sim(w_{j1}, w_{j2}) = Σ_p v_{j1,p} v_{j2,p} / ( sqrt(Σ_p v_{j1,p}²) · sqrt(Σ_p v_{j2,p}²) ) (p.73). Example: topic vectors (3,4) and (4,3) give 24/25 = 0.96."
+            ]
+          },
+          {
+            "heading": "Exercise: TruncatedSVD in scikit-learn (p.74)",
+            "points": [
+              "tSVD = decomposition.TruncatedSVD(n_components = k, random_state = 2020) with k = 10; xtr = tSVD.fit_transform(x) (p.74).",
+              "fit_transform returns U_k Σ_k (n × k), not U_k: Sigma is recovered as the diagonal of the column norms of xtr, and U[:, i] = xtr[:, i] / Sigma[i, i] (equivalently U = xtr × Σ⁻¹) (p.74).",
+              "V = tSVD.components_.transpose(), i.e. components_ stores V_kᵀ (k × m) (p.74).",
+              "Sanity check on p.74: U and V are column-orthonormal, so ‖UᵀU − I_k‖ and ‖VᵀV − I_k‖ should both be (numerically) 0."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-truncated-svd-pca-link",
+        "title": "Truncated SVD and PCA (Optional Reading)",
+        "sections": [
+          {
+            "heading": "Document and word similarity matrices (p.75, p.76)",
+            "points": [
+              "XXᵀ (n × n) has entries d_iᵀ d_j: the Document Similarity Matrix (dot products between document rows) (p.75).",
+              "XᵀX (m × m) has entries w_iᵀ w_j: the Word Similarity Matrix (dot products between word columns) (p.76).",
+              "These slides are marked Optional Reading."
+            ]
+          },
+          {
+            "heading": "Eigen-structure via SVD (p.77, p.78)",
+            "points": [
+              "If X = U Σ Vᵀ, then XXᵀ = U Σ VᵀV Σ Uᵀ = U Σ² Uᵀ and XᵀX = V Σ UᵀU Σ Vᵀ = V Σ² Vᵀ, using column-orthogonality (VᵀV = I, UᵀU = I) (p.77).",
+              "So the u_i are eigenvectors of the document similarity matrix and the v_i are eigenvectors of the word similarity matrix, both with eigenvalues σ_1², σ_2², ..., σ_d² (p.77). Example: σ_1 = 3 gives eigenvalue 9.",
+              "Truncation carries over: XXᵀ ≈ U_k Σ_k² U_kᵀ and XᵀX ≈ V_k Σ_k² V_kᵀ, which is the k-dimensional PCA of XXᵀ and XᵀX (p.78).",
+              "Why it matters: LSA's truncated SVD of X simultaneously gives the top-k principal eigen-structure of both document-document and word-word similarity, linking LSA to PCA (compare Cov = QΛQᵀ on p.67)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-lda",
+        "title": "Latent Dirichlet Allocation (LDA)",
+        "sections": [
+          {
+            "heading": "What LDA learns and why priors (p.80)",
+            "points": [
+              "LDA aims to train two distributions: the topic distribution over documents (per document, which topics it contains) and the word distribution over topics (per topic, which words it uses) (p.80).",
+              "LDA introduces a prior distribution, the Dirichlet distribution, to smooth these two distributions, which reduces overfitting and gives better performance (p.80)."
+            ]
+          },
+          {
+            "heading": "Plate diagram and generative process (p.81)",
+            "points": [
+              "Variables: α = document-topic prior; β = topic-word prior; θ_d = topic distribution for document d; φ_k = word distribution for topic k; z_dn = topic of token n in document d; w_dn = observed word (the only shaded/observed node). M documents, K topics, N_d words in document d (p.81).",
+              "Plates: φ_k is repeated K times; θ_d is inside the M (document) plate; z_dn and w_dn are inside the nested N_d (token) plate (p.81).",
+              "Generative process: for each topic k = 1..K draw φ_k ∼ Dirichlet(β). For each document d = 1..M draw θ_d ∼ Dirichlet(α); then for each token n = 1..N_d draw z_dn ∼ Categorical(θ_d) and draw w_dn ∼ Categorical(φ_{z_dn}) (p.81).",
+              "Size intuition (derived): with M = 1000 documents, K = 10 topics and a 5000-word vocabulary, there are 1000 θ_d vectors of length 10 (10,000 values) and 10 φ_k vectors of length 5000 (50,000 values)."
+            ]
+          },
+          {
+            "heading": "Exercise: LDA in scikit-learn (p.82)",
+            "points": [
+              "Input uses raw counts: CountVectorizer(min_df = 0.01, max_df = 0.5, stop_words = 'english'), i.e. drop words in fewer than 1% or more than 50% of documents and English stop words; x = fit_transform(news_article) (p.82).",
+              "lda = decomposition.LatentDirichletAllocation(n_components = k, random_state = 2020) with k = 10; xtr = lda.fit_transform(x) gives the document-topic representation (n × k) (p.82).",
+              "topic_word = lda.components_ (k × m); the code divides each column j by its sum, then for each topic sorts words by weight and prints the top 10 words with vocab[...] (p.82)."
+            ]
+          },
+          {
+            "heading": "Why topic models? (p.83)",
+            "points": [
+              "Main use: topic discovery in document collections (p.83).",
+              "Other applications listed: gene expression analysis, image/video annotation, consumer behaviour analysis, user profiling (p.83)."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w9-word2vec",
+        "title": "Word Embedding: Word2Vec (CBOW and Skip-gram)",
+        "sections": [
+          {
+            "heading": "Two models and the context window (p.85, p.86)",
+            "points": [
+              "Word2Vec = two neural network models: Continuous Bag Of Words (CBOW) predicts the center word from the (bag of) context words; Skip-gram (SG) predicts the context ('outside') words, position independent, given the center word (p.85). Figure: CBOW arrows from 'the, man, his, son' into 'loves'; Skip-gram arrows from 'loves' out to 'the, man, his, son'.",
+              "Training samples for 'The quick brown fox jumps over the lazy dog.': CBOW gives ((quick, brown, ___, jump, over), fox); Skip-gram gives (fox, quick), (fox, brown), (fox, jump), (fox, over) (p.86).",
+              "Context size = maximum number of surrounding words considered for each input/target word; context size 2 means 2 words on the left and 2 on the right (p.86).",
+              "Edge words get fewer pairs: 'The' gives (the, quick), (the, brown); 'quick' gives 3 pairs; 'brown' and 'fox' give 4 each (p.86). Over the whole 9-word sentence with window 2 there are 2+3+4+4+4+4+4+3+2 = 30 skip-gram pairs (derived)."
+            ]
+          },
+          {
+            "heading": "CBOW (p.87)",
+            "points": [
+              "For each center word: generate a count vector over the context window, aggregate the input embeddings of the context words weighted by counts, and use this aggregated vector to predict the center word by SoftMax (p.87).",
+              "Figure: context 'the cat [sat] on the' gives a count vector in ℕ^D with 'the' = 2, 'cat' = 1, 'on' = 1; W maps it to a hidden vector in ℝ^d; W′ maps back to ℝ^D scores, softmax peaks at [sat] (p.87).",
+              "Objective: J(W, W′) = −(1/T) Σ_{t=1}^{T} log P(w_t | Context(w_t); W, W′), with Context(w_t) = (w_{t−m}, ..., w_{t−1}, w_{t+1}, ..., w_{t+m}) (p.87)."
+            ]
+          },
+          {
+            "heading": "Skip-gram (p.88)",
+            "points": [
+              "Given a center word, retrieve its input embedding from a look-up table, then calculate the probability of each word in the context window (p.88).",
+              "Figure: one-hot input over 10,000 positions (1 at 'ants'), hidden layer of 300 linear neurons, output softmax classifier of 10,000 neurons giving the probability that a randomly chosen nearby word is 'abandon', 'ability', ..., 'zone' (p.88).",
+              "Objective: J(W, W′) = −(1/T) Σ_{t=1}^{T} Σ_{−m≤j≤m, j≠0} log P(w_{t+j} | w_t; W, W′) (p.88).",
+              "The slide asks 'Is it very slow?': each prediction requires a softmax over the full vocabulary (10,000 outputs in the figure), and Skip-gram makes one such prediction per context word, so cost scales with vocabulary size times window size (p.88)."
+            ]
+          },
+          {
+            "heading": "Architecture dimensions, input vs output embeddings (p.89, p.90, p.91)",
+            "points": [
+              "Notation (p.89): V = vocabulary size, C = number of context words, N = embedding dimension; input matrix W is V × N and output matrix W′ is N × V. CBOW: C one-hot inputs (C×V-dim) share W into one N-dim hidden layer, output V-dim. Skip-gram: one V-dim input, N-dim hidden, C output panels (C×V-dim) sharing W′.",
+              "Parameter count (derived): V = 10,000 and N = 300 give W with 3,000,000 weights and W′ with another 3,000,000, 6,000,000 total.",
+              "The hidden layer is linear; with one-hot input x the hidden vector h = Eᵀx is just a row of the input-embedding matrix E (|V| × N), e.g. h = E_2 for x_2, so it works like a lookup table (p.90).",
+              "Output scores: u = O h; the score for word 3 is u_3 = O_3 · h = O_3 · E_2, followed by softmax to get y (p.90).",
+              "Input embeddings represent words as context words in CBOW or center words in Skip-gram; output embeddings represent words as predicted targets in CBOW or context words in Skip-gram. After training, usually the input-embedding matrix is taken as the final word embeddings for downstream tasks (p.90)."
+            ]
+          },
+          {
+            "heading": "Meaning of words in embedding space (p.91)",
+            "points": [
+              "Figure (p.91): in 3-D embedding space, the offset man → woman is parallel to king → queen (gender relation), and walking → walked is parallel to swimming → swam (verb tense relation).",
+              "Why it matters: semantic and syntactic relations are captured as consistent vector directions, so similar relationships correspond to similar vector offsets."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

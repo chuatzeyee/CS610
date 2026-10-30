@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, ClipboardCheck, Sigma, FlaskConical, CalendarDays, Gamepad2, ArrowRight } from 'lucide-react'
+import { BookOpen, ClipboardCheck, Sigma, FlaskConical, CalendarDays, Gamepad2, FileText, ArrowRight } from 'lucide-react'
 import { sessions } from '../data/topics'
 import { definitions } from '../data/definitions'
 import { questions } from '../data/quiz'
@@ -7,13 +7,14 @@ import { levels } from '../data/mathdrills'
 import { labs } from '../data/lab'
 import { course } from '../data/course'
 import { kahootQuestions } from '../data/kahoot'
+import { examQuestions } from '../data/exam'
 
 const cards = [
   {
     to: '/topics',
     icon: BookOpen,
     title: 'Topics & Glossary',
-    description: 'Every lecture segment (Weeks 1–8) distilled into revision notes, plus a searchable glossary of key terms',
+    description: 'Every lecture segment (Weeks 1–9) distilled into revision notes, plus a searchable glossary of key terms',
     count: sessions.reduce((sum, s) => sum + s.topics.length, 0) + definitions.length,
     unit: 'entries',
   },
@@ -50,6 +51,14 @@ const cards = [
     unit: 'questions',
   },
   {
+    to: '/exam',
+    icon: FileText,
+    title: 'Sample Exam',
+    description: 'The official sample paper (7 questions, 70 marks) with worked model answers you reveal after attempting each part, plus the exam format and strategy',
+    count: examQuestions.length,
+    unit: 'questions',
+  },
+  {
     to: '/course',
     icon: CalendarDays,
     title: 'Course Map',
@@ -75,11 +84,11 @@ export default function Home() {
           {course.courseTitle}
         </p>
         <p className="text-ink-secondary max-w-2xl mx-auto leading-relaxed">
-          Study companion for SMU CS610 — Weeks 1–8: the ML landscape, Bayesian
+          Study companion for SMU CS610 — Weeks 1–9: the ML landscape, Bayesian
           learning and naive Bayes, probability, linear algebra and information
           theory foundations, linear regression and regularization, logistic
           regression, decision trees and ensemble methods, neural networks, convolutional neural
-          networks, sequence models, attention and Transformers, and generative AI — plus the
+          networks, sequence models, attention and Transformers, generative AI, and unsupervised learning — plus the
           weekly lab notebooks and Kahoot-style practice.
         </p>
       </div>

@@ -1045,6 +1045,56 @@ function genGenAI(tier: Tier): Problem {
   }
 }
 
+function genUnsupervised(tier: Tier): Problem {
+  if (tier === 1) {
+    const a = Array.from({ length: 3 }, () => ri(0, 4)), b = Array.from({ length: 3 }, () => ri(0, 4))
+    if (Math.max(...a) === 0) a[0] = 1
+    if (Math.max(...b) === 0) b[1] = 1
+    const dot = a.reduce((s, x, i) => s + x * b[i], 0)
+    const na = Math.hypot(...a), nb = Math.hypot(...b)
+    const answer = dot / (na * nb)
+    return {
+      prompt: `Two word vectors a = ${vecStr(a)} and b = ${vecStr(b)}. Compute their cosine similarity.`,
+      answerLabel: 'cos(a, b)',
+      answer,
+      steps: [
+        `a·b = ${a.map((x, i) => `${x}×${b[i]}`).join(' + ')} = ${dot}.`,
+        `|a| = √${a.reduce((s, x) => s + x * x, 0)} = ${fmt(na)}; |b| = √${b.reduce((s, x) => s + x * x, 0)} = ${fmt(nb)}.`,
+        `cos = ${dot} / (${fmt(na)} × ${fmt(nb)}) = ${fmt(answer)}. Cosine ignores vector length, so a long and a short document on the same topic still score high.`,
+      ],
+    }
+  }
+  if (tier === 2) {
+    const lams = shuffle([ri(20, 60), ri(5, 20), ri(1, 5), ri(1, 4)]).sort((x, y) => y - x)
+    const k = pick([1, 2])
+    const answer = lams.slice(0, k).reduce((s, x) => s + x, 0) / lams.reduce((s, x) => s + x, 0)
+    return {
+      prompt: `PCA on 4 features gives covariance eigenvalues ${lams.join(', ')}. What fraction of the total variance do the first ${k} principal component${k > 1 ? 's' : ''} explain?`,
+      answerLabel: 'explained variance ratio',
+      answer,
+      steps: [
+        `Each eigenvalue is the variance along its principal direction; the total variance is their sum, ${lams.join(' + ')} = ${lams.reduce((s, x) => s + x, 0)}.`,
+        `First ${k}: ${lams.slice(0, k).join(' + ')} = ${lams.slice(0, k).reduce((s, x) => s + x, 0)}, so the ratio is ${fmt(answer)}.`,
+      ],
+    }
+  }
+  const pts = Array.from({ length: 5 }, () => [ri(0, 10), ri(0, 10)])
+  const c1 = [ri(0, 4), ri(0, 4)], c2 = [ri(6, 10), ri(6, 10)]
+  const d = (p: number[], c: number[]) => Math.hypot(p[0] - c[0], p[1] - c[1])
+  const inA = pts.filter(p => d(p, c1) <= d(p, c2))
+  if (inA.length === 0) inA.push(pts[0])
+  const answer = inA.reduce((s, p) => s + p[0], 0) / inA.length
+  return {
+    prompt: `Exam-style k-means step: centres A = (${c1}) and B = (${c2}); points ${pts.map(p => `(${p})`).join(', ')}. Assign each point to its nearest centre (ties go to A), then update A. What is the new x-coordinate of centre A?`,
+    answerLabel: 'new A x',
+    answer,
+    steps: [
+      ...pts.map(p => `(${p}): to A ${fmt(d(p, c1))}, to B ${fmt(d(p, c2))}, so ${d(p, c1) <= d(p, c2) ? 'A' : 'B'}.`),
+      `Cluster A = ${inA.map(p => `(${p})`).join(', ')}; new centre x = mean of their x values = ${fmt(answer)}.`,
+    ],
+  }
+}
+
 export const levels: readonly DrillLevel[] = [
   {
     id: 'fit',
@@ -1189,5 +1239,13 @@ export const levels: readonly DrillLevel[] = [
     concept: 'Score a reward-model comparison, add noise to a pixel with the DDPM forward process, and measure generated-image quality with FID.',
     formula: 'loss = −log σ(r_w − r_l)    x_t = √ᾱ_t x₀ + √(1−ᾱ_t) ε    FID₁D = (μ−μ\')² + (σ−σ\')²',
     generate: genGenAI,
+  },
+  {
+    id: 'unsupervised',
+    week: 'W9',
+    title: 'Unsupervised: cosine, PCA & k-means',
+    concept: 'Compare word vectors with cosine similarity, read explained variance off PCA eigenvalues, and run one k-means assign-and-update step by hand.',
+    formula: 'cos = a·b / (|a||b|)    explained = Σ top-k λ / Σ λ    k-means: assign to nearest centre, centre = mean of its points',
+    generate: genUnsupervised,
   },
 ]

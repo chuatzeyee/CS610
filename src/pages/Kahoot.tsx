@@ -49,7 +49,7 @@ function reviewRound(): KahootQuestion[] {
 }
 
 const setsWithAll = [
-  { id: 'review', title: `Weeks 1 to 8 mixed review (${REVIEW_SIZE} questions)`, blurb: 'A fresh random round drawn evenly from every week, like the cumulative in-class Kahoot.' },
+  { id: 'review', title: `Weeks 1 to 9 mixed review (${REVIEW_SIZE} questions)`, blurb: 'A fresh random round drawn evenly from every week, like the cumulative in-class Kahoot.' },
   { id: 'all', title: 'Everything (all sets)', blurb: 'Every question from all sets, shuffled.' },
   ...kahootSets,
 ].map(s => ({

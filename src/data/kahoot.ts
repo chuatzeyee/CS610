@@ -71,6 +71,11 @@ export const kahootSets: readonly KahootSet[] = [
     blurb: "Quick-fire checks on RNNs, LSTM gates, seq2seq, self-attention, masking, multi-head attention, BERT and ViT.",
   },
   {
+    id: 'w9',
+    title: 'Week 9: Unsupervised learning & embeddings',
+    blurb: 'k-means, EM and DBSCAN, PCA, the vector space model and tf-idf, SVD and LSA, LDA topics, and word embeddings, from 09_embedding.pdf.',
+  },
+  {
     id: 'genai',
     title: 'Week 8: Generative AI',
     blurb: 'GANs, the LLM training pipeline (pre-training, instruction tuning, RLHF), diffusion models, Stable Diffusion and FID, from 08_genAI.pdf.',
@@ -3052,4 +3057,451 @@ const review: KahootQuestion[] = [
   }
 ]
 
-export const kahootQuestions: readonly KahootQuestion[] = [...instructorDt, ...instructor, ...week6, ...week8, ...review]
+const week9: KahootQuestion[] = [
+  {
+    "id": "k-w9-1",
+    "set": "w9",
+    "question": "Unsupervised learning training data includes the desired outputs.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Unsupervised data has no desired outputs; a few outputs is semi-supervised, all outputs is supervised.",
+    "ref": "09_embedding.pdf p. 4"
+  },
+  {
+    "id": "k-w9-2",
+    "set": "w9",
+    "question": "BERT is listed in the lecture as a representation learning method.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "Representation learning examples are PCA, ICA, SimCLR, BERT and autoencoders.",
+    "ref": "09_embedding.pdf p. 5"
+  },
+  {
+    "id": "k-w9-3",
+    "set": "w9",
+    "question": "Good clustering: intra-cluster distance should be...",
+    "options": [
+      "Maximised",
+      "Minimised",
+      "Equal to inter-cluster",
+      "Ignored"
+    ],
+    "answerIndex": 1,
+    "explanation": "Intra-cluster distances are minimised and inter-cluster distances are maximised.",
+    "ref": "09_embedding.pdf p. 15"
+  },
+  {
+    "id": "k-w9-4",
+    "set": "w9",
+    "question": "In k-means a point can belong to two clusters at once.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Hard memberships with Σ_j m_ij = 1 mean each point is in exactly one cluster.",
+    "ref": "09_embedding.pdf p. 18"
+  },
+  {
+    "id": "k-w9-5",
+    "set": "w9",
+    "question": "k-means cluster owns (1,2), (3,4), (5,0). New centre?",
+    "options": [
+      "(9, 6)",
+      "(3, 3)",
+      "(3, 2)",
+      "(2, 3)"
+    ],
+    "answerIndex": 2,
+    "explanation": "The centre is the mean: (9/3, 6/3) = (3, 2).",
+    "ref": "09_embedding.pdf p. 19"
+  },
+  {
+    "id": "k-w9-6",
+    "set": "w9",
+    "question": "1D points 1, 2, 3 in one cluster with centre 2. Within-cluster SSE?",
+    "options": [
+      "0",
+      "1",
+      "3",
+      "2"
+    ],
+    "answerIndex": 3,
+    "explanation": "(1−2)² + 0 + (3−2)² = 2.",
+    "ref": "09_embedding.pdf p. 18"
+  },
+  {
+    "id": "k-w9-7",
+    "set": "w9",
+    "question": "k-means automatically discovers the best number of clusters k.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "The user must specify k up front, e.g. k = 5; elbow or silhouette help choose it.",
+    "ref": "09_embedding.pdf p. 23"
+  },
+  {
+    "id": "k-w9-8",
+    "set": "w9",
+    "question": "k-means++: D = 1, 2, 3. Probability the D = 3 point is picked?",
+    "options": [
+      "1/3",
+      "1/2",
+      "9/14",
+      "3/14"
+    ],
+    "answerIndex": 2,
+    "explanation": "Probability is D² / ΣD² = 9 / (1 + 4 + 9) = 9/14.",
+    "ref": "09_embedding.pdf p. 28"
+  },
+  {
+    "id": "k-w9-9",
+    "set": "w9",
+    "question": "k-means++ guarantees the globally optimal clustering.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "It is only O(log k) competitive: expected cost at most about log k times the optimum.",
+    "ref": "09_embedding.pdf p. 28"
+  },
+  {
+    "id": "k-w9-10",
+    "set": "w9",
+    "question": "Elbow method: what is plotted against k?",
+    "options": [
+      "Silhouette score",
+      "Sum of squared errors",
+      "Accuracy",
+      "Number of iterations"
+    ],
+    "answerIndex": 1,
+    "explanation": "SSE is plotted against k and you pick where the slope changes from steep to shallow.",
+    "ref": "09_embedding.pdf p. 29"
+  },
+  {
+    "id": "k-w9-11",
+    "set": "w9",
+    "question": "Silhouette with a(i) = 2, b(i) = 5?",
+    "options": [
+      "0.6",
+      "1.5",
+      "0.4",
+      "−0.6"
+    ],
+    "answerIndex": 0,
+    "explanation": "s = (5 − 2) / max(2, 5) = 3/5 = 0.6.",
+    "ref": "09_embedding.pdf p. 30"
+  },
+  {
+    "id": "k-w9-12",
+    "set": "w9",
+    "question": "A silhouette value near −1 means the point fits its cluster well.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Near −1 means the point is not fitted to its cluster; near 1 means it is far from neighbouring clusters.",
+    "ref": "09_embedding.pdf p. 30"
+  },
+  {
+    "id": "k-w9-13",
+    "set": "w9",
+    "question": "k-means always gives straight-ish boundaries. Can it correctly separate two interleaved crescents?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. p.32 shows k-means with k=2 cutting across the two crescent shapes because it assumes spherical clusters.",
+    "ref": "09_embedding.pdf p. 32"
+  },
+  {
+    "id": "k-w9-14",
+    "set": "w9",
+    "question": "A = {0,1}, B = {4,7}. Single-linkage distance?",
+    "options": [
+      "3",
+      "5",
+      "7",
+      "4"
+    ],
+    "answerIndex": 0,
+    "explanation": "Single linkage uses the minimum pairwise distance: |1 − 4| = 3. 7 would be complete linkage.",
+    "ref": "09_embedding.pdf p. 36"
+  },
+  {
+    "id": "k-w9-15",
+    "set": "w9",
+    "question": "Agglomerative clustering starts with all points in one cluster and splits.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "False. Agglomerative starts with singletons and merges; top-down splitting is the divisive approach.",
+    "ref": "09_embedding.pdf p. 36"
+  },
+  {
+    "id": "k-w9-16",
+    "set": "w9",
+    "question": "Can DBSCAN find clusters of arbitrary shape and leave outliers as noise?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 0,
+    "explanation": "Yes. Clusters grow through dense neighbourhoods, and points not density connected to anything are labelled noise, unlike k-means.",
+    "ref": "09_embedding.pdf p. 39"
+  },
+  {
+    "id": "k-w9-17",
+    "set": "w9",
+    "question": "Which pair are DBSCAN's parameters?",
+    "options": [
+      "k and max_iter",
+      "ε and min_sample",
+      "linkage and k",
+      "λ and k"
+    ],
+    "answerIndex": 1,
+    "explanation": "ε sets the neighbourhood size and min_sample the minimum points to form a cluster; DBSCAN needs no k.",
+    "ref": "09_embedding.pdf p. 39"
+  },
+  {
+    "id": "k-w9-18",
+    "set": "w9",
+    "question": "u = (0.6, 0.8), x = (3, 4). Projection z = uᵀx?",
+    "options": [
+      "7",
+      "4.8",
+      "5",
+      "1.4"
+    ],
+    "answerIndex": 2,
+    "explanation": "0.6·3 + 0.8·4 = 1.8 + 3.2 = 5.",
+    "ref": "09_embedding.pdf p. 42"
+  },
+  {
+    "id": "k-w9-19",
+    "set": "w9",
+    "question": "Total variance 10, PCA captures 7. Reconstruction error?",
+    "options": [
+      "17",
+      "3",
+      "0.7",
+      "7"
+    ],
+    "answerIndex": 1,
+    "explanation": "Variance of data = captured variance + reconstruction error, so 10 − 7 = 3.",
+    "ref": "09_embedding.pdf p. 44"
+  },
+  {
+    "id": "k-w9-20",
+    "set": "w9",
+    "question": "PCA keeps the eigenvectors with the LARGEST eigenvalues of the covariance matrix.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "True. Largest eigenvalues = directions of greatest variance; keeping the smallest would discard most of the information.",
+    "ref": "09_embedding.pdf p. 53"
+  },
+  {
+    "id": "k-w9-21",
+    "set": "w9",
+    "question": "Eigenvalues 6, 3, 1. Variance captured by the first PC?",
+    "options": [
+      "90%",
+      "30%",
+      "100%",
+      "60%"
+    ],
+    "answerIndex": 3,
+    "explanation": "6 / (6+3+1) = 0.6. 90% is for the top two PCs.",
+    "ref": "09_embedding.pdf p. 53"
+  },
+  {
+    "id": "k-w9-22",
+    "set": "w9",
+    "question": "Σ = diag(4,1), x − x̄ = (2,1). Mahalanobis distance?",
+    "options": [
+      "√5",
+      "2",
+      "√2",
+      "1"
+    ],
+    "answerIndex": 2,
+    "explanation": "√(4/4 + 1/1) = √2. √5 is plain Euclidean distance.",
+    "ref": "09_embedding.pdf p. 51"
+  },
+  {
+    "id": "k-w9-23",
+    "set": "w9",
+    "question": "1000 docs, word in 10 docs. log10 inv-freq?",
+    "options": [
+      "1",
+      "2",
+      "100",
+      "3"
+    ],
+    "answerIndex": 1,
+    "explanation": "inv-freq = 1000/10 = 100; log10(100) = 2.",
+    "ref": "09_embedding.pdf p. 61"
+  },
+  {
+    "id": "k-w9-24",
+    "set": "w9",
+    "question": "Should a word appearing in every document get a high IDF weight?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "answerIndex": 1,
+    "explanation": "No. inv-freq = |D|/|D| = 1 and log(1) = 0; rare terms are weighted more.",
+    "ref": "09_embedding.pdf p. 61"
+  },
+  {
+    "id": "k-w9-25",
+    "set": "w9",
+    "question": "Zipf's law plot: log(frequency) vs log(rank) is roughly a straight line.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "Frequency ∝ 1/rank gives a straight, negatively sloped line on log-log axes.",
+    "ref": "09_embedding.pdf p. 63"
+  },
+  {
+    "id": "k-w9-26",
+    "set": "w9",
+    "question": "In the document-word matrix, each document is a column vector.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Documents are rows; words are columns.",
+    "ref": "09_embedding.pdf p. 65"
+  },
+  {
+    "id": "k-w9-27",
+    "set": "w9",
+    "question": "Truncated SVD: U is 8×6, keep k = 4. Shape of U_k?",
+    "options": [
+      "8×4",
+      "4×6",
+      "8×2",
+      "4×4"
+    ],
+    "answerIndex": 0,
+    "explanation": "Keep the first 4 columns of U: 8×4.",
+    "ref": "09_embedding.pdf p. 71"
+  },
+  {
+    "id": "k-w9-28",
+    "set": "w9",
+    "question": "σ_1 = 3. Eigenvalue of XXᵀ for eigenvector u_1?",
+    "options": [
+      "3",
+      "6",
+      "9",
+      "√3"
+    ],
+    "answerIndex": 2,
+    "explanation": "XXᵀ = UΣ²Uᵀ, so eigenvalue = σ_1² = 9.",
+    "ref": "09_embedding.pdf p. 77"
+  },
+  {
+    "id": "k-w9-29",
+    "set": "w9",
+    "question": "In LDA, the only observed variable is w_dn.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 0,
+    "explanation": "w_dn is the shaded node; θ_d, φ_k and z_dn are latent.",
+    "ref": "09_embedding.pdf p. 81"
+  },
+  {
+    "id": "k-w9-30",
+    "set": "w9",
+    "question": "In LDA, θ_d is drawn from which distribution?",
+    "options": [
+      "Dirichlet(β)",
+      "Categorical(φ)",
+      "Dirichlet(α)",
+      "Gaussian"
+    ],
+    "answerIndex": 2,
+    "explanation": "θ_d ∼ Dirichlet(α), the document-topic prior.",
+    "ref": "09_embedding.pdf p. 81"
+  },
+  {
+    "id": "k-w9-31",
+    "set": "w9",
+    "question": "CBOW predicts context words from the center word.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "That is Skip-gram. CBOW predicts the center word from the context.",
+    "ref": "09_embedding.pdf p. 85"
+  },
+  {
+    "id": "k-w9-32",
+    "set": "w9",
+    "question": "Context size 2: how many skip-gram pairs for center word 'fox' mid-sentence?",
+    "options": [
+      "2",
+      "4",
+      "5",
+      "8"
+    ],
+    "answerIndex": 1,
+    "explanation": "2 words left + 2 words right = 4 pairs, e.g. (fox, quick), (fox, brown), (fox, jumps), (fox, over).",
+    "ref": "09_embedding.pdf p. 86"
+  },
+  {
+    "id": "k-w9-33",
+    "set": "w9",
+    "question": "V = 10,000, N = 300. How many weights in input matrix W?",
+    "options": [
+      "10,300",
+      "300,000",
+      "3,000,000",
+      "6,000,000"
+    ],
+    "answerIndex": 2,
+    "explanation": "W is V×N = 10,000 × 300 = 3,000,000; 6,000,000 would include W′ too.",
+    "ref": "09_embedding.pdf p. 89"
+  },
+  {
+    "id": "k-w9-34",
+    "set": "w9",
+    "question": "The output-embedding matrix is usually kept as the final word embeddings.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answerIndex": 1,
+    "explanation": "Usually the input-embedding matrix is taken as the final word embeddings.",
+    "ref": "09_embedding.pdf p. 90"
+  }
+]
+
+export const kahootQuestions: readonly KahootQuestion[] = [...instructorDt, ...instructor, ...week6, ...week8, ...review, ...week9]

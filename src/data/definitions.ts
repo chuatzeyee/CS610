@@ -2435,5 +2435,320 @@ export const definitions: readonly Definition[] = [
     "definition": "The process of designing and refining prompts or instructions given to a language model, such as ChatGPT, to elicit desired responses or guide its behaviour.",
     "example": "Prompts sold on PromptBase.",
     "source": "GenAI"
+  },
+  {
+    "term": "Anomaly detection",
+    "definition": "Identifying unexpected items or events in a dataset that differ from the norm.",
+    "example": "One-class SVM, Local Outlier Factor.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Intra-cluster distance",
+    "definition": "Distance between objects within the same cluster; a good clustering minimises it.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Inter-cluster distance",
+    "definition": "Distance between objects (or clusters) in different clusters; a good clustering maximises it.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Proximity measure",
+    "definition": "The similarity or distance measure used to compare two objects; the clustering algorithm must be compatible with it.",
+    "example": "Squared Euclidean distance in k-means.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Partitioning clustering",
+    "definition": "Clustering that decomposes N objects into k clusters to optimise an objective function, with each point in exactly one cluster.",
+    "example": "K-means, Gaussian Mixture Model.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Membership indicator m_ij",
+    "definition": "Binary variable equal to 1 if point x_i belongs to cluster j and 0 otherwise, with Σ_j m_ij = 1 for every point.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Centroid",
+    "definition": "The mean of the points assigned to a cluster, μ_j = Σ_i m_ij x_i / Σ_i m_ij; k-means moves each centre to its centroid.",
+    "example": "Points (1,2), (3,4), (5,0) have centroid (3,2).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "k-means",
+    "definition": "Partitioning algorithm that alternates between assigning each point to its nearest centre and moving each centre to the mean of its assigned points, minimising within-cluster squared distance.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "k-means++",
+    "definition": "Seeding method for k-means that picks the first centre uniformly at random and each subsequent centre with probability proportional to D(x)², spreading initial centres apart.",
+    "example": "O(log k) competitive with the optimal clustering.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "D(x)",
+    "definition": "In k-means++, the distance from point x to its nearest already-chosen centroid.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Elbow method",
+    "definition": "Plotting sum of squared errors against the number of clusters k and choosing the k where the curve bends from steep to shallow.",
+    "example": "Optimal k = 3 in the p.29 plot.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Sum of squared errors (SSE)",
+    "definition": "Total squared distance of points to their assigned cluster centres; the k-means objective and the y-axis of the elbow plot.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Silhouette score",
+    "definition": "Per-point measure s(i) = (b(i) − a(i)) / max{a(i), b(i)} in [−1, 1] of how well a point fits its own cluster versus the nearest other cluster.",
+    "example": "a = 2, b = 5 gives 0.6.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "a(i)",
+    "definition": "Mean distance of point i to all other points in its own cluster (cohesion term in the silhouette).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "b(i)",
+    "definition": "Minimum over all other clusters of the mean distance from point i to the points of that cluster (separation term in the silhouette).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Market segmentation",
+    "definition": "Dividing a broad target market into subsets of consumers, businesses or countries that share common needs, interests and priorities.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Community discovery",
+    "definition": "Using clustering on a social network to find groups of densely connected users.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Gaussian Mixture Model (GMM)",
+    "definition": "Clustering model where each cluster is a Gaussian with its own mean and covariance; the slides' remedy for k-means' spherical-cluster assumption.",
+    "example": "Elliptical, tilted, overlapping clusters on p.35.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Hierarchical clustering",
+    "definition": "Clustering that builds a hierarchy (tree) of clusters, either divisively (top-down splitting) or agglomeratively (bottom-up merging).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Dendrogram",
+    "definition": "Tree diagram representing a hierarchical clustering; cutting it at a given height yields a flat set of clusters.",
+    "example": "Iris dendrogram with a dashed cut line on p.37.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Agglomerative clustering",
+    "definition": "Bottom-up hierarchical clustering that starts with every point as a singleton cluster and repeatedly merges the closest clusters until one cluster remains.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Single linkage",
+    "definition": "Cluster distance defined as the minimum distance between any pair of elements from the two clusters.",
+    "example": "A={0,1}, B={4,7}: single linkage = 3.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Complete linkage",
+    "definition": "Cluster distance defined as the maximum distance between any pair of elements from the two clusters.",
+    "example": "A={0,1}, B={4,7}: complete linkage = 7.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Average linkage",
+    "definition": "Cluster distance defined as the mean of all pairwise distances between elements of the two clusters.",
+    "example": "A={0,1}, B={4,7}: average linkage = 5.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "DBSCAN",
+    "definition": "Density Based Spatial Clustering of Applications with Noise: forms clusters from dense regions separated by low-density regions, allowing arbitrary shapes and labelling isolated points as noise.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "ε (eps)",
+    "definition": "DBSCAN parameter giving the size of the neighbourhood around each data point.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "min_sample",
+    "definition": "DBSCAN parameter giving the minimum number of points in an ε-neighbourhood needed to form a cluster.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Noise (DBSCAN)",
+    "definition": "A point that is not density connected to any other object; DBSCAN leaves it unassigned rather than forcing it into a cluster.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Reconstruction error",
+    "definition": "Squared distance ||xi − x̃i||² between a point and its reconstruction x̃i = UUᵀxi from the reduced space; PCA minimises its sum.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Variance-covariance matrix",
+    "definition": "Σ = (1/n)ẌᵀẌ computed from mean-centred data Ẍ; a d×d matrix whose eigen-decomposition gives the PCA directions and variances.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Topic model",
+    "definition": "Unsupervised model that discovers topics, abstract contexts associated with sets of keywords, from a collection of documents.",
+    "example": "LSA (truncated SVD), PLSA, NMF, LDA.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Latent Semantic Analysis (LSA)",
+    "definition": "Topic-discovery technique based on truncated Singular Value Decomposition of the term-document matrix.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Latent Dirichlet Allocation (LDA)",
+    "definition": "Probabilistic topic model listed on p.56 as a key topic-discovery technique.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Bag of words / vector space model",
+    "definition": "Represents a document as a vector of term counts over the vocabulary, ignoring word order; queries live in the same space so retrieval uses vector similarity.",
+    "example": "(give, man, fish, feed, day, teach, lifetime) = (1,2,2,2,1,1,1).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Corpus",
+    "definition": "A set of documents.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Sparse vector",
+    "definition": "A vector in which most elements are zero, as in count vectors over a large vocabulary.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Inverse document frequency (inv-freq / IDF)",
+    "definition": "Term weight |D| / (number of documents containing w), usually used as its log, so rare terms are weighted more.",
+    "example": "1000 docs, word in 10: inv-freq 100, log10 = 2.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Zipf's law",
+    "definition": "In natural language, a word's frequency is inversely proportional to its rank in the frequency table, which motivates using log inv-freq.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Term frequency (tf)",
+    "definition": "tf(w, d) = the number of times word w appears in document d.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Inverse document frequency (idf)",
+    "definition": "idf(w, D) = log(|D| / number of documents in D containing w); large for rare words, 0 for words appearing in every document.",
+    "example": "1000 docs, word in 10: idf = log10(100) = 2.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "tf-idf",
+    "definition": "A term weight combining term frequency and inverse document frequency so that words frequent in a document but rare in the corpus get high weight; can be used as entries of the document-word matrix.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Document-word matrix",
+    "definition": "An n × m matrix X with documents as rows and words as columns; entry x_{i,j} is the tf or tf-idf of word j in document i, so documents are row vectors and words are column vectors.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Singular Value Decomposition (SVD)",
+    "definition": "Factorization X = U Σ Vᵀ with column-orthogonal U (n × d) and V (m × d) and diagonal Σ (d × d) holding singular values; equivalently X = Σ σ_i u_i v_iᵀ.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Singular values",
+    "definition": "The diagonal entries σ_i of Σ in an SVD; in LSA they are sorted descending (σ_1 ≥ ... ≥ σ_d) so the leading terms dominate the reconstruction.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Column-orthogonal matrix",
+    "definition": "A matrix whose columns are mutually orthogonal unit vectors, so UᵀU = I; U and V in SVD have this property.",
+    "example": "Checked on p.74 via ‖UᵀU − I‖ ≈ 0.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Truncated (rank-reduced) SVD",
+    "definition": "Keeping only the top-k singular values and their vectors (k ≤ d, usually k ≪ d) to approximate X ≈ X_k = U_k Σ_k V_kᵀ.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "LSA topics",
+    "definition": "The k retained dimensions of truncated SVD; rows of U_k give each document's topic representation and rows of V_k give each term's topic representation.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Cosine similarity",
+    "definition": "cos(a, b) = aᵀb / (‖a‖‖b‖); used in LSA to compare documents (rows of U_k) or words (rows of V_k) in topic space.",
+    "example": "(3,4) vs (4,3): 24/25 = 0.96.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Document similarity matrix",
+    "definition": "XXᵀ (n × n), whose entries are dot products d_iᵀd_j between document rows; its eigenvectors are the u_i of the SVD with eigenvalues σ_i².",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Word similarity matrix",
+    "definition": "XᵀX (m × m), whose entries are dot products w_iᵀw_j between word columns; its eigenvectors are the v_i of the SVD with eigenvalues σ_i².",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Dirichlet prior (α, β)",
+    "definition": "The prior distributions in LDA: α is the document-topic prior from which each θ_d is drawn, β is the topic-word prior from which each φ_k is drawn.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "θ_d and φ_k (LDA)",
+    "definition": "θ_d is the topic distribution of document d; φ_k is the word distribution of topic k.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "z_dn and w_dn (LDA)",
+    "definition": "z_dn is the latent topic assigned to token n of document d, drawn from Categorical(θ_d); w_dn is the observed word, drawn from Categorical(φ_{z_dn}).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Word2Vec",
+    "definition": "A word embedding method consisting of two shallow neural network models, CBOW and Skip-gram, trained on center/context word pairs.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Continuous Bag of Words (CBOW)",
+    "definition": "Word2Vec model that predicts the center word from the (bag of) context words by aggregating their input embeddings with counts and applying softmax.",
+    "example": "((quick, brown, ___, jump, over), fox).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Skip-gram",
+    "definition": "Word2Vec model that, given a center word, predicts each (position independent) context word in the window.",
+    "example": "(fox, quick), (fox, brown), (fox, jump), (fox, over).",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Context window (context size)",
+    "definition": "The maximum number of surrounding words considered on each side of a target word; size 2 means 2 words left and 2 words right.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Input embedding",
+    "definition": "Row of the input matrix W/E (V × N) representing a word when it is a context word in CBOW or a center word in Skip-gram; usually taken as the final word embedding.",
+    "source": "Unsupervised"
+  },
+  {
+    "term": "Output embedding",
+    "definition": "Column of the output matrix W′/O (N × V) representing a word when it is a predicted target in CBOW or a context word in Skip-gram.",
+    "source": "Unsupervised"
   }
 ]
