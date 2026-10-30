@@ -8,10 +8,12 @@ import {
   CalendarDays,
   Gamepad2,
   FileText,
+  Search,
 } from 'lucide-react'
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home },
+  { to: '/search', label: 'Search', icon: Search },
   { to: '/topics', label: 'Topics', icon: BookOpen },
   { to: '/quiz', label: 'Quiz', icon: ClipboardCheck },
   { to: '/math', label: 'Math', icon: Sigma },

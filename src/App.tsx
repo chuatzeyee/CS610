@@ -9,6 +9,7 @@ import Lab from './pages/Lab'
 import Course from './pages/Course'
 import Kahoot from './pages/Kahoot'
 import Exam from './pages/Exam'
+import Search from './pages/Search'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/lab" element={<Lab />} />
           <Route path="/kahoot" element={<Kahoot />} />
           <Route path="/exam" element={<Exam />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/course" element={<Course />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

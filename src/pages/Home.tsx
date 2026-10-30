@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, ClipboardCheck, Sigma, FlaskConical, CalendarDays, Gamepad2, FileText, ArrowRight } from 'lucide-react'
+import { BookOpen, ClipboardCheck, Sigma, FlaskConical, CalendarDays, Gamepad2, FileText, Search, ArrowRight } from 'lucide-react'
 import { sessions } from '../data/topics'
 import { definitions } from '../data/definitions'
 import { questions } from '../data/quiz'
@@ -10,6 +10,14 @@ import { kahootQuestions } from '../data/kahoot'
 import { examQuestions } from '../data/exam'
 
 const cards = [
+  {
+    to: '/search',
+    icon: Search,
+    title: 'Search Everything',
+    description: 'One search box across lecture notes, glossary, quiz and Kahoot questions, formulas, lab walkthroughs and the sample exam',
+    count: sessions.reduce((sum, s) => sum + s.topics.length, 0) + definitions.length + questions.length + kahootQuestions.length + examQuestions.length,
+    unit: 'items',
+  },
   {
     to: '/topics',
     icon: BookOpen,
