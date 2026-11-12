@@ -182,8 +182,9 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Verified mini answers (check your method)',
+      title: 'Method answers',
       lines: [
+        'Unsure of a formula or keys? Run these inputs first. Same result = method right; now use the exam numbers.',
         'GNB Q2 model, x=(2,4): coef 1/√(2π×2.64) = 0.2455',
         ' c0: e^(−0.16/5.28)=0.9702, dens 0.2382, ×2 feats: 0.0567',
         ' c1: e^(−1.96/5.28)=0.6899, dens 0.1694, ×2 feats: 0.0287',
@@ -199,10 +200,6 @@ export const cheatSheet: CheatSheet = {
         ' ∂J/∂W1 rows (−.5,−.5,−1); η=0.1: ŷ=1.4638, J=0.2875',
         'Attn q=(1,0,2,1): q.k = 1,3,4; ÷√4 = 0.5,1.5,2',
         ' softmax (0.1220,0.3315,0.5465); v=(10,2,6): out 5.1618',
-        'Q5 p=64,s1=9,s2=5,f1=15,f2=27: pool1 28 to 30, pool2 12',
-        ' to 11; params 13812 to 33972 (+20160 = f1(81−25)(24))',
-        'Q7 it1 centres (4.6,8.2),(9.4,6.8); it2 (5,9.6),(9,5.4)',
-        ' C and H switch in it2, so NOT converged; stable from it4',
       ],
     },
   ],
@@ -217,7 +214,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Sample exam explain Qs (Q1, Q3-Q7)',
+      title: 'Explainers',
       lines: [
         'Q: Why do we need a validation set? A: To choose models and hyperparameters (α, depth, epochs) and detect overfitting on unseen data. Training error is optimistic, so cannot pick models.',
         'Q: Split validation from the train or the test set? A: From the TRAINING set. Test is used once at the end; tuning on it leaks test info (data leakage), so the reported score is too optimistic.',
