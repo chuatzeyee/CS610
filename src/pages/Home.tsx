@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, ClipboardCheck, Sigma, FlaskConical, CalendarDays, Gamepad2, FileText, Search, ArrowRight } from 'lucide-react'
+import { GraduationCap, BookOpen, ClipboardCheck, Sigma, FlaskConical, CalendarDays, Gamepad2, FileText, Search, ArrowRight } from 'lucide-react'
 import { sessions } from '../data/topics'
 import { definitions } from '../data/definitions'
 import { questions } from '../data/quiz'
@@ -8,8 +8,17 @@ import { labs } from '../data/lab'
 import { course } from '../data/course'
 import { kahootQuestions } from '../data/kahoot'
 import { examQuestions } from '../data/exam'
+import { cramModules } from '../data/cram'
 
 const cards = [
+  {
+    to: '/cram',
+    icon: GraduationCap,
+    title: 'Exam Cram (start here)',
+    description: 'Zero-to-pass study plan for the exam: every topic in plain English with step-by-step recipes, worked examples and self-checks, a scientific calculator guide with drills, and the A4 cheat sheet master copy',
+    count: cramModules.length,
+    unit: 'steps',
+  },
   {
     to: '/search',
     icon: Search,

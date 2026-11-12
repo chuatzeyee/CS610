@@ -103,3 +103,22 @@ input::placeholder {
   border-radius: 2px;
   padding: 0 2px;
 }
+
+/* A4 cheat sheet print layout */
+.a4-root { background: #e5e5e5; min-height: 100vh; padding: 16px 0 48px; color: #111; }
+.a4-bar { display: flex; gap: 16px; justify-content: center; margin-bottom: 16px; font: 14px var(--font-sans); }
+.a4-bar a, .a4-bar button { color: #14532d; text-decoration: underline; cursor: pointer; }
+.a4-page { width: 210mm; height: 297mm; margin: 0 auto 16px; padding: 5mm; background: #fff; box-sizing: border-box; position: relative; overflow: hidden; }
+.a4-cols { column-count: 3; column-gap: 3mm; column-fill: auto; height: 283mm; font: 6.6pt/1.22 var(--font-mono); }
+.a4-block { break-inside: avoid; border: 0.3mm solid #999; padding: 0.8mm 1.2mm; margin-bottom: 1.2mm; }
+.a4-block p { margin: 0; overflow-wrap: anywhere; }
+.a4-title { font-weight: 700; font-family: var(--font-sans); font-size: 7.2pt; border-bottom: 0.2mm solid #bbb; margin-bottom: 0.4mm !important; }
+.a4-foot { position: absolute; bottom: 1.5mm; right: 5mm; font: 5pt var(--font-sans); color: #888; }
+@media print {
+  @page { size: A4; margin: 0; }
+  html, body, .bg-void { background: #fff !important; }
+  .no-print, nav, button[aria-label='Scroll to top'] { display: none !important; }
+  main { padding: 0 !important; }
+  .a4-root { background: #fff; padding: 0; }
+  .a4-page { margin: 0; break-after: page; }
+}

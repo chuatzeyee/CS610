@@ -8,6 +8,7 @@ import { formulas } from '../data/formulas'
 import { labs } from '../data/lab'
 import { kahootQuestions, kahootSets } from '../data/kahoot'
 import { examQuestions } from '../data/exam'
+import { cramModules, calcGuide } from '../data/cram'
 
 interface Hit {
   kind: string
@@ -16,12 +17,18 @@ interface Hit {
   lines: readonly string[]
 }
 
-const KINDS = ['Topics', 'Glossary', 'Quiz', 'Formulas', 'Labs', 'Kahoot', 'Exam'] as const
+const KINDS = ['Cram', 'Topics', 'Glossary', 'Quiz', 'Formulas', 'Labs', 'Kahoot', 'Exam'] as const
 const PAGE = 25
 
 const setTitle = new Map(kahootSets.map(s => [s.id, s.title]))
 
 const index: readonly Hit[] = [
+  ...cramModules.flatMap(m => [
+    { kind: 'Cram', title: m.title, context: `Cram step, ${m.week}`, lines: [...m.plain, ...m.terms.map(t => `${t.term}: ${t.meaning}`), ...m.recipes.map(r => `${r.title}: ${r.steps.join(' ')}`), ...m.traps] },
+    ...m.worked.map(w => ({ kind: 'Cram', title: w.problem, context: `Worked example, ${m.title}`, lines: [...w.steps, `Answer: ${w.answer}`] })),
+    ...[...m.explain, ...m.selfCheck].map(qa => ({ kind: 'Cram', title: qa.q, context: m.title, lines: [qa.a] })),
+  ]),
+  ...calcGuide.skills.map(sk => ({ kind: 'Cram', title: `Calculator: ${sk.title}`, context: sk.usedFor, lines: [...sk.keys, `${sk.example.task}: ${sk.example.keys.join(' ')} = ${sk.example.display}`] })),
   ...sessions.flatMap(session => session.topics.map(topic => ({
     kind: 'Topics',
     title: topic.title,

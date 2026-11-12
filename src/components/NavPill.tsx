@@ -9,10 +9,12 @@ import {
   Gamepad2,
   FileText,
   Search,
+  GraduationCap,
 } from 'lucide-react'
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home },
+  { to: '/cram', label: 'Cram', icon: GraduationCap },
   { to: '/search', label: 'Search', icon: Search },
   { to: '/topics', label: 'Topics', icon: BookOpen },
   { to: '/quiz', label: 'Quiz', icon: ClipboardCheck },
@@ -26,14 +28,14 @@ const navItems = [
 export default function NavPill() {
   return (
     <nav className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-center gap-1 px-2 py-2 bg-base/95 backdrop-blur-md border border-edge-bright rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+      <div className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-2 bg-base/95 backdrop-blur-md border border-edge-bright rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
             className={({ isActive }) =>
-              `flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
+              `flex items-center gap-2 px-2 sm:px-3.5 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-glow-dim text-glow shadow-[0_0_12px_rgba(74,222,128,0.12)]'
                   : 'text-ink-muted hover:text-ink hover:bg-raised'
