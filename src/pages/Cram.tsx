@@ -213,7 +213,7 @@ function Blocks({ blocks }: { blocks: readonly SheetBlock[] }) {
       {blocks.map(b => (
         <div key={b.title} className="break-inside-avoid mb-3 border border-edge rounded p-2.5">
           <p className="text-xs font-semibold text-glow mb-1">{b.title}</p>
-          {b.lines.map(l => <p key={l} className="text-xs font-mono text-ink-secondary leading-snug">{l}</p>)}
+          {b.lines.map(l => <p key={l} className="text-xs text-ink-secondary leading-snug">{l.startsWith('Q: ') ? <><b className="text-ink">{l.slice(3, l.indexOf(' A: ') > 0 ? l.indexOf(' A: ') : undefined)}</b>{l.indexOf(' A: ') > 0 ? ` ${l.slice(l.indexOf(' A: ') + 4)}` : ''}</> : l}</p>)}
         </div>
       ))}
     </div>

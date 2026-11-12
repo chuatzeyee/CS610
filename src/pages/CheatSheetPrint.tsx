@@ -5,6 +5,11 @@ function items(lines: readonly string[]): string[] {
   return lines.reduce<string[]>((acc, l) => (l.startsWith(' ') && acc.length ? [...acc.slice(0, -1), `${acc[acc.length - 1]} ${l.trim()}`] : [...acc, l]), [])
 }
 
+function Line({ text }: { text: string }) {
+  const m = /^Q: (.*?\?) A: (.*)$/.exec(text)
+  return m ? <p><b>{m[1]}</b> {m[2]}</p> : <p>{text}</p>
+}
+
 function Page({ side, blocks }: { side: number; blocks: readonly SheetBlock[] }) {
   return (
     <section className="a4-page">
@@ -12,7 +17,7 @@ function Page({ side, blocks }: { side: number; blocks: readonly SheetBlock[] })
         {blocks.map(b => (
           <div key={b.title} className="a4-block">
             <p className="a4-title">{b.title}</p>
-            {items(b.lines).map(l => <p key={l}>{l}</p>)}
+            {items(b.lines).map(l => <Line key={l} text={l} />)}
           </div>
         ))}
       </div>
