@@ -27,7 +27,7 @@ assert(await page.locator('text=Display:').count() >= 15, 'calculator skills mis
 
 await page.getByRole('button', { name: 'Cheat sheet', exact: true }).click()
 await page.waitForSelector('text=Side 2: concepts')
-await page.getByRole('link', { name: /A4 print layout/ }).click()
+await page.getByRole('link', { name: /A4 layout/ }).click()
 await page.waitForSelector('.a4-page')
 assert.equal(await page.locator('.a4-page').count(), 2, 'need exactly 2 A4 pages')
 assert.equal(await page.getByRole('navigation').count(), 0, 'nav should be hidden on print view')
@@ -41,6 +41,7 @@ assert(overflow.every(n => n === 0), 'cheat sheet overflows A4')
 
 await page.emulateMedia({ media: 'print' })
 await page.pdf({ path: '/tmp/cram/cheatsheet.pdf', format: 'A4', printBackground: true, preferCSSPageSize: true })
+await (await import("node:fs/promises")).copyFile("/tmp/cram/cheatsheet.pdf", "public/CS610_cheatsheet.pdf").catch(() => {})
 
 await page.goto(`${BASE}/search?q=bootstrap`, { waitUntil: 'networkidle' })
 await page.waitForSelector('text=Cram')

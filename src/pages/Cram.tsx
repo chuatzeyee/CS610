@@ -227,7 +227,10 @@ function Sheet() {
       <div className="bg-surface border border-s4/40 rounded-lg p-5 text-sm text-ink-secondary space-y-2">
         <p><span className="text-s4 font-semibold">Rule: </span>one A4 sheet, both sides. The instructor confirmed on 11 Nov that it can be <span className="text-ink">printed or handwritten</span>, and it is collected at the end of the exam.</p>
         <p>Print it double-sided at 100% scale (no "fit to page"). Before the exam, highlight the blocks you needed in the sample exam and scribble your own notes in the margins.</p>
-        <Link to="/cheatsheet" className="inline-flex items-center gap-2 text-glow hover:text-glow-hover font-medium"><Printer size={15} /> Open the A4 print layout</Link>
+        <div className="flex flex-wrap gap-4">
+          <a href={`${import.meta.env.BASE_URL}CS610_cheatsheet.pdf`} download className="inline-flex items-center gap-2 text-glow hover:text-glow-hover font-medium"><Printer size={15} /> Download the print-ready PDF (recommended)</a>
+          <Link to="/cheatsheet" className="inline-flex items-center gap-2 text-ink-secondary hover:text-glow font-medium">Open the A4 layout in the browser</Link>
+        </div>
       </div>
       <h2 className="text-sm font-semibold text-ink">Side 1: calculations <span className="font-mono text-ink-muted text-xs">({lines(cheatSheet.side1)} lines)</span></h2>
       <Blocks blocks={cheatSheet.side1} />
