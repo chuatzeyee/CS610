@@ -29,6 +29,8 @@ await page.getByRole('button', { name: 'Cheat sheet', exact: true }).click()
 await page.waitForSelector('text=Side 2: concepts')
 await page.getByRole('link', { name: /A4 layout/ }).click()
 await page.waitForSelector('.a4-page')
+await page.evaluate(() => document.fonts.ready)
+assert(await page.evaluate(() => document.fonts.check("8pt 'Google Sans Flex'")), 'Google Sans Flex not loaded')
 assert.equal(await page.locator('.a4-page').count(), 2, 'need exactly 2 A4 pages')
 assert.equal(await page.getByRole('navigation').count(), 0, 'nav should be hidden on print view')
 
