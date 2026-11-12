@@ -3,7 +3,7 @@ import type { CheatSheet } from './types'
 export const cheatSheet: CheatSheet = {
   side1: [
     {
-      title: 'Bayes, MAP, MLE (W1)',
+      title: 'Bayes, MAP, MLE',
       lines: [
         'P(h|D) = P(D|h)P(h)/P(D)   post = likelihood × prior / evidence',
         'Total prob: P(D) = Σh P(D|h)P(h); P(S)=P(S|M)P(M)+P(S|¬M)(1−P(M))',
@@ -14,7 +14,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Gaussian fit + Gaussian NB (Q2)',
+      title: 'Gaussian fit + Gaussian NB',
       lines: [
         'μ = (1/n)Σxi    σ² = (1/n)Σ(xi−μ)²   (MLE: divide by n)',
         'State "MLE, /n". Unbiased /(n−1) only if asked (= σ² × n/(n−1))',
@@ -41,7 +41,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Trees: entropy, IG, Gini, gain ratio (W4)',
+      title: 'Trees: entropy, IG, Gini, gain ratio',
       lines: [
         'H(S) = −Σ pi log2 pi; 2 classes: max 1 at 50/50, pure = 0',
         'H(S|A) = Σv (|Sv|/|S|) H(Sv);  IG = H(S) − H(S|A); pick max',
@@ -54,7 +54,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Confusion matrix, ROC, AUC (Q6)',
+      title: 'Confusion matrix, ROC, AUC',
       lines: [
         'Rows actual, cols predicted:  [TP FN; FP TN]',
         'Acc = (TP+TN)/all   Prec = TP/(TP+FP)   Rec = TPR = TP/(TP+FN)',
@@ -66,11 +66,11 @@ export const cheatSheet: CheatSheet = {
         'Fix: invert classifier (swap +/− decisions, or use 1 − score)',
         '  (FPR,TPR) becomes (1−FPR, 1−TPR); new AUC = 1 − old AUC',
         'Imbalanced: accuracy misleading, prefer precision-recall curve',
-        'Q6 t=0.5: TP5 FN15 FP30 TN50: TPR=5/20=0.25, FPR=30/80=0.375',
+        'Eg 20 pos, 80 neg, TP5 FN15 FP30 TN50: TPR=5/20=0.25, FPR=30/80=0.375',
       ],
     },
     {
-      title: 'Linear regression (W2)',
+      title: 'Linear regression',
       lines: [
         'h(x) = w0 + w1x1 + ... = wᵀx (x0=1);  MSE J = (1/n)Σ(h(xi)−yi)²',
         '∂J/∂w0 = (2/n)Σ(h(xi)−yi);  ∂J/∂w1 = (2/n)Σ xi(h(xi)−yi)',
@@ -82,7 +82,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Logistic, softmax, Q3 d+1 (W3)',
+      title: 'Logistic regression, softmax',
       lines: [
         'σ(z) = 1/(1+e^(−z)); σ(0)=0.5; σ(−z) = 1−σ(z); σ\' = σ(1−σ)',
         'p(1|x) = σ(wᵀx + b);  log-odds ln(p/(1−p)) = wᵀx + b (linear)',
@@ -91,7 +91,7 @@ export const cheatSheet: CheatSheet = {
         'y∈{±1}: L = Σ ln(1 + e^(−y wᵀx))',
         'Softmax p(k|x) = e^(zk)/Σj e^(zj), zk = wkᵀx + βk: K(d+1) params',
         'Multiclass CE = −ln p(true class)',
-        'Q3: K=2, divide top and bottom by e^(z1):',
+        'Why d+1 params: K=2, divide top and bottom by e^(z1):',
         '  p(1|x) = 1/(1 + e^(z2−z1)) = 1/(1 + e^(−(w1−w2)ᵀx − (β1−β2)))',
         '  = σ(wᵀx + β), w = w1−w2, β = β1−β2: only differences, d+1',
         '  Add same (c, b) to both classes: probs unchanged, redundant',
@@ -100,7 +100,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Bootstrap, bagging (Q4)',
+      title: 'Bootstrap, bagging',
       lines: [
         'n draws with replacement. P(not picked in 1 draw) = 1 − 1/n',
         'P(never picked in n draws) = (1 − 1/n)^n, tends to 1/e = 0.368',
@@ -111,7 +111,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'AdaBoost (course, labels ±1)',
+      title: 'AdaBoost (labels ±1)',
       lines: [
         'err_t = Σ w_i [h_t(x_i) ≠ y_i] / Σ w_i',
         'α_t = ½ ln((1 − err_t)/err_t);  err 1/3: α = ½ ln 2 = 0.347',
@@ -123,7 +123,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Perceptron, neuron (W5)',
+      title: 'Perceptron, neuron',
       lines: [
         'ŷ = 1 if Σ wjxj > 0 else −1 (x0 = 1 is bias); labels ±1',
         'Step perceptron: w ← w + η(y − ŷ)x; wrong gives y − ŷ = ±2',
@@ -135,21 +135,21 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'CNN sizes and params (Q5)',
+      title: 'CNN sizes and params',
       lines: [
         'O = (N + 2P − F)/S + 1;  P=0, S=1: O = N − F + 1',
         'Pool 2×2 stride 2: O = N/2, depth unchanged, 0 params',
         'Conv params = K × (F×F×C_in + 1); C_in = depth of input',
         'Output O×O×K. Check: 32×32×3, 6 of 5×5: 28×28×6, 456 params',
         'Swap question: write both configs as formulas, subtract, sign',
-        'Q5 pool1: (p−s+1)/2, s1 to smaller s2: INCREASE',
+        'Swap pool1: (p−s+1)/2, s1 to smaller s2: INCREASE',
         '  pool2: (p−s1−2s2+3)/4; swapped − correct = (s2−s1)/4: DECREASE',
         '  conv1 f1(3s²+1): DECREASE;  conv2 f2(f1s²+1): INCREASE',
         '  total diff = f1(s1²−s2²)(f2−3) > 0: INCREASE (big kernel, f1 ch)',
       ],
     },
     {
-      title: 'Attention (W7)',
+      title: 'Attention',
       lines: [
         'Attention(Q,K,V) = softmax(QKᵀ/√dk) V, softmax per row',
         'score q.k/√dk, weights α sum to 1, output Σ αi vi',
@@ -158,7 +158,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'k-means (Q7) + distances',
+      title: 'k-means + distances',
       lines: [
         'Init k centres. Repeat: 1) assign each point to nearest centre',
         '2) update: centre = mean of its points (x̄, ȳ)',
@@ -185,7 +185,7 @@ export const cheatSheet: CheatSheet = {
       title: 'Method answers',
       lines: [
         'Unsure of a formula or keys? Run these inputs first. Same result = method right; now use the exam numbers.',
-        'GNB Q2 model, x=(2,4): coef 1/√(2π×2.64) = 0.2455',
+        'GNB μ0=(1.6,4.4), μ1=(3.4,2.6), σ²=2.64, x=(2,4): coef 1/√(2π×2.64) = 0.2455',
         ' c0: e^(−0.16/5.28)=0.9702, dens 0.2382, ×2 feats: 0.0567',
         ' c1: e^(−1.96/5.28)=0.6899, dens 0.1694, ×2 feats: 0.0287',
         ' P(c0|x) = 0.0567/(0.0567+0.0287) = 0.6641: class 0',
@@ -230,7 +230,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Fitting, bias-variance, regularisation (W2)',
+      title: 'Fitting, bias-variance, regularisation',
       lines: [
         'Q: Overfitting vs underfitting? A: Overfit: train error low, val high, fits noise (high variance). Underfit: both high, too simple (high bias); fix: more features or complexity, less regularisation.',
         'Q: How to reduce overfitting? A: More data or augmentation, simpler model, L1/L2 regularisation, pruning, dropout, early stopping, bagging.',
@@ -243,7 +243,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Metrics (W3)',
+      title: 'Metrics',
       lines: [
         'Q: Why is accuracy poor on imbalanced data? A: Predicting all-majority (99% negative) scores 99% yet finds no positives. Use precision, recall, F1, PR-AUC; class weights, resampling.',
         'Q: Precision vs recall, when each? A: Precision TP/(TP+FP) when false alarms are costly (spam filter). Recall TP/(TP+FN) when misses are costly (cancer screening, fraud).',
@@ -254,7 +254,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Bayes and naive Bayes (W1)',
+      title: 'Bayes and naive Bayes',
       lines: [
         'Q: Generative vs discriminative? A: Generative models p(x|C)P(C), can generate x (NB, GAN); ok with little data, strong assumptions. Discriminative models p(C|x) directly (logistic, trees, NN); better with much data.',
         'Q: Naive Bayes assumption and why? A: Features conditionally independent given the class: p(x|C) = Π p(xj|C). d easy 1-D estimates instead of one d-dim joint; Gaussian NB covariance is diagonal.',
@@ -264,7 +264,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Decision trees (W4)',
+      title: 'Decision trees',
       lines: [
         'Q: What does entropy measure? A: Impurity of class labels, H = -Σ p log2 p: 0 for a pure node, max (1 bit for 2 classes) at 50/50. Gini 1-Σp² behaves alike.',
         'Q: What is IG and how does ID3 use it? A: IG = H(parent) - Σ (|Sv|/|S|) H(Sv), the entropy drop from a split. ID3 greedily splits on the max-IG attribute, recurses.',
@@ -273,7 +273,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Ensembles (W4)',
+      title: 'Ensembles',
       lines: [
         'Q: Why do ensembles work? A: Combining diverse models cancels independent errors. Base models must beat chance (each 45% accurate: more voters is worse).',
         'Q: Bagging vs boosting? A: Bagging: parallel models on bootstrap samples, equal vote, cuts VARIANCE (RF). Boosting: sequential, each focuses on past errors, α-weighted vote, cuts BIAS; sensitive to noisy labels.',
@@ -283,7 +283,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Neural networks (W5)',
+      title: 'Neural networks',
       lines: [
         'Q: Why a non-linear activation? A: Else layers collapse to one linear map (W2W1x): no XOR, no curves.',
         'Q: Vanishing gradient and fixes? A: Backprop multiplies many derivatives (σ\' ≤ 0.25), so early layers get ~0 gradient and stop learning. Fix: ReLU, He init, batch norm, skip connections, LSTM.',
@@ -292,7 +292,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'CNN (W6)',
+      title: 'CNN',
       lines: [
         'Q: Why CNN over FNN for images? A: FNN: a weight per pixel per neuron, ignores layout. CNN: local connectivity + weight sharing = far fewer params, translation invariance, feature hierarchy.',
         'Q: What is weight sharing? A: One filter slides over all positions: params = k×k×C_in per filter, not image size; finds a pattern anywhere.',
@@ -302,7 +302,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'RNN, attention, transformer (W7)',
+      title: 'RNN, attention, transformer',
       lines: [
         'Q: RNN vs LSTM? A: RNN gradient over T steps ~ W^T vanishes or explodes: forgets long context. LSTM forget/input/output gates + additive cell state keep gradients.',
         'Q: Why self-attention over RNN? A: Every token links directly to every other (path length 1), all positions in parallel, no vanishing through time. Cost O(n²).',
@@ -314,14 +314,14 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Generative AI (W8)',
+      title: 'Generative AI',
       lines: [
         'Q: GAN, VAE, diffusion? A: GAN: generator fakes from noise vs discriminator (real/fake), min-max. VAE: encoder gives μ, σ, z = μ + σε, decoder rebuilds. Diffusion: learn to remove noise step by step.',
         'Q: Why RLHF after fine-tuning? A: LLM = pre-train (self-sup.), SFT (sup.), RLHF. SFT copies demos, cannot rank answers; human rankings train a reward model, PPO maximises reward minus KL.',
       ],
     },
     {
-      title: 'Unsupervised (W9)',
+      title: 'Unsupervised',
       lines: [
         'Q: k-means weaknesses? A: Must pick k; init-sensitive local optimum (restarts, k-means++); assumes round equal-size clusters; outliers; needs scaling.',
         'Q: How to choose k? A: Elbow: plot SSE vs k, pick the bend (SSE always falls). Silhouette s = (b-a)/max(a,b): pick k with highest average. Or domain knowledge.',
