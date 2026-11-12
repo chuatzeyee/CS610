@@ -109,7 +109,7 @@ input::placeholder {
 .a4-bar { display: flex; gap: 16px; justify-content: center; margin-bottom: 16px; font: 14px var(--font-sans); }
 .a4-bar a, .a4-bar button { color: #14532d; text-decoration: underline; cursor: pointer; }
 .a4-page { width: 210mm; height: 297mm; margin: 0 auto 16px; padding: 5mm; background: #fff; box-sizing: border-box; position: relative; overflow: hidden; }
-.a4-cols { column-count: 3; column-gap: 3mm; column-fill: auto; height: 283mm; font: 6.6pt/1.22 var(--font-mono); }
+.a4-cols { column-count: 3; column-gap: 3mm; column-fill: auto; height: 283mm; font: 6.4pt/1.2 var(--font-mono); }
 .a4-block { break-inside: avoid; border: 0.3mm solid #999; padding: 0.8mm 1.2mm; margin-bottom: 1.2mm; }
 .a4-block p { margin: 0; overflow-wrap: anywhere; }
 .a4-title { font-weight: 700; font-family: var(--font-sans); font-size: 7.2pt; border-bottom: 0.2mm solid #bbb; margin-bottom: 0.4mm !important; }

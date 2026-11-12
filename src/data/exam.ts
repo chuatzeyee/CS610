@@ -23,7 +23,7 @@ export const examFormat = {
     ['Duration', '2 hours'],
     ['Questions', '7 questions, answer all'],
     ['Total', '70 marks'],
-    ['Materials', 'Closed book; one A4 cheat sheet, handwritten, both sides'],
+    ['Materials', 'Closed book; one A4 cheat sheet, both sides, printed or handwritten (instructor update 11 Nov), collected at the end'],
     ['Calculator', 'Scientific calculator allowed (no graphical or programmable)'],
     ['Style', 'Written answers: calculations, comparisons, explanations and justifications; no coding, no MCQ'],
     ['Real exam', 'Fri 13 Nov 2026, 7:30pm, 35% of the course grade'],
