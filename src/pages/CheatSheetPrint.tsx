@@ -21,7 +21,7 @@ function Page({ side, blocks }: { side: number; blocks: readonly SheetBlock[] })
           </div>
         ))}
       </div>
-      <p className="a4-foot">CS610 cheat sheet, side {side}</p>
+      <p className="a4-foot">Chua Tze Yee - p{side}</p>
     </section>
   )
 }
