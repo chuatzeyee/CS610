@@ -173,7 +173,7 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Calculator keys (fx-97SG X)',
+      title: '97SG X',
       lines: [
         'Setup: SHIFT MENU (SETUP), Input/Output, 2 MathI/DecimalO',
         'Stats: MENU, Statistics icon, =, 1 (1-Variable); x =, x =, ...',
