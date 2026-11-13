@@ -136,7 +136,11 @@ export const cheatSheet: CheatSheet = {
     {
       title: 'Entropy, information gain, Gini',
       lines: [
-        '1) Parent H(S) = −Σ p log2 p; log2 x = [log] x [)] ÷ [ALPHA (−)] (A = log 2); 0 log 0 = 0',
+        'H of ONE node [a, b]: n = a + b; p1 = a/n, p2 = b/n',
+        ' H = −p1 log2 p1 − p2 log2 p2; log2 x = [log] x [)] ÷ [ALPHA (−)] (A = log 2); 0 log 0 = 0',
+        ' Table: class | count | p | log2 p | −p log2 p, then add the last column',
+        ' Check H(2,3): p .4, .6; log2 −1.3219, −.7370; .5288 + .4422 = 0.9710',
+        '1) Parent H(S) from the parent counts (recipe above)',
         '2) Each branch v: H(Sv) from its own counts',
         '3) H(S|A) = Σ (|Sv|/|S|) H(Sv)  (weight by branch size)',
         '4) IG = H(S) − H(S|A); split on the max IG',
