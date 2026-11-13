@@ -113,7 +113,6 @@ input::placeholder {
 .a4-block { break-inside: avoid; border: 0.3mm solid #444; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 0.8mm 1.2mm; margin-bottom: 1.2mm; }
 .a4-block p { margin: 0; padding: 0.15mm 0.6mm 0.15mm 2.4mm; text-indent: -1.8mm; overflow-wrap: anywhere; }
 .a4-block p:nth-of-type(odd):not(.a4-title) { background: #ececec; }
-.a4-block p + p { border-top: 0.1mm solid #d4d4d4; }
 .a4-title { font-weight: 700; font-size: 8.4pt; background: #222 !important; color: #fff; padding: 0.3mm 1mm !important; text-indent: 0 !important; margin: -0.8mm -1.2mm 0.4mm !important; }
 .a4-foot { position: absolute; bottom: 1.5mm; right: 5mm; font: 5pt var(--font-sans); color: #888; }
 @media print {
