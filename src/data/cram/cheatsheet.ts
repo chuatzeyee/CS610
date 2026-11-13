@@ -12,15 +12,6 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: '97SG X',
-      lines: [
-        'log2 x = [log] x [)] ÷ [ALPHA (−)], A = log 2 stored by [log] 2 [)] [=] [STO] [(−)]',
-        'Test log2 8 = 3. e^x = [SHIFT ln]. Decimal [SHIFT =]. Last result [Ans]',
-        'Stats: [MENU] Statistics [=] [1]; [OPTN 3] results; [OPTN 2 2] clear',
-        'Brackets: e^(−(x−μ)²/(2σ²)), 1/(1+e^(−z)): close every bracket',
-      ],
-    },
-    {
       title: 'Mean and variance (÷ n)',
       lines: [
         '1) μ = Σx ÷ n.  eg −1,1,2,2,4: 8/5 = 1.6',
@@ -88,6 +79,16 @@ export const cheatSheet: CheatSheet = {
         '5) Write: biggest wins.  eg No',
         'Sanity: P(v|Ck) over all v adds to 1',
         'Trap: one zero count zeroes it all: Laplace',
+      ],
+    },
+    {
+      title: 'Parameter counts (d features, K classes)',
+      lines: [
+        'Linear / logistic regression: d + 1 (weights + bias)',
+        'Softmax: K(d + 1), only (K − 1)(d + 1) free; K = 2 gives d + 1',
+        'Gaussian NB: 2dK (μ and σ² per feature per class) + (K − 1) priors',
+        'Dense layer: (inputs + 1) × outputs.  eg 784-128-10: 100480 + 1290',
+        'Conv layer: K(F·F·C_in + 1); pooling has 0',
       ],
     },
     {
