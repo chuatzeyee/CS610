@@ -3,15 +3,6 @@ import type { CheatSheet } from './types'
 export const cheatSheet: CheatSheet = {
   side1: [
     {
-      title: 'Answer layout (every calc)',
-      lines: [
-        'Formula, then numbers substituted, then result (4 dp), then 1 line of meaning',
-        'eg values = one worked example with known answers, NOT exam answers. Same result = method right',
-        'State convention: ÷ n, log2, labels ±1. Setup: [SHIFT MENU] Input/Output 2',
-        'Fraction on screen? [SHIFT =] gives decimal. Store: [STO (−)] = A, use [ALPHA (−)]',
-      ],
-    },
-    {
       title: 'Mean and variance (÷ n)',
       lines: [
         '0) Given x = −1, 1, 2, 2, 4 (n = 5)',
@@ -242,6 +233,51 @@ export const cheatSheet: CheatSheet = {
         'Sanity: now w·x = 3 > 0: ŷ = +1 (right: no change)',
       ],
     },
+    {
+      title: 'Attention weights',
+      lines: [
+        '0) Given q, keys k_i, values v_i, d_k.  eg q = (1,0,2,1); k1 = (1,1,0,0), k2 = (0,1,1,1), k3 = (2,0,1,0); v = 10, 2, 6; d_k = 4',
+        '1) Dot product q·k_i: multiply matching positions, add',
+        ' eg q·k1 = 1+0+0+0 = 1; q·k2 = 0+0+2+1 = 3; q·k3 = 2+0+2+0 = 4',
+        '2) Scale: score_i = q·k_i ÷ √d_k.  eg √4 = 2: 1/2, 3/2, 4/2 = 0.5, 1.5, 2.0',
+        '3) e^ each score [SHIFT ln], add them',
+        ' eg e^0.5 = 1.6487, e^1.5 = 4.4817, e^2 = 7.3891; sum = 13.5195',
+        '4) Weight α_i = e^score_i ÷ sum',
+        ' eg 1.6487/13.5195 = 0.1220, 4.4817/13.5195 = 0.3315, 7.3891/13.5195 = 0.5465',
+        '5) Output = Σ α_i × v_i',
+        ' eg 0.1220×10 + 0.3315×2 + 0.5465×6 = 1.2195 + 0.6630 + 3.2793 = 5.1618',
+        'Sanity: weights sum to 1; output lies between smallest and largest v',
+      ],
+    },
+    {
+      title: 'Neural net forward and one backprop gradient',
+      lines: [
+        '0) Given x = 1; 2 sigmoid hidden units, both w1 = 0; w2 = (1, 1); y = 2; η = 0.1',
+        '1) z_j = σ(w1 × x).  eg σ(0 × 1) = 1/(1 + e^0) = 1/2 = 0.5 each',
+        '2) ŷ = Σ w2_j z_j; J = (y − ŷ)².  eg 1 × 0.5 + 1 × 0.5 = 1; (2 − 1)² = 1',
+        '3) δout = 2(ŷ − y); ∂J/∂w2_j = δout × z_j.  eg 2(1 − 2) = −2; −2 × 0.5 = −1',
+        '4) δh = δout × w2_j × z(1 − z); ∂J/∂w1 = δh × x',
+        ' eg −2 × 1 × 0.5 × (1 − 0.5) = −0.5; −0.5 × 1 = −0.5',
+        '5) new w = w − η × grad.  eg w2 = 1 − 0.1 × (−1) = 1.1; w1 = 0 − 0.1 × (−0.5) = 0.05',
+        'Trap: use the OLD w2 in δh',
+      ],
+    },
+    {
+      title: 'Logistic regression (labels ±1)',
+      lines: [
+        '0) Given w = (0.8, −0.5), b = −1, x = (3, 2), true label +1',
+        '1) z = w1x1 + w2x2 + b.  eg 0.8 × 3 + (−0.5) × 2 + (−1) = 2.4 − 1 − 1 = 0.4',
+        '2) p(+1) = σ(z) = 1/(1 + e^(−z))',
+        ' eg e^(−0.4) = 0.6703; 1/(1 + 0.6703) = 1/1.6703 = 0.5987',
+        ' Keys: [SHIFT ln] (−)0.4 [=], then 1 ÷ (1 + [Ans]) [=]',
+        '3) Class: z > 0 (p > 0.5) gives +1, else −1.  eg 0.4 > 0: +1',
+        '4) odds = p/(1 − p) = e^z; log-odds = z.  eg e^0.4 = 1.4918',
+        '5) Loss = −ln p(true class).  eg −ln 0.5987 = 0.5130',
+        ' eg if true −1: −ln(1 − 0.5987) = −ln 0.4013 = 0.9130',
+        'Boundary: w·x + b = 0 (p = 0.5); 1 feature: x* = −b/w',
+        'Trap: minus sign in e^(−z); p(−1) = 1 − p(+1)',
+      ],
+    },
   ],
   side2: [
     {
@@ -268,22 +304,6 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Logistic regression (labels ±1)',
-      lines: [
-        '0) Given w = (0.8, −0.5), b = −1, x = (3, 2), true label +1',
-        '1) z = w1x1 + w2x2 + b.  eg 0.8 × 3 + (−0.5) × 2 + (−1) = 2.4 − 1 − 1 = 0.4',
-        '2) p(+1) = σ(z) = 1/(1 + e^(−z))',
-        ' eg e^(−0.4) = 0.6703; 1/(1 + 0.6703) = 1/1.6703 = 0.5987',
-        ' Keys: [SHIFT ln] (−)0.4 [=], then 1 ÷ (1 + [Ans]) [=]',
-        '3) Class: z > 0 (p > 0.5) gives +1, else −1.  eg 0.4 > 0: +1',
-        '4) odds = p/(1 − p) = e^z; log-odds = z.  eg e^0.4 = 1.4918',
-        '5) Loss = −ln p(true class).  eg −ln 0.5987 = 0.5130',
-        ' eg if true −1: −ln(1 − 0.5987) = −ln 0.4013 = 0.9130',
-        'Boundary: w·x + b = 0 (p = 0.5); 1 feature: x* = −b/w',
-        'Trap: minus sign in e^(−z); p(−1) = 1 − p(+1)',
-      ],
-    },
-    {
       title: 'AdaBoost: one round (labels ±1)',
       lines: [
         '0) Given 10 points; learner 1 gets 3 wrong',
@@ -303,35 +323,6 @@ export const cheatSheet: CheatSheet = {
         ' eg 0.4236 × (+1) + 0.2 × (−1) + 0.3 × (−1) = 0.4236 − 0.2 − 0.3 = −0.0764 < 0: predict −1',
         'Sanity: wrong points now hold half: 3 × 1/6 = 0.5',
         'Trap: ε is a SUM of weights, not count/n (equal only in round 1)',
-      ],
-    },
-    {
-      title: 'Neural net forward and one backprop gradient',
-      lines: [
-        '0) Given x = 1; 2 sigmoid hidden units, both w1 = 0; w2 = (1, 1); y = 2; η = 0.1',
-        '1) z_j = σ(w1 × x).  eg σ(0 × 1) = 1/(1 + e^0) = 1/2 = 0.5 each',
-        '2) ŷ = Σ w2_j z_j; J = (y − ŷ)².  eg 1 × 0.5 + 1 × 0.5 = 1; (2 − 1)² = 1',
-        '3) δout = 2(ŷ − y); ∂J/∂w2_j = δout × z_j.  eg 2(1 − 2) = −2; −2 × 0.5 = −1',
-        '4) δh = δout × w2_j × z(1 − z); ∂J/∂w1 = δh × x',
-        ' eg −2 × 1 × 0.5 × (1 − 0.5) = −0.5; −0.5 × 1 = −0.5',
-        '5) new w = w − η × grad.  eg w2 = 1 − 0.1 × (−1) = 1.1; w1 = 0 − 0.1 × (−0.5) = 0.05',
-        'Trap: use the OLD w2 in δh',
-      ],
-    },
-    {
-      title: 'Attention weights',
-      lines: [
-        '0) Given q, keys k_i, values v_i, d_k.  eg q = (1,0,2,1); k1 = (1,1,0,0), k2 = (0,1,1,1), k3 = (2,0,1,0); v = 10, 2, 6; d_k = 4',
-        '1) Dot product q·k_i: multiply matching positions, add',
-        ' eg q·k1 = 1+0+0+0 = 1; q·k2 = 0+0+2+1 = 3; q·k3 = 2+0+2+0 = 4',
-        '2) Scale: score_i = q·k_i ÷ √d_k.  eg √4 = 2: 1/2, 3/2, 4/2 = 0.5, 1.5, 2.0',
-        '3) e^ each score [SHIFT ln], add them',
-        ' eg e^0.5 = 1.6487, e^1.5 = 4.4817, e^2 = 7.3891; sum = 13.5195',
-        '4) Weight α_i = e^score_i ÷ sum',
-        ' eg 1.6487/13.5195 = 0.1220, 4.4817/13.5195 = 0.3315, 7.3891/13.5195 = 0.5465',
-        '5) Output = Σ α_i × v_i',
-        ' eg 0.1220×10 + 0.3315×2 + 0.5465×6 = 1.2195 + 0.6630 + 3.2793 = 5.1618',
-        'Sanity: weights sum to 1; output lies between smallest and largest v',
       ],
     },
     {
@@ -364,6 +355,10 @@ export const cheatSheet: CheatSheet = {
         'Q: How to reduce overfitting? A: More data, simpler model, L1/L2, pruning, dropout, early stopping, bagging.',
         'Q: L1 vs L2? A: Penalty α‖w‖ shrinks weights: variance down, bias up a little. L2 αΣw² shrinks all smoothly; L1 αΣ|w| sets some w to 0 = feature selection.',
         'Q: Bias-variance trade-off? A: Error = bias² + variance + noise. More complexity lowers bias, raises variance; choose the complexity at minimum validation error.',
+        'Q: Learning rate too big or too small? A: Too small: tiny steps, slow. Too big: overshoots the minimum, loss oscillates or diverges.',
+        'Q: How does regularisation help? A: Loss + α‖w‖ penalises big weights, so the fit is smoother: variance falls, bias rises a little. Larger α = simpler model.',
+        'Q: Why gradient descent, not the closed form? A: Normal equation (XᵀX)⁻¹Xᵀy costs ~O(d³) and needs all data in memory; GD scales to big d, n and works where no closed form exists (logistic, NN).',
+        'Q: Parameter vs hyperparameter? A: Parameters are learned in training (w, b). Hyperparameters are set before, chosen on validation (α, k, depth, η).',
       ],
     },
     {
@@ -374,6 +369,7 @@ export const cheatSheet: CheatSheet = {
         'Q: Why is F1 a harmonic mean? A: Pulled to the smaller: P = 1, R = 0.01 gives F1 0.02. Both must be good.',
         'Q: ROC vs PR curve? A: FPR divides by the many negatives, so ROC looks optimistic when positives are rare. PR curve ignores TN, so it is more informative on imbalanced data.',
         'Q: What do ROC and AUC show? A: ROC = TPR vs FPR over all thresholds; diagonal random, top-left perfect. AUC = P(random positive scored above random negative); 0.5 random, 1 perfect.',
+        'Q: Effect of raising the threshold? A: Fewer predicted positives: FP fall so precision usually rises, FN rise so recall falls.',
       ],
     },
     {
@@ -383,6 +379,7 @@ export const cheatSheet: CheatSheet = {
         'Q: Why Laplace smoothing? A: An unseen word gives P = 0 and zeroes the product; (count + 1)/(total + |V|) keeps all > 0.',
         'Q: Generative vs discriminative? A: Generative models p(x|C)P(C) (NB, GAN); discriminative models p(C|x) directly (logistic, trees, NN).',
         'Q: MLE vs MAP? A: MLE = argmax P(D|h), data only. MAP = argmax P(D|h)P(h), adds a prior. Uniform prior: MAP = MLE. MAP safer with little data.',
+        'Q: Why does NB work though independence is false? A: Only needs the right class to score highest (argmax), not exact probabilities. Fast, little data.',
       ],
     },
     {
@@ -399,6 +396,7 @@ export const cheatSheet: CheatSheet = {
         'Q: Bagging vs boosting? A: Bagging: parallel, bootstrap samples, equal vote, cuts variance (RF). Boosting: sequential, focuses on errors, α-weighted vote, cuts bias; noise-sensitive.',
         'Q: Why random features in a random forest? A: Each split tries ≈√d random features, so trees decorrelate; averaging cuts more variance.',
         'Q: Why do ensembles work? A: Combining diverse models cancels independent errors. Base models must beat chance (each 45% accurate: more voters is worse).',
+        'Q: Stacking vs blending? A: Stacking trains a meta-model on out-of-fold predictions of the base models; blending trains it on a held-out set (simpler, uses less data).',
       ],
     },
     {
@@ -444,6 +442,7 @@ export const cheatSheet: CheatSheet = {
         'Q: How to choose k? A: Elbow (bend in SSE vs k) or highest average silhouette (b − a)/max(a, b).',
         'Q: What does PCA do? A: Projects centred data onto the top-k max-variance directions (covariance eigenvectors); var explained = Σtop λ / Σλ.',
         'Q: k-means vs hierarchical? A: k-means: k in advance, fast, random init. Agglomerative: merge closest pair, dendrogram cut at any k, deterministic, O(n²).',
+        'Q: Why embeddings, why cosine? A: One-hot is huge, sparse, all words equally far. Dense learned vectors put similar meanings close; cosine a·b/(‖a‖‖b‖) compares direction, ignores length.',
       ],
     },
   ],
