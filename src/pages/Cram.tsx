@@ -228,7 +228,8 @@ function Sheet() {
         <p><span className="text-s4 font-semibold">Rule: </span>one A4 sheet, both sides. The instructor confirmed on 11 Nov that it can be <span className="text-ink">printed or handwritten</span>, and it is collected at the end of the exam.</p>
         <p>Print it double-sided at 100% scale (no "fit to page"). Before the exam, highlight the blocks you needed in the sample exam and scribble your own notes in the margins.</p>
         <div className="flex flex-wrap gap-4">
-          <a href={`${import.meta.env.BASE_URL}CS610_cheatsheet.pdf`} download className="inline-flex items-center gap-2 text-glow hover:text-glow-hover font-medium"><Printer size={15} /> Download the print-ready PDF (recommended)</a>
+          <a href={`${import.meta.env.BASE_URL}CS610_cheatsheet.pdf`} download className="inline-flex items-center gap-2 text-glow hover:text-glow-hover font-medium"><Printer size={15} /> PDF 6.6pt (everything)</a>
+          <a href={`${import.meta.env.BASE_URL}CS610_cheatsheet_7pt.pdf`} download className="inline-flex items-center gap-2 text-glow hover:text-glow-hover font-medium"><Printer size={15} /> PDF 7pt (larger, 8 fewer Q&amp;As)</a>
           <Link to="/cheatsheet" className="inline-flex items-center gap-2 text-ink-secondary hover:text-glow font-medium">Open the A4 layout in the browser</Link>
         </div>
       </div>

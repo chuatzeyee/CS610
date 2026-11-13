@@ -43,7 +43,7 @@ assert(overflow.every(n => n === 0), 'cheat sheet overflows A4')
 
 await page.emulateMedia({ media: 'print' })
 await page.pdf({ path: '/tmp/cram/cheatsheet.pdf', format: 'A4', printBackground: true, preferCSSPageSize: true })
-await (await import("node:fs/promises")).copyFile("/tmp/cram/cheatsheet.pdf", "public/CS610_cheatsheet.pdf").catch(() => {})
+await (await import("node:fs/promises")).copyFile("/tmp/cram/cheatsheet.pdf", "/tmp/cram/last-smoke.pdf").catch(() => {})
 
 await page.goto(`${BASE}/search?q=bootstrap`, { waitUntil: 'networkidle' })
 await page.waitForSelector('text=Cram')
