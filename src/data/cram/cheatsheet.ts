@@ -76,7 +76,7 @@ export const cheatSheet: CheatSheet = {
         '∂J/∂w0 = (2/n)Σ(h(xi)−yi);  ∂J/∂w1 = (2/n)Σ xi(h(xi)−yi)',
         'GD: wj ← wj − α ∂J/∂wj, all j updated simultaneously',
         'Normal eq: w = (XᵀX)⁻¹Xᵀy',
-        'R² = 1 − SSE/SST; SSE = Σ(yi−ŷi)², SST = Σ(yi−ȳ)²',
+        'R² = 1 − SSE/SST; SSE = Σ(yi−ŷi)², SST = Σ(yi−ȳ)², MSE = SSE/n',
         'Ridge J + α‖w‖₂² = αΣw²;  Lasso J + α‖w‖₁ = αΣ|w|',
         'E[error] = Bias² + Variance + σ² (irreducible noise)',
       ],
@@ -85,7 +85,8 @@ export const cheatSheet: CheatSheet = {
       title: 'Logistic regression, softmax',
       lines: [
         'σ(z) = 1/(1+e^(−z)); σ(0)=0.5; σ(−z) = 1−σ(z); σ\' = σ(1−σ)',
-        'p(1|x) = σ(wᵀx + b);  log-odds ln(p/(1−p)) = wᵀx + b (linear)',
+        'z = wᵀx + b = w1x1 + w2x2 + ... + b;  p(1|x) = σ(z), p(−1|x) = 1 − p',
+        'odds = p/(1−p) = e^z; log-odds ln(p/(1−p)) = z; z > 0: predict +1',
         'Boundary wᵀx + b = 0 (p = 0.5); 1-D: x* = −b/w',
         'Log loss y∈{0,1}: −Σ[y ln ŷ + (1−y) ln(1−ŷ)];  ∂/∂z = ŷ − y',
         'y∈{±1}: L = Σ ln(1 + e^(−y wᵀx))',
