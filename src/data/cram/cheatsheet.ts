@@ -173,14 +173,15 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Calculator keys (fx-96SG PLUS / 570ES / 991ES)',
+      title: 'Calculator keys (fx-97SG X)',
       lines: [
-        'Setup: SHIFT MODE 1 then 2 (LineO); SHIFT MODE 8 then 2 (Norm 2)',
-        'log2(x) = log(x) ÷ log(2); e^x = SHIFT ln; STO = SHIFT RCL',
-        'STAT: MODE 2 (96SG) or MODE 3 (ES), 1 (1-VAR), x =, ..., AC',
-        'SHIFT 1 4: 1 n, 2 mean, 3 σx (÷n, USE), 4 sx (÷n−1)',
-        'Variance = σx² ; clear data in editor SHIFT 1 3 2 (Del-A)',
-        'S⇔D for decimal. Bracket: e^(−(x−μ)²/(2σ²)), 1/(1+e^(−z))',
+        'Setup: SHIFT MENU (SETUP), Input/Output, 2 MathI/DecimalO',
+        'Stats: MENU, Statistics icon, =, 1 (1-Variable); x =, x =, ...',
+        'OPTN 3 (1-Variable Calc): x̄, σ²x (÷n, USE), σx, s²x (÷n−1)',
+        'Clear data: OPTN 2 2 (Delete All); exit stats: MENU, Calculate',
+        'log2(x) = log(x) ÷ log(2) (no log_a key); e^x = SHIFT ln',
+        'Store: STO (−) puts Ans in A; use: ALPHA (−). Decimal: SHIFT =',
+        'Bracket: e^(−(x−μ)²/(2σ²)), 1/(1+e^(−z)). Reset: SHIFT 9 3 =',
       ],
     },
     {

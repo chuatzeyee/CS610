@@ -2,6 +2,11 @@ import type { CalcGuide } from './types'
 
 export const calcGuide: CalcGuide = {
   setup: [
+    'YOUR CALCULATOR IS THE fx-97SG X (ClassWiz). Its keys differ from the ES models used in the skills below. Checked against the official Casio fx-97SG X user guide:',
+    'fx-97SG X setup: SHIFT MENU (SETUP), choose Input/Output, then 2 (MathI/DecimalO) so answers come out as decimals. Number format Norm 2 is the default. SHIFT = gives a decimal for any result.',
+    'fx-97SG X statistics: MENU, move to the Statistics icon, press =, then 1 (1-Variable). Type each value and =. Then OPTN 3 (1-Variable Calc) lists x̄, Σx, Σx², σ²x, σx, s²x, sx. Use σ²x for the course variance (divides by n). Delete all data: OPTN 2 (Editor) 2 (Delete All). From the results screen, OPTN 3 (Data) goes back to the table.',
+    'fx-97SG X memory: STO is its own key. Result then STO (−) stores in A (B is the °′″ key, etc.); recall with ALPHA (−). Clear memory: SHIFT 9 2 =. Reset everything: SHIFT 9 3 =.',
+    'fx-97SG X logs: there is NO log_a key. log2(x) = log(x) ÷ log(2). e^x is SHIFT ln. Wherever a skill below says MODE 2/MODE 3 or SHIFT 1 4, use the fx-97SG X statistics steps above instead.',
     'Target models: Casio fx-96SG PLUS, fx-570ES PLUS, fx-991ES PLUS (MODE key menus) and fx-570EX / fx-991EX ClassWiz (MENU key with icons). Key names below are for the ES PLUS family; EX and CW differences are noted where they matter.',
     'Reset the night before and again in the exam hall: SHIFT 9 (CLR), 3 (All), = (Yes), then AC. This restores COMP mode, default setup and clears every variable, Ans and M. On fx-570EX/991EX: SHIFT 9, Initialize All, = (Yes). On fx-991CW/570CW: press SETTINGS, choose Reset, then Initialize All.',
     'Make sure you are in normal calculation mode: MODE 1 (COMP). On fx-570EX/991EX: MENU, 1 (Calculate). On fx-991CW/570CW: press HOME and open the Calculate app icon.',
