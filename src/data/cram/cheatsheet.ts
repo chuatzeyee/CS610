@@ -85,7 +85,8 @@ export const cheatSheet: CheatSheet = {
       title: 'Logistic regression, softmax',
       lines: [
         'σ(z) = 1/(1+e^(−z)); σ(0)=0.5; σ(−z) = 1−σ(z); σ\' = σ(1−σ)',
-        'z = wᵀx + b = w1x1 + w2x2 + ... + b;  p(1|x) = σ(z), p(−1|x) = 1 − p',
+        'z = wᵀx + b = w1x1 + w2x2 + ... + b',
+        'σ(z) = p(y=+1|x);  p(y=−1|x) = 1 − σ(z) = σ(−z);  ±1: p(y|x) = σ(yz)',
         'odds = p/(1−p) = e^z; log-odds ln(p/(1−p)) = z; z > 0: predict +1',
         'Boundary wᵀx + b = 0 (p = 0.5); 1-D: x* = −b/w',
         'Log loss y∈{0,1}: −Σ[y ln ŷ + (1−y) ln(1−ŷ)];  ∂/∂z = ŷ − y',
