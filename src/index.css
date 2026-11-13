@@ -109,7 +109,7 @@ input::placeholder {
 .a4-bar { display: flex; gap: 16px; justify-content: center; margin-bottom: 16px; font: 14px var(--font-sans); }
 .a4-bar a, .a4-bar button { color: #14532d; text-decoration: underline; cursor: pointer; }
 .a4-page { width: 210mm; height: 297mm; margin: 0 auto 16px; padding: 5mm; background: #fff; box-sizing: border-box; position: relative; overflow: hidden; }
-.a4-cols { column-count: 3; column-gap: 3mm; column-fill: auto; height: 283mm; font-family: 'Google Sans Flex', 'Google Sans', Arial, sans-serif; font-size: 7.6pt; line-height: 1.2; font-stretch: 85%; }
+.a4-cols { column-count: 3; column-gap: 3mm; column-fill: auto; height: 283mm; font-family: 'Google Sans Flex', 'Google Sans', Arial, sans-serif; font-size: 7pt; line-height: 1.2; font-stretch: 85%; }
 .a4-block { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 0.8mm 1.2mm; margin-bottom: 1.2mm; }
 .a4-block p { margin: 0; padding: 0.15mm 0.6mm 0.15mm 2.4mm; text-indent: -1.8mm; overflow-wrap: anywhere; }
 .a4-block p:nth-of-type(odd):not(.a4-title) { background: #ececec; }

@@ -232,6 +232,16 @@ export const cheatSheet: CheatSheet = {
         'Sanity: 0.0900 + 0.2447 + 0.6652 = 0.9999 (1 up to rounding). Trap: divide e^z, not z',
       ],
     },
+    {
+      title: 'Perceptron update (labels ±1)',
+      lines: [
+        '0) Given w = (0, 0, 0), x = (1, 1) plus x0 = 1: (1, 1, 1); y = +1; η = 0.5',
+        '1) ŷ = +1 if w·x > 0 else −1.  eg 0×1 + 0×1 + 0×1 = 0, not > 0: ŷ = −1, wrong',
+        '2) If wrong: new w = w + η(y − ŷ)x',
+        ' eg (0,0,0) + 0.5 × (1 − (−1)) × (1,1,1) = 0.5 × 2 × (1,1,1) = (1, 1, 1)',
+        'Sanity: now w·x = 3 > 0: ŷ = +1 (right: no change)',
+      ],
+    },
   ],
   side2: [
     {
@@ -309,16 +319,6 @@ export const cheatSheet: CheatSheet = {
       ],
     },
     {
-      title: 'Perceptron update (labels ±1)',
-      lines: [
-        '0) Given w = (0, 0, 0), x = (1, 1) plus x0 = 1: (1, 1, 1); y = +1; η = 0.5',
-        '1) ŷ = +1 if w·x > 0 else −1.  eg 0×1 + 0×1 + 0×1 = 0, not > 0: ŷ = −1, wrong',
-        '2) If wrong: new w = w + η(y − ŷ)x',
-        ' eg (0,0,0) + 0.5 × (1 − (−1)) × (1,1,1) = 0.5 × 2 × (1,1,1) = (1, 1, 1)',
-        'Sanity: now w·x = 3 > 0: ŷ = +1 (right: no change)',
-      ],
-    },
-    {
       title: 'Attention weights',
       lines: [
         '0) Given q, keys k_i, values v_i, d_k.  eg q = (1,0,2,1); k1 = (1,1,0,0), k2 = (0,1,1,1), k3 = (2,0,1,0); v = 10, 2, 6; d_k = 4',
@@ -363,6 +363,7 @@ export const cheatSheet: CheatSheet = {
         'Q: Overfitting vs underfitting? A: Overfit: train error low, val high, fits noise (high variance). Underfit: both high, too simple (high bias).',
         'Q: How to reduce overfitting? A: More data, simpler model, L1/L2, pruning, dropout, early stopping, bagging.',
         'Q: L1 vs L2? A: Penalty α‖w‖ shrinks weights: variance down, bias up a little. L2 αΣw² shrinks all smoothly; L1 αΣ|w| sets some w to 0 = feature selection.',
+        'Q: Bias-variance trade-off? A: Error = bias² + variance + noise. More complexity lowers bias, raises variance; choose the complexity at minimum validation error.',
       ],
     },
     {
@@ -371,6 +372,8 @@ export const cheatSheet: CheatSheet = {
         'Q: Why is accuracy poor on imbalanced data? A: All-majority scores 99% yet finds no positives. Use precision, recall, F1, PR-AUC.',
         'Q: Precision vs recall, when each? A: Precision when false alarms are costly (spam). Recall when misses are costly (cancer, fraud).',
         'Q: Why is F1 a harmonic mean? A: Pulled to the smaller: P = 1, R = 0.01 gives F1 0.02. Both must be good.',
+        'Q: ROC vs PR curve? A: FPR divides by the many negatives, so ROC looks optimistic when positives are rare. PR curve ignores TN, so it is more informative on imbalanced data.',
+        'Q: What do ROC and AUC show? A: ROC = TPR vs FPR over all thresholds; diagonal random, top-left perfect. AUC = P(random positive scored above random negative); 0.5 random, 1 perfect.',
       ],
     },
     {
@@ -379,6 +382,7 @@ export const cheatSheet: CheatSheet = {
         'Q: Naive Bayes assumption? A: Features independent given the class: p(x|C) = Π p(xj|C); d easy 1-D estimates; Gaussian NB Σ is diagonal.',
         'Q: Why Laplace smoothing? A: An unseen word gives P = 0 and zeroes the product; (count + 1)/(total + |V|) keeps all > 0.',
         'Q: Generative vs discriminative? A: Generative models p(x|C)P(C) (NB, GAN); discriminative models p(C|x) directly (logistic, trees, NN).',
+        'Q: MLE vs MAP? A: MLE = argmax P(D|h), data only. MAP = argmax P(D|h)P(h), adds a prior. Uniform prior: MAP = MLE. MAP safer with little data.',
       ],
     },
     {
@@ -386,6 +390,7 @@ export const cheatSheet: CheatSheet = {
       lines: [
         'Q: What do entropy and IG measure? A: H = label impurity, 0 pure, 1 bit at 50/50. IG = entropy drop from a split; ID3 splits on max IG.',
         'Q: Why does IG favour many-valued attributes? A: An ID splits into tiny pure subsets: max IG, useless. Gain ratio = IG/SplitInfo.',
+        'Q: Why do trees overfit and how to stop it? A: They can split until every training row is right, fitting noise (high variance). Pre-prune (max depth, min leaf size), post-prune on validation, or use RF.',
       ],
     },
     {
@@ -393,6 +398,7 @@ export const cheatSheet: CheatSheet = {
       lines: [
         'Q: Bagging vs boosting? A: Bagging: parallel, bootstrap samples, equal vote, cuts variance (RF). Boosting: sequential, focuses on errors, α-weighted vote, cuts bias; noise-sensitive.',
         'Q: Why random features in a random forest? A: Each split tries ≈√d random features, so trees decorrelate; averaging cuts more variance.',
+        'Q: Why do ensembles work? A: Combining diverse models cancels independent errors. Base models must beat chance (each 45% accurate: more voters is worse).',
       ],
     },
     {
@@ -400,6 +406,8 @@ export const cheatSheet: CheatSheet = {
       lines: [
         'Q: Why a non-linear activation? A: Else the layers collapse into one linear map: no XOR.',
         'Q: Vanishing gradient and fixes? A: Backprop multiplies σ\' ≤ 0.25 many times, so early layers stop learning. ReLU, batch norm, skip connections, LSTM.',
+        'Q: How does dropout reduce overfitting? A: Drops random units in training so none rely on others; like averaging many sub-nets. Test: all units, × keep prob α.',
+        'Q: Batch vs SGD vs mini-batch? A: Batch: all data per update, stable, slow. SGD: 1 sample, fast, noisy zig-zag. Mini-batch: balance, the default.',
       ],
     },
     {
@@ -407,6 +415,7 @@ export const cheatSheet: CheatSheet = {
       lines: [
         'Q: Why CNN over FNN for images? A: Local connectivity + weight sharing: far fewer params, translation invariance, feature hierarchy.',
         'Q: Pooling, padding, stride? A: Pooling downsamples, robust to shifts, no weights. Padding keeps size and borders; bigger stride shrinks output.',
+        'Q: Why ResNet skip connections? A: Block outputs F(x) + x: learns only the residual; gradient flows straight through the + to early layers, so 100+ layers train.',
       ],
     },
     {
@@ -416,6 +425,9 @@ export const cheatSheet: CheatSheet = {
         'Q: Why self-attention over RNN? A: Every token links directly to every other, in parallel, no vanishing through time; cost O(n²).',
         'Q: Why scale by √dk? A: q·k grows with dk; scaling stops softmax saturating (tiny gradients).',
         'Q: BERT vs GPT? A: BERT: encoder, bidirectional, masked words: understanding. GPT: decoder, causal, next token: generation.',
+        'Q: Why multi-head? A: Each head has its own Q, K, V projections, so each learns a different relation (syntax, coreference); concat × W^O.',
+        'Q: Why positional encoding? A: Attention is order-blind; added sin/cos position vectors give word order.',
+        'Q: Why mask the decoder? A: Token t must not see the future it predicts: scores j > t set to -∞.',
       ],
     },
     {
@@ -431,6 +443,7 @@ export const cheatSheet: CheatSheet = {
         'Q: k-means weaknesses? A: Must pick k; init-sensitive (restarts, k-means++); assumes round equal clusters; outliers; needs scaling.',
         'Q: How to choose k? A: Elbow (bend in SSE vs k) or highest average silhouette (b − a)/max(a, b).',
         'Q: What does PCA do? A: Projects centred data onto the top-k max-variance directions (covariance eigenvectors); var explained = Σtop λ / Σλ.',
+        'Q: k-means vs hierarchical? A: k-means: k in advance, fast, random init. Agglomerative: merge closest pair, dendrogram cut at any k, deterministic, O(n²).',
       ],
     },
   ],
