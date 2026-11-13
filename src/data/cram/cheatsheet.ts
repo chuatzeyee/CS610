@@ -136,7 +136,7 @@ export const cheatSheet: CheatSheet = {
     {
       title: 'Entropy, information gain, Gini',
       lines: [
-        '1) Parent H(S) = −Σ p log2 p; log2 x = [log] x ÷ [log] 2; 0 log 0 = 0',
+        '1) Parent H(S) = −Σ p log2 p; log2 x = [log] x [)] ÷ [ALPHA (−)] (A = log 2); 0 log 0 = 0',
         '2) Each branch v: H(Sv) from its own counts',
         '3) H(S|A) = Σ (|Sv|/|S|) H(Sv)  (weight by branch size)',
         '4) IG = H(S) − H(S|A); split on the max IG',
@@ -228,7 +228,8 @@ export const cheatSheet: CheatSheet = {
     {
       title: 'fx-97SG X keys',
       lines: [
-        'log2(x) = [log] x ÷ [log] 2 (no log-base key); ln x = [ln]',
+        'log2(x) = [log] x [)] ÷ [log] 2 [)] (no log-base key); test log2 8 = 3',
+        'Faster: [log] 2 [)] [=] [STO] [(−)] puts log 2 in A, then log2 x = [log] x [)] ÷ [ALPHA] [(−)]',
         'e^x = [SHIFT ln]. Decimal: [SHIFT =]. Last result: [Ans]',
         'Store A: [STO (−)], recall [ALPHA (−)]',
         'Stats: [MENU] Statistics [=] [1]; [OPTN 3] results; [OPTN 2 2] clear',
